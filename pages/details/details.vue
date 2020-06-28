@@ -1,6 +1,7 @@
 <template>
 	<view class="content">
 		<uni-nav-bar
+		v-if="index==1"
 			:status-bar="true"
 			:show="show"
 			left-icon="arrowleft"
@@ -11,10 +12,10 @@
 			:background-color="'#ec706b'"
 			class="uni-nav-bar"
 		/>
-		<view class="video-box">
+		<view class="video-box" v-if="index==1">
 			<web-view class="video" :style="webviewStyles" :src="webviewsrc"></web-view>
 		</view>
-		<scroll-view class="scroll" scroll-y>
+		<scroll-view v-if="index==1" class="scroll" scroll-y>
 			<view class="scroll-content">
 				<view class="image-box"><image :src="obj.cover" @error="imgError(obj)"></image></view>
 				<view class="text-right">
@@ -90,6 +91,7 @@ export default {
 			show:true,
 			title:"影视详情",
 			num: 0,
+			index:0,
 			loading: true,
 			detailData: {},
 			list: [],
@@ -111,7 +113,11 @@ export default {
 		};
 	},
 	onReady: function(res) {
-		
+		let option = uni.getStorageSync('config');
+		this.index = option.index
+		// #ifndef MP
+		this.index = 1
+		// #endif
 	},
 	computed: {
 		

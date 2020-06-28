@@ -5,11 +5,11 @@
 		<!-- <view class="text-item text-item-top" v-show="!show" :class="{ black: black }">
 		 	<text>{{title}}</text>
 		 </view> -->
-		 <view @touchmove="handletouchmove" @touchstart="handletouchstart" @touchend="handletouchend" class="scroll" id="scrollview"
+		 <view  v-if="index==1" @touchmove="handletouchmove" @touchstart="handletouchstart" @touchend="handletouchend" class="scroll" id="scrollview"
 		  :class="{ black: black }" >
 		 	<view class="scroll-content">
 				<view class="img-list" v-for="(item,index) in list" :key="index">
-					<image class="img" mode="widthFix" :src="item.img" lazy-load="true" ></image>
+					<image class="img" mode="widthFix" :src="item.img" @error="imgError(item)"  lazy-load="true" ></image>
 				</view>
 		 		<!-- <movable-area scale-area >
 		 			<movable-view scale :x="x" :y="y" direction="all" >
@@ -28,7 +28,7 @@
 				<text>{{time}}</text>
 			</view>
 		</view> -->
-		<view class="bottom-tools" :class="{ 'show:': show, hide: !show }">
+		<view class="bottom-tools" :class="{ 'show:': show, hide: !show }" v-if="index==1">
 			<button class="bottom-button" type="primary" size="mini" plain="true" @click="gotomhlist">目录</button>
 			<button class="bottom-button" type="primary" size="mini" plain="true" @click="prev">上一话</button>
 			<button class="bottom-button" type="primary" size="mini" plain="true" @click="next">下一话</button>
@@ -71,6 +71,7 @@
 				xsurl2Request: null,
 				scrollTimer: null,
 				scrollTopTotal: 0,
+				index:0,
 				style: {
 					pageHeight: 0,
 					contentViewHeight: 0,
@@ -113,6 +114,9 @@
 			this.platform = uni.getSystemInfoSync().platform
 		},
 		methods: {
+			imgError(item) {
+				item.img = '/static/404.jpg';
+			},
 			back() {
 				uni.navigateBack({
 					delta: 1
@@ -374,6 +378,11 @@
 		onReady() {
 			let _this = this;
 			this.getTIme()
+			let option = uni.getStorageSync('config');
+			this.index = option.index;
+			// #ifndef MP
+			this.index = 1
+			// #endif
 			// #ifdef APP-PLUS
 			// plus.navigator.setFullscreen(true);
 			this.currentWebview = this.$mp.page.$getAppWebview();

@@ -1,7 +1,7 @@
 <template>
 	<view>
-		<view class="video-box" :style="{ height: boxHeight }"></view>
-		<view :style="{ top: scrollTop, height: scrollHeight }" class="scroll" scroll-y>
+		<view class="video-box" :style="{ height: boxHeight }" v-if="index==1"></view>
+		<view :style="{ top: scrollTop, height: scrollHeight }" class="scroll" scroll-y v-if="index==1">
 			<view class="scroll-content">
 				<view class="image-box"><image class="uni-image" :src="obj.cover" @error="imgError(obj)"></image></view>
 				<view class="text-right">
@@ -65,6 +65,7 @@ export default {
 			video_content: null,
 			videoshow: false,
 			checked: false,
+			index:0,
 			webviewStyles: {
 				top: '64px',
 				height: '350upx',
@@ -497,6 +498,11 @@ export default {
 	onReady(res) {
 		let _t = this;
 		let resObj = uni.getSystemInfoSync();
+		let option = uni.getStorageSync('config');
+		this.index = option.index;
+		// #ifndef MP
+		this.index = 1
+		// #endif
 		this.statusBarHeight = resObj.statusBarHeight;
 		this.screenWidth = resObj.screenWidth;
 		this.screenHeight = resObj.screenHeight;

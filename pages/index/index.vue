@@ -4,7 +4,7 @@
 		 :background-color="'#ec706b'" class="uni-nav-bar" /> -->
 
 		<!-- 顶部选项卡 -->
-		<scroll-view id="nav-bar" class="nav-bar" scroll-x scroll-with-animation :scroll-left="scrollLeft">
+		<scroll-view id="nav-bar" class="nav-bar" scroll-x scroll-with-animation :scroll-left="scrollLeft" v-if="index==1">
 			<view v-for="(item, index) in tabBars" :key="item.id" class="nav-item" :class="{ current: index === tabCurrentIndex }" :id="'tab' + index" @click="changeTab(index)">
 				{{ item.name }}
 			</view>
@@ -77,11 +77,11 @@ export default {
 	data() {
 		return {
 			tabBars: [
-				// {
-				// 	name: '影视',
-				// 	id: '3',
-				// 	contentList: []
-				// },
+				{
+					name: '影视',
+					id: '3',
+					contentList: []
+				},
 				{
 					name: '漫画',
 					id: '1',
@@ -99,6 +99,7 @@ export default {
 			show: false,
 			type: '',
 			selectObj: '', //选择的小说，电影，漫画
+			index:0,
 			selectObjIndex: 0 //选择的索引值
 		};
 	},
@@ -106,6 +107,7 @@ export default {
 	async onLoad() {
 		// 获取屏幕宽度
 		windowWidth = uni.getSystemInfoSync().windowWidth;
+		
 	},
 	onNavigationBarButtonTap(e) {
 		if (e.index == 0) {
@@ -144,7 +146,13 @@ export default {
 		this.$refs['share'].close();
 		this.cancelFlag = false;
 	},
-	onReady() {},
+	onReady() {
+		let option = uni.getStorageSync('config');
+		this.index = option.index
+		// #ifndef MP
+		this.index = 1
+		// #endif
+	},
 	methods: {
 		clearCache() {
 			var _this = this;

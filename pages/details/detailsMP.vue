@@ -1,11 +1,11 @@
 <template>
 	<view class="content">
-		<view class="video-box">
+		<view class="video-box" v-if="index==1">
 			<video id="myVideo" :title="videoTitle" class="myVideo"
 			 autoplay :src="src" controls show-center-play-btn enable-play-gesture
 			  show-casting-button  show-screen-lock-button picture-in-picture-mode="" enable-auto-rotation></video>
 		</view>
-		<scroll-view class="scroll" scroll-y>
+		<scroll-view class="scroll" scroll-y v-if="index==1">
 			<view class="scroll-content">
 				<view class="image-box"><image :src="obj.cover" @error="imgError(obj)"></image></view>
 				<view class="text-right">
@@ -92,12 +92,18 @@ export default {
 			videoshow: false,
 			first:true,
 			checked:false,
-			videoTitle:""
+			videoTitle:"",
+			index:0
 		};
 	},
 	onReady: function(res) {
 		// #ifndef MP-ALIPAY
 		this.videoContext = uni.createVideoContext('myVideo')
+		// #endif
+		let option = uni.getStorageSync('config');
+		this.index = option.index
+		// #ifndef MP
+		this.index = 1
 		// #endif
 	},
 	computed: {

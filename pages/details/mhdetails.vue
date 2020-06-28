@@ -2,7 +2,7 @@
 	<view class="content">
 		<!-- <uni-nav-bar :status-bar="true" left-icon="arrowleft" @click-left="back" :title="title" right-text="收藏" @click-right="shoucang"
 		 :background-color="'#ec706b'" class="uni-nav-bar" /> -->
-		<scroll-view class="scroll" scroll-y>
+		<scroll-view class="scroll" scroll-y v-if="index==1">
 			<view class="scroll-content">
 				<view class="image-box">
 					<image :src="obj.cover" @error="imgError(obj)"></image>
@@ -57,6 +57,7 @@
 				list:[],
 				title:"",
 				obj:{},
+				index:0,
 				type:"h5" // h5 video
 			}
 		},
@@ -68,6 +69,13 @@
 					title: '点击了收藏'
 				});
 			}
+		},
+		onReady(){
+			let option = uni.getStorageSync('config');
+			this.index = option.index
+			// #ifndef MP
+			this.index = 1
+			// #endif
 		},
 		onLoad(options){
 			this.detailData = JSON.parse(options.data);

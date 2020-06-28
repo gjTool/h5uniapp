@@ -1,5 +1,5 @@
 {
-    "name" : "pdfh5影视漫测试",
+    "name" : "爱看电影",
     "appid" : "__UNI__1EA8C20",
     "description" : "看电影漫画",
     "versionName" : "1.0.0",
@@ -135,7 +135,8 @@
             "postcss" : true,
             "minified" : true
         },
-        "usingComponents" : true
+        "usingComponents" : true,
+        "permission" : {}
     },
     "h5" : {
         "title" : "仅供测试",

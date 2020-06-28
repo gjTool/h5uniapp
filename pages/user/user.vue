@@ -1,24 +1,23 @@
 <template>
 	<view class="user" :style="{'background':background}">
-		<view v-if="isCanUse">
-			<view>
-				<view class="header"><image src="../../static/wxlogin.png"></image></view>
-				<view class="content">
-					<view>申请获取以下权限</view>
-					<text>获得你的公开信息(昵称，头像、地区等)</text>
-				</view>
-
-				<button class="bottom" type="primary" open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="wxGetUserInfo">授权登录</button>
-			</view>
-		</view>
-		<view class="status_bar_bg" v-if="!isCanUse">
+		<view class="status_bar_bg">
 			<view class="status_bar"></view>
 			<view class="headPortrait">
 				<image :src="data.avatarUrl || '../../static/404.jpg'"></image>
 				<view class="name">{{ data.nickName || '暂无信息' }}</view>
 			</view>
 		</view>
-		<view class="listFunction" v-if="!isCanUse">
+		<view class="" v-if="isCanUse">
+			<button class="bottom" type="primary" @click="login">立即登录</button>
+		</view>
+		<view class="listFunction" v-if="index==0">
+			<view class="listStrip">
+				<image src="../../static/tab-shoucang-current.png" mode="aspectFit"></image>
+				<view class="text">欢迎使用pdfh5咨讯查询，您在这里可以查询到当地天气详情</view>
+				<text class="iconfont iconyou"></text>
+			</view>
+		</view>
+		<view class="listFunction" v-if="!isCanUse && index==1">
 			<view class="listStrip" v-for="(item, index) in list" :key="index" @click="listJump(index)">
 				<image :src="item.img" mode="aspectFit"></image>
 				<view class="text">{{ item.text }}</view>
@@ -34,36 +33,48 @@ export default {
 		return {
 			list: [
 				// {img:'../../static/jianjie.png',text:'最近浏览'},
-				{ img: '../../static/tab-shoucang-current.png', text: '我的收藏' }
+				{ img: '../../static/tab-download-current.png', text: '我的收藏' }
 			],
-			data: {},
+			data: uni.setStorageSync("userInfo"),
 			SessionKey: '',
 			OpenId: '',
 			nickName: null,
 			avatarUrl: null,
 			background:"#fff",
-			isCanUse: uni.setStorageSync('isCanUse')||true //默认为true
+			index:0,
+			isCanUse: uni.setStorageSync('isCanUse') //默认为true
 		};
+	},
+	onReady(){
+		let _this = this;
+		let option = uni.getStorageSync('config');
+		this.index = option.index
 	},
 	onLoad() {
 		let _this = this;
-		_this.isCanUse = uni.setStorageSync('isCanUse')||true;
+		_this.isCanUse = uni.setStorageSync('isCanUse') || true;
+		_this.data = uni.setStorageSync("userInfo");
 	},
 	onShow() {
 		let _this = this;
+		_this.isCanUse = uni.setStorageSync('isCanUse');
+		_this.data = uni.setStorageSync("userInfo");
 		// #ifdef MP-WEIXIN
 		uni.getSetting({
 			success(res) {
 				let authSetting=res.authSetting
 				if (!res.authSetting['scope.userInfo']) {
 					//这里调用授权
-					console.log('当前未授权');
+					// console.log('当前未授权');
 					_this.isCanUse = true;
+					_this.data ={};
+					uni.setStorageSync('userInfo',{});
+					uni.setStorageSync('isCanUse', true); //记录是否第一次授权  false:表示不是第一次授权
 				} else {
 					//用户已经授权过了
 					_this.isCanUse = false;
 					_this.data = uni.setStorageSync("userInfo")
-					console.log('当前已授权',_this.data );
+					// console.log('当前已授权',_this.data );
 					_this.background = "RGB(248,249,251)"
 					uni.getUserInfo({
 						provider: 'weixin',
@@ -72,12 +83,24 @@ export default {
 							let nickName = infoRes.userInfo.nickName; //昵称
 							let avatarUrl = infoRes.userInfo.avatarUrl; //头像
 							_this.data = infoRes.userInfo;
-							console.log("infoRes1",infoRes)
+							// console.log("infoRes1",infoRes)
 							try {
 								uni.setStorageSync('userInfo', infoRes.userInfo);
 								uni.setStorageSync('isCanUse', false); //记录是否第一次授权  false:表示不是第一次授权
 								_this.isCanUse = false;
 								// _this.updateUserInfo(); //调用更新信息方法
+								uni.request({
+									url: 'https://www.gjtool.cn/download/config.json',
+									method: 'GET',
+									complete: res => {
+										if (res.statusCode == 200 && res.data) {
+											uni.setStorage({
+												key: 'config',
+												data: res.data
+											});
+										}
+									}
+								});
 							} catch (e) {}
 						}
 					});
@@ -89,57 +112,20 @@ export default {
 	methods: {
 		listJump(index) {
 			if (index === 0) {
+				let url = `/pages/index/index`;
+				if(this.index==0){
+					url=""
+				}
 				uni.navigateTo({
-					url: `/pages/index/index`
+					url: url
 				});
 			}
 		},
-		//第一授权获取用户信息===》按钮触发
-		wxGetUserInfo() {
-			let _this = this;
-			// uni.showLoading({
-			// 	title: '登录中...'
-			// });
-			// 1.wx获取登录用户code
-			uni.login({
-				provider: 'weixin',
-				success: function(loginRes) {
-					let code = loginRes.code;
-					//非第一次授权获取用户信息
-					uni.getUserInfo({
-						provider: 'weixin',
-						success: function(infoRes) {
-							//获取用户信息后向调用信息更新方法
-							let nickName = infoRes.userInfo.nickName; //昵称
-							let avatarUrl = infoRes.userInfo.avatarUrl; //头像
-							_this.data = infoRes.userInfo;
-							console.log("infoRes2",infoRes)
-							try {
-								uni.setStorageSync('userInfo', infoRes.userInfo);
-								uni.setStorageSync('isCanUse', false); //记录是否第一次授权  false:表示不是第一次授权
-								_this.isCanUse = false;
-								// _this.updateUserInfo(); //调用更新信息方法
-							} catch (e) {}
-						}
-					});
-
-					//2.将用户登录code传递到后台置换用户SessionKey、OpenId等信息
-					uni.request({
-						url: 'https://www.gjtool.cn/wxlogin',
-						data: {
-							code: code
-						},
-						method: 'GET',
-						header: {
-							'content-type': 'application/json'
-						},
-						success: res => {
-							//openId、或SessionKdy存储//隐藏loading
-							// uni.hideLoading();
-							console.log("wxlogin res",res);
-						}
-					});
-				}
+		login(){
+			uni.navigateTo({
+				url: `/pages/login/login`,
+				animationType: 'slide-in-bottom',
+				animationDuration: 200
 			});
 		}
 	}

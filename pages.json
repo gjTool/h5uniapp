@@ -60,45 +60,12 @@
 					}
 				}
 			}
-		}, 
-		 {
-			"path": "pages/download/download",
-			"style": {
-				"navigationBarTitleText": "下载管理",
-				"app-plus": {
-					"bounce": "none",
-					"titleNView":{
-						"buttons": [
-							{
-								"text": "   ",
-								"fontSize":"14",
-								"float": "left",
-								"color":"#fff",
-								"width":"90upx"
-							},
-							{
-								"text": "清除缓存", 
-								"fontSize":"14",
-								"float": "right",
-								"color":"#fff",
-								"width":"180upx"
-							}
-						]
-					}
-				}
-			}
-		},  {
-			"path": "pages/gonggao/gonggao",
-			"style": {
-				"navigationBarTitleText": "公告",
-				"app-plus": {
-					"bounce": "none"
-				}
-			}
-		},{
+		}
+		
+		,{
 			"path": "pages/details/details",
 			"style": {
-				"navigationBarTitleText": "影视详情",
+				"navigationBarTitleText": "工具",
 				"app-plus": {
 					"navigationBarTextStyle": "white",
 					"bounce": "none",
@@ -131,7 +98,7 @@
 		}, {
 			"path": "pages/video/video",
 			"style": {
-				"navigationBarTitleText": "影视详情",
+				"navigationBarTitleText": "工具",
 				"app-plus": {
 					"navigationBarTextStyle": "white",
 					"bounce": "none",
@@ -195,10 +162,30 @@
 					]
 				}
 			}
-		},  {
+		}
+		
+		,{
+		    "path" : "pages/details/detailsMP",
+		    "style" : {
+				"navigationBarTitleText": "工具",
+				"app-plus": {
+					"bounce": "none",
+					"titleNView": {
+						// "buttons": [{
+						// 	"width": "60px",
+						// 	"text": "生序",
+						// 	"fontSize": "16",
+						// 	"float": "right",
+						// 	"color": "#fff"
+						// }]
+					}
+				}
+			}
+		}
+		,{
 			"path": "pages/details/mhdetails",
 			"style": {
-				"navigationBarTitleText": "漫画详情",
+				"navigationBarTitleText": "详情",
 				"app-plus": {
 					"navigationBarTextStyle": "white",
 					"bounce": "none",
@@ -213,25 +200,9 @@
 					}
 				}
 			}
-		}, {
-			"path": "pages/details/xsdetails",
-			"style": {
-				"navigationBarTitleText": "小说详情",
-				"app-plus": {
-					"navigationBarTextStyle": "white",
-					"bounce": "none",
-					"titleNView": {
-						// "buttons": [{
-						// 	"width": "60px",
-						// 	"text": "收藏",
-						// 	"fontSize": "16",
-						// 	"float": "right",
-						// 	"color": "#fff"
-						// }]
-					}
-				}
-			}
-		}, {
+		},
+		
+		{
 			"path": "pages/mh/mh",
 			"style": {
 				"app-plus": {
@@ -249,62 +220,10 @@
 					"scrollIndicator":"none"
 				}
 			}
-		}, {
-			"path": "pages/xs/xs",
-			"style": {
-				"app-plus": {
-					"navigationBarTextStyle": "white",
-					"bounce": "none",
-					"titleNView": {
-						"buttons": [{
-							"width": "60px",
-							"text": "刷新",
-							"fontSize": "16",
-							"float": "right",
-							"color": "#fff"
-						}]
-					},
-					"scrollIndicator":"none"
-				}
-			}
 		}
-	    ,{
-            "path" : "pages/xslist/xslist",
-            "style" : {
-				"app-plus": {
-					"bounce": "none",
-					"titleNView": {
-						// "buttons": [{
-						// 	"width": "60px",
-						// 	"text": "生序",
-						// 	"fontSize": "16",
-						// 	"float": "right",
-						// 	"color": "#fff"
-						// }]
-					}
-				}
-			}
-        }
         ,{
             "path" : "pages/mhlist/mhlist",
             "style" : {
-				"app-plus": {
-					"bounce": "none",
-					"titleNView": {
-						// "buttons": [{
-						// 	"width": "60px",
-						// 	"text": "生序",
-						// 	"fontSize": "16",
-						// 	"float": "right",
-						// 	"color": "#fff"
-						// }]
-					}
-				}
-			}
-        },{
-            "path" : "pages/details/detailsMP",
-            "style" : {
-				"navigationBarTitleText": "影视详情",
 				"app-plus": {
 					"bounce": "none",
 					"titleNView": {
@@ -323,6 +242,12 @@
             "path" : "pages/user/user",
             "style" : {
 				"navigationBarTitleText": "个人中心"
+			}
+        }
+        ,{
+            "path" : "pages/login/login",
+            "style" : {
+				"navigationBarTitleText": "授权登录"
 			}
         }
     ],

@@ -2,7 +2,7 @@
 	<view class="content">
 	<!-- 	<uni-nav-bar :status-bar="true" left-icon="arrowleft" @click-left="back" :title="title" :background-color="'#ec706b'"
 		 class="uni-nav-bar" :right-text="sort" @click-right="sortlist" /> -->
-		<view class="uni-xs-list">
+		<view class="uni-xs-list"  v-if="index==0">
 			<!-- 下拉刷新组件 -->
 			<mix-pulldown-refresh ref="mixPulldownRefresh" :top="0" @refresh="onPulldownReresh" @setEnableScroll="setEnableScroll">
 				<scroll-view class="scroll" :scroll-y="enableScroll" scroll-y style="padding:20upx;">
@@ -52,6 +52,7 @@
 				list: [],
 				sort: "升序",
 				from: "xs",
+				index:0,
 				cover:""
 			}
 		},
@@ -210,6 +211,13 @@
 			if (val.index == 0) {
 				this.sortlist()
 			}
+		},
+		onReady(){
+			let option = uni.getStorageSync('config');
+			this.index = option.index
+			// #ifndef MP
+			this.index = 1
+			// #endif
 		},
 		onLoad(options) {
 			let _this = this;

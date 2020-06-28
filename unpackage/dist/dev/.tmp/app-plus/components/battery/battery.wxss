@@ -1,0 +1,47 @@
+
+.box.data-v-9527ed1c {
+	height: 10px;
+	width: 20px;
+	border: 1px solid #777;
+	position: relative;
+}
+.box .progress-box.data-v-9527ed1c {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	padding: 1px;
+	box-sizing: border-box;
+}
+.box .progress-box .progress.data-v-9527ed1c {
+	height: 100%;
+	width: 30%;
+	box-sizing: border-box;
+	background-color: #555555;
+}
+.box .progress-box .progress.red.data-v-9527ed1c {
+	background-color: red;
+}
+.box.data-v-9527ed1c::after {
+	content: '';
+	height: 2px;
+	width: 1px;
+	background-color: #777;
+	border: 1px solid #777;
+	position: absolute;
+	top: 2px;
+	right: -4px;
+	border-radius: 0 1px 1px 0;
+}
+.progress-text.data-v-9527ed1c {
+	font-size: 10px;
+	position: absolute;
+	top: -4px;
+	left: 14px;
+	color: #555555;
+}
+.progress-text.android.data-v-9527ed1c{
+	top: 0px;
+}
+

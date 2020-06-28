@@ -1,0 +1,43 @@
+@charset "UTF-8";
+/* 页面左右间距 */
+/* 文字尺寸 */
+/*文字颜色*/
+/* 边框颜色 */
+.content,
+.uni-xs-list {
+  /* background-color: #ec706b; */
+}
+.content .uni-xs-list .scroll {
+  background-color: #FFFFFF;
+}
+.active {
+  color: #007AFF;
+  font-weight: 600;
+}
+.uni-xs-list {
+  font-size: 16px;
+  padding-top: 64px;
+}
+.text-view {
+  border-bottom: 1px dotted #ccc;
+  padding: 6px 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 14px;
+  position: relative;
+  padding-right: 50px;
+}
+.text-view .cache {
+    position: absolute;
+    top: 6px;
+    right: 0;
+    color: #999;
+    font-weight: 400;
+}
+.list-bottom,
+.list-top {
+  text-align: center;
+  color: #999;
+}
+

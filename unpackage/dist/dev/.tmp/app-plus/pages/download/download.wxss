@@ -1,0 +1,209 @@
+@charset "UTF-8";
+/* 页面左右间距 */
+/* 文字尺寸 */
+/*文字颜色*/
+/* 边框颜色 */
+page,
+.content {
+  background-color: #f8f8f8;
+  height: 100%;
+  overflow: hidden;
+}
+/* 顶部tabbar */
+.nav-bar {
+  position: fixed;
+  /* top: 64px; */
+  z-index: 10;
+  height: 45px;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  background-color: #fff;
+  text-align: center;
+}
+.nav-bar .nav-item {
+    display: inline-block;
+    width: 75px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    font-size: 15px;
+    color: #303133;
+    position: relative;
+}
+.nav-bar .nav-item:after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-bottom: 2px solid #007aff;
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      -webkit-transform: translateX(-50%);
+              transform: translateX(-50%);
+      -webkit-transition: 0.3s;
+      transition: 0.3s;
+}
+.nav-bar .current {
+    color: #007aff;
+}
+.nav-bar .current:after {
+      width: 50%;
+}
+.panel-content {
+  height: 100%;
+  position: relative;
+  margin-top: 45px;
+}
+.swiper-box {
+  height: 100%;
+  position: relative;
+  position: relative;
+}
+.panel-scroll-box {
+  padding: 10px;
+  height: 100%;
+  padding-bottom: 20px;
+  position: relative;
+  overflow-y: auto;
+}
+.panel-scroll-box .panel-item {
+    background: #fff;
+    padding: 30px 0;
+    border-bottom: 2px solid #000;
+}
+view {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+}
+.news-item {
+  position: relative;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  display: block;
+  font-size: 14px;
+  margin-bottom: 10px;
+  border-color: #e5e5e5;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.news-item .news-item-text {
+    margin-bottom: 4px;
+}
+.text-list {
+  width: 125px;
+  height: 42px;
+  padding: 4px;
+}
+.title {
+  font-size: 12px;
+  color: #303133;
+  line-height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.img-list {
+  -webkit-flex-shrink: 0;
+          flex-shrink: 0;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+          flex-direction: row;
+  background-color: #fff;
+  width: 115px;
+  height: 153px;
+}
+.img {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  width: 45%;
+  height: 100%;
+}
+.cancel {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  background: #fff;
+  z-index: 2;
+  border-radius: 50%;
+}
+/* 底部分享 */
+.uni-share {
+  background: #fff;
+}
+.uni-share-title {
+  line-height: 30px;
+  font-size: 16px;
+  padding: 7px 0;
+  text-align: center;
+}
+.uni-share-content {
+  display: block;
+}
+.uni-share-content .uni-share-item {
+    display: block;
+    width: 25%;
+    float: left;
+    text-align: center;
+}
+.uni-share-content-box {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  width: 25%;
+  box-sizing: border-box;
+}
+.uni-share-content-image {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  border-radius: 5px;
+  margin: 0 auto;
+}
+.uni-share-content-image .image {
+  width: 100%;
+  height: 100%;
+}
+.uni-share-content-text {
+  font-size: 13px;
+  color: #333;
+  padding-top: 5px;
+  padding-bottom: 10px;
+}
+.uni-share-btn {
+  height: 45px;
+  line-height: 45px;
+  border-top: 1px #f5f5f5 solid;
+  text-align: center;
+  color: #666;
+}
+uni-progress.uni-progress .uni-progress-info {
+  font-size: 10px !important;
+}
+

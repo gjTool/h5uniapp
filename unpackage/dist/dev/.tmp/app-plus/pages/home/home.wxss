@@ -1,0 +1,200 @@
+
+page {
+	background-color: #f8f8f8;
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+	        flex: 1;
+	height: 100%;
+	overflow: hidden;
+	
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: flex;
+	
+}
+
+@charset "UTF-8";
+/* 页面左右间距 */
+/* 文字尺寸 */
+/*文字颜色*/
+/* 边框颜色 */
+.input-view.data-v-2e39b054 {
+  width: 92%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  background-color: #e7e7e7;
+  height: 30px;
+  border-radius: 15px;
+  padding: 0 4%;
+  -webkit-flex-wrap: nowrap;
+          flex-wrap: nowrap;
+  margin: 7px 0;
+  line-height: 30px;
+  background: #f5f5f5;
+  position: relative;
+}
+.input-view .uni-icon.data-v-2e39b054 {
+  line-height: 30px !important;
+  font-size: 20px !important;
+}
+.input-view .uni-input-placeholder.data-v-2e39b054 {
+  color: #cccccc !important;
+  font-size: 14px !important;
+}
+.input-view .input.data-v-2e39b054 {
+  height: 30px;
+  line-height: 30px;
+  width: 88%;
+  padding: 0 3%;
+  /* float: left; */
+  position: absolute;
+  left: 12%;
+  color: #666;
+}
+page.data-v-2e39b054,
+.content.data-v-2e39b054 {
+  background-color: #f8f8f8;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  height: 100%;
+  overflow: hidden;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+}
+/* 顶部tabbar */
+.nav-bar.data-v-2e39b054 {
+  position: fixed;
+  /* top: 64px; */
+  z-index: 10;
+  height: 45px;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  background-color: #fff;
+  text-align: center;
+}
+.nav-bar .nav-item.data-v-2e39b054 {
+    display: inline-block;
+    width: 75px;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    font-size: 15px;
+    color: #303133;
+    position: relative;
+}
+.nav-bar .nav-item.data-v-2e39b054:after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-bottom: 2px solid #007aff;
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      -webkit-transform: translateX(-50%);
+              transform: translateX(-50%);
+      -webkit-transition: 0.3s;
+      transition: 0.3s;
+}
+.nav-bar .current.data-v-2e39b054 {
+    color: #007aff;
+}
+.nav-bar .current.data-v-2e39b054:after {
+      width: 50%;
+}
+.panel-content.data-v-2e39b054 {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  height: 100%;
+  position: relative;
+  margin-top: 45px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+}
+.swiper-box.data-v-2e39b054 {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  height: 100%;
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+}
+.panel-scroll-box.data-v-2e39b054 {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  height: 100%;
+  -webkit-justify-content: space-around;
+          justify-content: space-around;
+}
+.panel-scroll-box .panel-item.data-v-2e39b054 {
+    background: #fff;
+    padding: 30px 0;
+    border-bottom: 2px solid #000;
+}
+view.data-v-2e39b054 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+}
+.news-item.data-v-2e39b054 {
+  position: relative;
+  max-width: 150px;
+  width: 32%;
+  padding: 5px;
+  border-bottom-width: 1px;
+  border-color: #eee;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  float: left;
+  text-align: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+          justify-content: center;
+  box-sizing: border-box;
+}
+.text-list.data-v-2e39b054 {
+  width: 125px;
+  height: 42px;
+  padding: 4px;
+}
+.title.data-v-2e39b054 {
+  font-size: 12px;
+  color: #303133;
+  line-height: 18px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.img-list.data-v-2e39b054 {
+  -webkit-flex-shrink: 0;
+          flex-shrink: 0;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+          flex-direction: row;
+  background-color: #fff;
+  width: 100%;
+  height: 153px;
+}
+.img.data-v-2e39b054 {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  width: 45%;
+  height: 100%;
+}
+

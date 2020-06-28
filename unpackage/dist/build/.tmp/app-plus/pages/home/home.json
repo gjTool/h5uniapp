@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "首页",
+  "navigationStyle": "custom",
+  "bounce": "none",
+  "titleNView": false,
+  "usingComponents": {
+    "mix-pulldown-refresh": "/components/mix-pulldown-refresh/mix-pulldown-refresh",
+    "mix-load-more": "/components/mix-load-more/mix-load-more",
+    "uni-icons": "/components/uni-icons/uni-icons",
+    "uni-nav-bar": "/components/uni-nav-bar/uni-nav-bar"
+  }
+}

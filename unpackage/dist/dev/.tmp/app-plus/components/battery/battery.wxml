@@ -1,0 +1,1 @@
+<view class="data-v-9527ed1c"><view class="box data-v-9527ed1c"><view class="progress-box data-v-9527ed1c"><view class="{{['progress data-v-9527ed1c',(width<=20)?'red':'']}}" style="{{'width:'+(width+'%')+';'}}"></view></view><text class="{{['progress-text data-v-9527ed1c',(platform=='android')?'android':'']}}">{{width+'%'}}</text></view></view>

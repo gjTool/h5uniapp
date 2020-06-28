@@ -1,0 +1,10 @@
+{
+  "bounce": "none",
+  "titleNView": false,
+  "usingComponents": {
+    "mix-loading": "/components/mix-loading/mix-loading",
+    "uni-icons": "/components/uni-icons/uni-icons",
+    "uni-nav-bar": "/components/uni-nav-bar/uni-nav-bar",
+    "mix-pulldown-refresh": "/components/mix-pulldown-refresh/mix-pulldown-refresh"
+  }
+}

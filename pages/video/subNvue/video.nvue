@@ -1,0 +1,353 @@
+<template>
+	<div><div class="fullscreen"></div></div>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			num: 0,
+			loading: true,
+			detailData: {},
+			list: [],
+			obj: {},
+			name: '',
+			videoContext: null,
+			video_mask: null,
+			video_content: null,
+			videoshow: false,
+			webviewStyles: {
+				top: '64px',
+				height: '350upx',
+				backgroundColor: '#000000',
+				progress: {
+					color: 'green'
+				}
+			},
+			title: '影视详情',
+			buttons: null, //返回按钮图片
+			show: true,
+			// src:'',
+			webview: null,
+			webviewShow: true,
+			fanhui: null, //返回按钮
+			full: null, //满屏幕点击处理
+			statusBarHeight: 0,
+			screenWidth: 0,
+			screenHeight: 0,
+			time: '00:00',
+			titleShow: false,
+			boxHeight: '350px',
+			scrollHeight: '394upx',
+			scrollTop: '394upx',
+			pageTitle: null, //原生标题栏
+			timer: null,
+			titleButtonShowFlag: false,
+			pageIndex: 1,
+			h450: 0,
+			ipad: false,
+			isFullScreen: false,
+			isControllShow: true,
+			suo1: null,
+			suo2: null,
+			jiesuo: true,
+			full2: null,
+			suo1show: false, //锁定false
+			suo2show: false,
+			playTimer: null,
+			first: true,
+			currentWebview: null
+		};
+	},
+	beforeCreate() {},
+	mounted() {
+		let _t = this;
+		let resObj = uni.getSystemInfoSync();
+		this.statusBarHeight = resObj.statusBarHeight;
+		this.screenWidth = resObj.screenWidth;
+		this.screenHeight = resObj.screenHeight;
+		this.h450 = uni.upx2px(450);
+		if (this.screenWidth >= 768) {
+			this.ipad = true;
+			if (this.h450 != 460) {
+				this.h450 = 460;
+			}
+		} else {
+			if (this.h450 != 225) {
+				this.h450 = 225;
+			}
+		}
+		this.getTIme();
+
+		this.boxHeight = this.h450 + 'px';
+		// this.scrollHeight = 'calc(100% - ' + (44 + uni.getSystemInfoSync().statusBarHeight + this.h450) + 'px)';
+		// this.scrollTop = 44 + uni.getSystemInfoSync().statusBarHeight + this.h450 + 'px';
+
+		this.scrollHeight = 'calc(100% - ' + this.h450 + 'px)';
+		this.scrollTop = this.h450 + 'px';
+
+		let first = true;
+		// this.webview = currentWebview.children()[0];
+		//预加载本地文件
+		// this.webview.appendJsFile('../../static/js/uni.webview.1.5.2.js');
+
+		uni.showLoading({
+			title: '加载中…',
+			mask: true
+		});
+
+		let currentWebview = plus.webview.currentWebview(); //获取当前页面的webview对象
+		this.currentWebview = currentWebview;
+		this.webview = plus.webview.create('/hybrid/html/index1.html', 'custom-webview', {
+			top: 0, //放置在titleNView下方。如果还想在webview上方加个地址栏的什么的，可以继续降低TOP值
+			cachemode:"cacheElseNetwork",//只要存在缓存（即使过期）数据则使用，否则从网络获取
+			hardwareAccelerated:true,//开启硬件加速
+			kernel:"WKWebview",//使用WKWebview内核
+			popGesture: 'none'
+		});
+		this.currentWebview.append(this.webview);
+		this.webview.addEventListener('error', () => {
+			if (first) {
+				first = false;
+			}
+		});
+		this.webview.addEventListener(
+			'loaded',
+			() => {
+				uni.$emit('videoButtomShow');
+				this.controllShow();
+			},
+			false
+		);
+		uni.$on('videoLoad', data => {
+			console.log(data)
+			setTimeout(()=>{
+				this.playNext(data);
+			},3000)
+		});
+		uni.$on('controllShow', () => {
+			this.controllShow();
+		});
+		uni.$on('controllHide', () => {
+			this.controllHide();
+		});
+		uni.$on('videoPlayNext', url => {
+			this.playNext(url);
+		});
+		uni.$on('videoPlay', url => {
+			this.videoPlay();
+		});
+		uni.$on('videoPause', url => {
+			this.videoPause();
+		});
+		uni.$on('videoToggle', url => {
+			this.videoToggle();
+		});
+		uni.$on('videomargin', url => {
+			// setTimeout(()=>{
+			// 	this.webview.evalJS(`
+			// 		$("#a1").find(".dplayer-play-icon").css({
+			// 			"margin-right":"0px"
+			// 		})
+			// 	`)
+			// },500)
+		});
+		// player.video.duration
+		// player.video.currentTime
+		uni.$on('videoPlaySeek', t => {
+			// this.webview.evalJS(`
+			// 	var num = player.video.currentTime;
+			// 	var num2 = parseInt(num)+parseInt(`+t+`);
+			// 	var total = player.video.duration;
+			// 	if(num2>=total){
+			// 		num2=total
+			// 	}else if(num2<=0){
+			// 		num2=0
+			// 	}
+			// 	player.seek(num2)
+			// `)
+		});
+		uni.$on('videoPlayVol', t => {
+			// console.log(t)
+			// this.webview.evalJS(`
+			// 	player.volume(`+t+`, true, false);
+			// `)
+		});
+		uni.$on('webviewPause', () => {
+			// this.webview.pause()
+		});
+		uni.$on('webviewResume', () => {
+			// this.webview.resume()
+		});
+		uni.$on('videoFull', () => {
+			this.webview.evalJS(
+				`
+			var playcontrol =  document.querySelector(".video-js .vjs-play-control");
+			var fullscreencontrol =  document.querySelector(".video-js .vjs-fullscreen-control");
+			if(playcontrol){
+				playcontrol.style.marginLeft = "4em";
+			}
+			if(fullscreencontrol){
+				fullscreencontrol.style.marginLeft = "6em";
+				fullscreencontrol.style.marginRight = "5em";
+			}
+			`
+			);
+		});
+		uni.$on('videoNoFull', () => {
+			this.webview.evalJS(
+				`
+				var playcontrol =  document.querySelector(".video-js .vjs-play-control");
+				var fullscreencontrol =  document.querySelector(".video-js .vjs-fullscreen-control");
+				if(playcontrol){
+					playcontrol.style.marginLeft = "1em";
+				}
+				if(fullscreencontrol){
+					fullscreencontrol.style.marginLeft = "0em";
+					fullscreencontrol.style.marginRight = "1em";
+				}
+			`
+			);
+		});
+		uni.$on('videoNoList', () => {
+			this.webview.evalJS(
+				`
+				var playcontrol =  document.querySelector(".video-js .vjs-play-control");
+				var fullscreencontrol =  document.querySelector(".video-js .vjs-fullscreen-control");
+				if(playcontrol){
+					playcontrol.style.marginLeft = "4em";
+				}
+				if(fullscreencontrol){
+					fullscreencontrol.style.marginLeft = "0em";
+					fullscreencontrol.style.marginRight = "5em";
+				}
+			`
+			);
+		});
+	},
+	destroyed() {
+		plus.screen.lockOrientation('portrait-primary');
+		clearInterval(this.timer);
+		clearInterval(this.playTimer);
+		uni.$off('controllShow');
+		uni.$off('controllHide');
+		uni.$off('videoPlay');
+		uni.$off('videoPause');
+		uni.$off('videoPlayNext');
+		uni.$off('videoToggle');
+		uni.$off('videomargin');
+		uni.$off('videoPlaySeek');
+		uni.$off('videoPlayVol');
+		uni.$off('webviewPause');
+		uni.$off('webviewResume');
+		uni.$off('videoLoad');
+		uni.$off('videoFull');
+		uni.$off('videoNoFull');
+		uni.$off('videoNoList');
+	},
+	methods: {
+		playNext(url) {
+			uni.hideLoading();
+			this.webview.evalJS(
+				`
+				player.src("`+url+`");
+				player.load("`+url+`")
+				player.play();
+			`
+			);
+		},
+		videoPlay() {
+			this.webview.evalJS(`
+				player.play();
+			`);
+		},
+		videoPause() {
+			this.webview.evalJS(`
+				player.pause()
+			`);
+		},
+		videoToggle() {
+			this.webview.evalJS('document.querySelector(".video-js .vjs-play-control").click()');
+		},
+		getSrc() {
+			let num = this.num;
+			num = parseFloat(num);
+			if (this.list.length == 0) {
+				return '';
+			}
+			let item = this.list[num];
+			let url = '';
+			// #ifdef H5
+			url = item.download;
+			// #endif
+			// #ifdef APP-PLUS
+			url = item.m3u8url;
+			// #endif
+			url = item.onlineurl;
+			// console.log(url);
+			return url;
+		},
+		getTIme() {
+			let date = new Date();
+			let hour = date.getHours();
+			let minute = date.getMinutes();
+			hour = hour <= 9 ? '0' + hour : hour;
+			minute = minute <= 9 ? '0' + minute : minute;
+			this.time = hour + ':' + minute;
+		},
+		parseH(num) {
+			return uni.upx2px(num);
+		},
+		back() {
+			uni.switchTab({
+				url: '/pages/home/home'
+			});
+		},
+		imgError(item) {
+			item.cover = '/static/404.jpg';
+		},
+		//视频控制栏显示
+		controllShow() {
+			this.isControllShow = true;
+			this.webview.evalJS(`
+				var controller =  document.querySelector(".vjs-has-started .vjs-control-bar");
+				if(controller){
+					controller.style.opacity = 1;
+					controller.style.visibility = "visible";
+					controller.style.transform = "visibility 0s,opacity 0s";
+				}
+				`);
+		},
+		//视频控制栏隐藏
+		controllHide() {
+			this.isControllShow = false;
+			this.webview.evalJS(`
+				var controller =  document.querySelector(".vjs-has-started .vjs-control-bar");
+				if(controller){
+					controller.style.opacity = 0;
+					controller.style.visibility = "visible";
+					controller.style.transform = "visibility 0s,opacity 0s";
+				}
+				`);
+		}
+	}
+};
+</script>
+
+<style>
+.web-view {
+	top: 0px;
+	left: 0px;
+	width: 750upx;
+	height: 225px;
+	background-color: #000000;
+}
+.fullscreen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 750upx;
+	height: 225px;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+</style>

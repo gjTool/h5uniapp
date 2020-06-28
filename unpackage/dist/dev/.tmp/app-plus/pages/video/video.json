@@ -1,0 +1,69 @@
+{
+  "navigationBarTitleText": "影视详情",
+  "navigationBarTextStyle": "white",
+  "bounce": "none",
+  "titleNView": {
+    "buttons": [
+      {
+        "width": "60px",
+        "text": "收藏",
+        "fontSize": "16",
+        "float": "right",
+        "color": "#fff"
+      }
+    ]
+  },
+  "subNVues": [
+    {
+      "id": "video",
+      "path": "pages/video/subNvue/video",
+      "style": {
+        "position": "absolute",
+        "top": "64px",
+        "left": "0px",
+        "width": "100%",
+        "height": "450upx",
+        "background": "transparent"
+      }
+    },
+    {
+      "id": "title",
+      "path": "pages/video/subNvue/title",
+      "style": {
+        "position": "absolute",
+        "top": "64px",
+        "left": "0px",
+        "width": "100%",
+        "height": "60px",
+        "background": "transparent"
+      }
+    },
+    {
+      "id": "buttom",
+      "path": "pages/video/subNvue/buttom",
+      "style": {
+        "position": "absolute",
+        "bottom": "4px",
+        "left": "100px",
+        "right": "110px",
+        "height": "38px",
+        "background": "transparent"
+      }
+    },
+    {
+      "id": "list",
+      "path": "pages/video/subNvue/list",
+      "style": {
+        "top": "0px",
+        "right": "0px",
+        "height": "100%",
+        "background": "transparent"
+      }
+    }
+  ],
+  "usingComponents": {
+    "uni-icons": "/components/uni-icons/uni-icons",
+    "uni-nav-bar": "/components/uni-nav-bar/uni-nav-bar",
+    "battery": "/components/battery/battery"
+  }
+}

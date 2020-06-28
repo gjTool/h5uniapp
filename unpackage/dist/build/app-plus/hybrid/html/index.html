@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+		<meta http-equiv="X-UA-Compatible" content="IE=9" />
+		<title></title>
+		<link rel="stylesheet" href="./css/video-js.min.css">
+		<style type="text/css">
+			* {
+				padding: 0;
+				margin: 0;
+			}
+
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+
+			.video-js {
+				width: 100%;
+				height: 100%;
+			}
+
+			.video-js .vjs-big-play-button {
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+			}
+
+			.video-js .vjs-control-bar {
+				height: 5em;
+				background-color: rgba(43, 51, 63, .3);
+			}
+
+			.vjs-button>.vjs-icon-placeholder:before {
+				font-size: 2.6em;
+				line-height: 2;
+			}
+
+			.video-js .vjs-time-control {
+				font-size: 1.3em;
+				line-height: 4.1em;
+			}
+
+			.vjs-playback-rate .vjs-playback-rate-value {
+				line-height: 3.3;
+				font-size: 1.6em;
+			}
+
+			.video-js .vjs-progress-holder .vjs-load-progress,
+			.video-js .vjs-progress-holder .vjs-load-progress div,
+			.video-js .vjs-progress-holder .vjs-play-progress {
+				top: -1px;
+			}
+
+			.video-js .vjs-progress-holder {
+				height: 0.5em;
+				margin-top: 0.5em;
+			}
+
+			.video-js .vjs-play-progress:before {
+				font-size: 1.5em;
+			}
+
+			.video-js .vjs-picture-in-picture-control {
+				display: none;
+			}
+
+			.video-js .vjs-volume-panel {
+				display: none;
+			}
+
+			.video-js .vjs-control:focus,
+			.video-js .vjs-control:focus:before,
+			.video-js .vjs-control:hover:before {
+				outline: none;
+			}
+
+			.video-js .vjs-big-play-button {
+				/* display: none; */
+			}
+
+			.video-js .vjs-time-control {
+				display: block;
+			}
+
+			.video-js .vjs-remaining-time {
+				display: none;
+			}
+
+			.video-js .vjs-time-control.vjs-time-divider {
+				padding-left: 0em;
+				padding-right: 0em;
+				text-align: center;
+				min-width: 1em;
+			}
+
+			.video-js .vjs-current-time.vjs-time-control.vjs-control {
+				padding-left: 0.2em;
+				padding-right: 0.2em;
+			}
+
+			.video-js .vjs-duration.vjs-time-control.vjs-control {
+				padding-left: 0.2em;
+				padding-right: 0.2em;
+			}
+
+			.video-js .vjs-play-control {
+				margin-left: 1em;
+			}
+
+			.video-js .vjs-fullscreen-control {
+				margin-right: 1em;
+				margin-left: 0em;
+			}
+		</style>
+	</head>
+	<body>
+		<video id="video" class="video-js vjs-default-skin" controls width="640" height="264" poster="" x-webkit-airplay="allow"
+		 x5-playsinline="" playsinline="" webkit-playsinline="">
+			<source src="" type="application/x-mpegURL">
+			<source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+		</video>
+		<script src="./js/jquery-1.11.2.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="./js/video.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			function GetQueryString(name) {
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+				var r = window.location.search.substr(1).match(reg);
+				if (r != null) return decodeURIComponent(r[2]);
+				return "";
+			}
+			var videourl = GetQueryString("url");
+			var player;
+			var option = {
+				errorDisplay: false,
+				preload: "auto",
+				source: [{
+					type: "application/x-mpegURL",
+					src: videourl
+				}]
+			};
+			player = videojs('video', option, function() {
+				this.src({
+					type: "application/x-mpegURL",
+					src: videourl
+				});
+				this.load(videourl)
+				this.play();
+				this.on('loadeddata', function() {
+
+				})
+				this.on("ended", function() {
+					videojs.log("播放结束了!");
+				});
+			});
+			player.src({
+				type: "application/x-mpegURL",
+				src: videourl
+			});
+			player.load(videourl)
+		</script>
+	</body>
+</html>

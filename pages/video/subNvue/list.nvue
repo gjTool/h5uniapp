@@ -1,0 +1,164 @@
+<template>
+	<div class="episode-set" v-if="mode" :style="{ width: fullControlsWidth, height: fullControlsHeight }" @click.stop="hideDrawer">
+		<scroller class="episode-scroll" :style="{ width: fullControlsWidth2, maxHeight: fullControlsHeight2 }" @click.stop="hideDrawer">
+			<div class="row" v-for="(item, index) in lists" :class="{android:platform=='android'}" :key="index">
+				<div
+					class="item"
+					v-for="(item2, index2) in item"
+					:key="item2.index"
+					@click="clickitem(item2, item2.index-1)"
+					:class="{ 'solid-bottom' : (item2.index-1) == num  ,'blank':!item2.num,android:platform=='android'}"
+					:style="{ borderBottomColor: color}"
+				>
+					<text class="ios-title" :class="{ 'green-title' : (item2.index-1) == num }" >{{ item2.index <10 ? '0'+item2.index: item2.index}}</text>
+				</div>
+			</div>
+		</scroller>
+	</div>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			color: 'green',
+			width: 0,
+			height: 0,
+			num: 0,
+			lists: [],
+			mode: false,
+			fullControlsWidth: '100%',
+			fullControlsHeight: '100%',
+			fullControlsWidth2: '100%',
+			fullControlsHeight2: '100%',
+			screenWidth:0,
+			screenHeight:0,
+			platform:""
+		};
+	},
+	beforeCreate() {},
+	created() {
+		this.platform = uni.getSystemInfoSync().platform;
+		this.screenWidth = uni.getSystemInfoSync().screenWidth + 'px';
+		this.screenHeight =uni.getSystemInfoSync().screenHeight + 'px';
+	},
+	mounted() {
+		let that = this;
+		uni.$on('videoList', data => {
+			let arr = [];
+			for (let i = 0; i < data.length; i++) {
+				data[i].index = i+1;
+				arr.push(data[i]);
+				if ((i+1) % 7 == 0) {
+					this.lists.push(arr);
+					arr = [];
+				}
+			}
+			let num = data.length % 7;
+			let arr2 = data.slice(data.length-num,data.length)
+			for (let i = 0; i < 7-num; i++) {
+				arr2.push([]);
+			}
+			this.lists.push(arr2)
+		});
+		uni.$on('videoNum', num => {
+			this.num = num;
+		});
+		let timer;
+		//横屏
+		uni.$on('landscapeScreen', () => {
+			clearTimeout(timer);
+			timer = setTimeout(() => {
+				this.mode = true;
+				this.fullControlsWidth = uni.getSystemInfoSync().screenWidth + 'px';
+				this.fullControlsHeight = uni.getSystemInfoSync().screenHeight + 'px';
+
+				this.fullControlsWidth2 = uni.getSystemInfoSync().screenWidth - 180 + 'px';
+				this.fullControlsHeight2 = uni.getSystemInfoSync().screenHeight - 0 + 'px';
+				if(this.platform=='android'){
+					this.fullControlsWidth = this.screenHeight + 'px';
+					this.fullControlsHeight = this.screenWidth + 'px';
+					
+					this.fullControlsWidth2 = this.screenHeight - 180 + 'px';
+					this.fullControlsHeight2 = this.screenWidth - 0 + 'px';
+				}
+				// console.log(this.fullControlsWidth2,this.fullControlsHeight2)
+			}, 1000);
+		});
+		//竖屏
+		uni.$on('portraitScreen', () => {
+			this.mode = false;
+		});
+	},
+	destroyed() {
+		uni.$off('videoList');
+		uni.$off('videoNum');
+		uni.$off('landscapeScreen');
+		uni.$off('portraitScreen');
+	},
+	methods: {
+		hideDrawer() {
+			uni.getCurrentSubNVue().hide('auto');
+			uni.$emit('fullShow', null);
+		},
+		clickitem(item, index) {
+			this.num = index;
+			uni.$emit('changePlay', index);
+			this.hideDrawer();
+		}
+	}
+};
+</script>
+
+<style>
+.episode-set {
+	flex: 1;
+	height: 100%;
+	/* flex-direction: column; */
+	padding: 0px 90px;
+	/* flex-wrap: wrap; */
+	background-color: rgba(0, 0, 0, 0.3);
+	/* justify-content: center; */
+}
+.episode-scroll {
+	/* flex-direction: column; */
+	/* flex-wrap: wrap; */
+	/* justify-content: space-between; */
+	padding-bottom: 10px;
+}
+.item {
+	flex: 1;
+	/* width: 70px; */
+	/* height: 50px; */
+	padding: 10px;
+	margin: 5px;
+	background-color: #ccc;
+	/* justify-content: center;
+	align-items: center; */
+}
+.row {
+	flex-direction: row;
+	/* height: 50px; */
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+.ios-title {
+	font-size: 14px;
+	color: #fff;
+	text-align: center;
+}
+.solid-bottom {
+	border-bottom-width: 3px;
+	
+}
+.green-title{
+	font-weight: bold;
+	color: green !important;
+}
+.blank{
+	background-color: rgba(0,0,0,0) !important;
+}
+.android{
+	/* height: 80px !important; */
+}
+</style>

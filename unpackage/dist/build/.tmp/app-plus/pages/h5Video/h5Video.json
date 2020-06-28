@@ -1,0 +1,15 @@
+{
+  "navigationBarTextStyle": "white",
+  "bounce": "none",
+  "titleNView": {
+    "buttons": [
+      {
+        "text": "选集",
+        "fontSize": "16",
+        "float": "right",
+        "color": "#fff"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

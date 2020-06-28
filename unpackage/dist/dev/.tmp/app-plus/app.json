@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/index/index",
+    "pages/download/download",
+    "pages/gonggao/gonggao",
+    "pages/details/details",
+    "pages/video/video",
+    "pages/details/mhdetails",
+    "pages/details/xsdetails",
+    "pages/mh/mh",
+    "pages/xs/xs",
+    "pages/xslist/xslist",
+    "pages/mhlist/mhlist"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "",
+    "navigationBarBackgroundColor": "#ec706b",
+    "backgroundColor": "#f8f8f8",
+    "bounce": "none"
+  },
+  "tabBar": {
+    "color": "#C0C4CC",
+    "selectedColor": "#fa436a",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "static/tab-shoucang.png",
+        "selectedIconPath": "static/tab-shoucang-current.png",
+        "text": "收藏"
+      },
+      {
+        "pagePath": "pages/home/home",
+        "iconPath": "static/tab-search.png",
+        "selectedIconPath": "static/tab-search-current.png",
+        "text": "搜索"
+      }
+    ]
+  },
+  "nvueCompiler": "uni-app",
+  "renderer": "auto",
+  "splashscreen": {
+    "alwaysShowBeforeRender": true,
+    "autoclose": false
+  },
+  "appname": "秀秀专属",
+  "compilerVersion": "2.6.1",
+  "usingComponents": {}
+}

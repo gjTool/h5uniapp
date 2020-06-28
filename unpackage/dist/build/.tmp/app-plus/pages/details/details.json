@@ -1,0 +1,33 @@
+{
+  "navigationBarTitleText": "影视详情",
+  "navigationBarTextStyle": "white",
+  "bounce": "none",
+  "titleNView": {
+    "buttons": [
+      {
+        "text": "收藏",
+        "fontSize": "16",
+        "width": 55,
+        "float": "right",
+        "color": "#fff"
+      }
+    ]
+  },
+  "subNVues": [
+    {
+      "id": "video_content",
+      "path": "pages/details/subnvue/video_content",
+      "style": {
+        "position": "absolute",
+        "top": "64px",
+        "left": "0",
+        "width": "750upx",
+        "height": "225px",
+        "background": "transparent"
+      }
+    }
+  ],
+  "usingComponents": {
+    "mix-loading": "/components/mix-loading/mix-loading"
+  }
+}

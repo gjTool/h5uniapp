@@ -1,0 +1,288 @@
+<template>
+	<div class="controls-top" ref="controlsTop">
+		<div class="title"><text class="text">{{title}}</text></div>
+		<div class="fanhui" @tap="back"><text class="ios-icon">&#xe60a;</text></div>
+		<div class="top-right1">
+			<div class="power-view">
+				<div class="power-box">
+					<div class="power-header"></div>
+					<div class="power-body"><div class="power-level" :style="{ width: (level/100)*20+'px', backgroundColor: '#fff' }"></div></div>
+				</div>
+			</div>
+		</div>
+		<div class="top-right2">
+			<text class="ios-sm-title">{{time}}</text>
+		</div>
+	</div>
+</template>
+
+<script>
+const animation = weex.requireModule('animation');
+const modal = weex.requireModule('modal');
+export default {
+	data() {
+		return {
+			level:0,
+			time:"00:00",
+			title:'',
+			timer:null,
+			platform:null,
+			main:null,
+			Intent:null,
+			IntentFilter:null,
+			UIDevice:null
+		}
+	},
+	beforeCreate() {
+		// #ifdef APP-PLUS-NVUE
+		var domModule = weex.requireModule('dom');
+		domModule.addRule('fontFace', {
+			fontFamily: 'texticons',
+			src: "url('../../../static/text-icon.ttf')"
+		});
+		// #endif
+	},
+	created(){
+		uni.getSystemInfo({
+			success: (e) => {
+				// #ifndef MP
+				this.platform = e.platform
+				if(this.platform == 'android'){
+					this.main = plus.android.runtimeMainActivity();
+					this.Intent = plus.android.importClass('android.content.Intent');
+					this.IntentFilter = plus.android.importClass('android.content.IntentFilter'); 
+				}else if(this.platform == 'ios'){
+					this.UIDevice = plus.ios.import("UIDevice");
+				}
+				// #endif
+			}
+		})
+	},
+	mounted() {
+		let _this = this
+		this.timer = setInterval(()=>{
+			this.getBattery()
+		},1000)
+		uni.$on("videoTitileShow",()=>{
+			this.animateControls(0,this.$refs.controlsTop)
+		})
+		uni.$on("videoTitileHide",()=>{
+			this.animateControls(-60,this.$refs.controlsTop)
+		})
+		uni.$on("videoTitileChange",(title)=>{
+			this.title = title
+		})
+		switch (uni.getSystemInfoSync().platform) {
+			case 'android':
+				// #ifdef APP-PLUS
+				//注意，安卓需要配置下manifest.json文件，打开后，进入模块权限配置，
+				//在右侧的Android权限设置里勾选上android.permission.BATTERY_STATS
+				_this.main = plus.android.runtimeMainActivity();
+				_this.Intent = plus.android.importClass('android.content.Intent');
+				_this.IntentFilter = plus.android.importClass('android.content.IntentFilter');
+				_this.getBattery();
+				// #endif
+				break;
+			case 'ios':
+				// #ifdef APP-PLUS
+				_this.UIDevice = plus.ios.import('UIDevice');
+				_this.getBattery();
+				// #endif
+				break;
+			default:
+				_this.battery = navigator.battery || navigator.mozBattery || navigator.webkitBattery;
+		
+				function updateBatteryStatus(info) {
+					_this.level = _this.battery.level * 100;
+					_this.getTIme();
+				}
+				if (_this.battery) {
+					_this.battery.addEventListener('levelchange', updateBatteryStatus);
+				} else {
+					navigator.getBattery().then(function(battery) {
+						_this.battery = battery;
+						_this.battery.addEventListener('levelchange', updateBatteryStatus);
+					});
+				}
+				break;
+		}
+	},
+	destroyed() {
+		uni.$off("videoTitileShow")
+		uni.$off("videoTitileHide")
+		uni.$off("videoTitileChange")
+		clearInterval(this.timer)
+	},
+	methods: {
+		getBattery() {
+			let _this = this;
+			_this.getTIme();
+			// #ifdef APP-PLUS
+			if(this.platform == "ios"){
+				let dev = _this.UIDevice.currentDevice();
+				if (!dev.isBatteryMonitoringEnabled()) {
+					dev.setBatteryMonitoringEnabled(true);
+				}
+				let level = dev.batteryLevel();
+				if (level <= 1 && level >= 0) {
+					_this.level = Math.round(level * 100);
+				} else {
+					_this.level = Math.round(level);
+				}
+			}else{
+				let recevier = plus.android.implements('io.dcloud.feature.internal.reflect.BroadcastReceiver', {
+					onReceive: function(context, intent) {
+						let action = intent.getAction();
+						if (action == _this.Intent.ACTION_BATTERY_CHANGED) {
+							let level = intent.getIntExtra('level', 0); //电量
+							if (level <= 1 && level >= 0) {
+								_this.level = Math.round(level) * 100;
+							} else {
+								_this.level = Math.round(level);
+							}
+							// console.log(_this.level)
+						}
+					}
+				});
+				let filter = new _this.IntentFilter(_this.Intent.ACTION_BATTERY_CHANGED);
+				_this.main.registerReceiver(recevier, filter);
+			}
+			// #endif
+		},
+		getTIme() {
+			let date = new Date();
+			let hour = date.getHours();
+			let minute = date.getMinutes();
+			hour = hour <= 9 ? '0' + hour : hour;
+			minute = minute <= 9 ? '0' + minute : minute;
+			this.time = hour + ':' + minute;
+		},
+		back(){
+			this.animateControls(-40,this.$refs.controlsTop)
+			uni.$emit("exitFullscreen")
+		},
+		animateControls(distance,el){
+			animation.transition(el, {
+				styles: {
+					transform: `translate(0px, ${distance}px)`,
+				},
+				duration: 350, //ms
+				timingFunction: 'ease',
+				delay: 0 //ms
+				}, () => {
+					
+				}
+			)
+		}
+	}
+};
+</script>
+
+<style>
+.controls-top {
+	/* width: 750upx; */
+	/* #ifndef APP-PLUS-NVUE */
+	display: flex;
+	/* #endif */
+	position: relative;
+	background-image: linear-gradient(to top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4));
+	height: 60px;
+	transform: translateY(-60px);
+	align-items: center;
+	justify-content: space-between;
+	text-align: left;
+	padding: 0 40px 0 40px;
+}
+.ios-icon {
+	font-size: 22px;
+	color: #fff;
+	font-family: texticons;
+}
+.title {
+	/* width: 750upx; */
+	height: 40px;
+	/* #ifndef APP-PLUS-NVUE */
+	display: flex;
+	/* #endif */
+	position: absolute;
+	left: 90px;
+	right: 120px;
+	top: 20px;
+	justify-content: center;
+	text-align: left;
+	align-items: flex-start;
+	/* background-color: #007aff; */
+	padding: 0 10px 0 10px;
+}
+.text {
+	color: #fff;
+	font-size: 18px;
+}
+.fanhui {
+	/* #ifndef APP-PLUS-NVUE */
+	display: flex;
+	/* #endif */
+	width: 40px;
+	height: 40px;
+	position: absolute;
+	top: 20px;
+	left: 40px;
+	justify-content: center;
+	align-items: center;
+}
+.top-right1 {
+	/* #ifndef APP-PLUS-NVUE */
+	display: flex;
+	/* #endif */
+	align-items: center;
+	font-size: 14px;
+	color: #fff;
+	position: absolute;
+	top: 34px;
+	right: 62px;
+	width: 40px;
+}
+.top-right2 {
+	/* #ifndef APP-PLUS-NVUE */
+	display: flex;
+	/* #endif */
+	align-items: center;
+	font-size: 12px;
+	color: #fff;
+	position: absolute;
+	top: 32px;
+	right:108px;
+	width: 40px;
+}
+.power-view {
+	/* #ifndef APP-PLUS-NVUE */
+	display: flex;
+	/* #endif */
+	align-items: center;
+}
+.power-box {
+	flex-direction: row;
+	align-items: center;
+}
+.power-header {
+	height: 4px;
+	width: 2px;
+	background-color: #fff;
+}
+.power-body {
+	height: 12px;
+	width: 24px;
+	border-width: 1px;
+	border-color: #fff;
+	padding: 1px;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+.power-level {
+	height: 8px;
+}
+.ios-sm-title{
+	font-size: 14px;
+	color: #fff;
+}
+</style>

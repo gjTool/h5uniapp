@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "收藏夹",
+  "navigationBarTextStyle": "white",
+  "bounce": "none",
+  "titleNView": false,
+  "usingComponents": {
+    "mix-loading": "/components/mix-loading/mix-loading",
+    "mix-advert": "/components/mix-advert/vue/mix-advert",
+    "uni-icons": "/components/uni-icons/uni-icons",
+    "uni-nav-bar": "/components/uni-nav-bar/uni-nav-bar",
+    "uni-popup": "/components/uni-popup/uni-popup"
+  }
+}

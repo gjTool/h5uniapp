@@ -1,0 +1,10 @@
+
+view {
+	padding: 10rpx;
+	padding-top: 20rpx;
+	text-indent: 56rpx;
+}
+text {
+	font-size: 28rpx;
+}
+

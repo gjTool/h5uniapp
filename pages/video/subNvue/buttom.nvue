@@ -1,0 +1,140 @@
+<template>
+	<div class="bottom" ref="bottom">
+		<div class="button">
+			<!-- <div class="next" @click="playNext">
+				<text class="text ios-icon">&#xe8df;</text>
+			</div> -->
+			<div class="xuanji" :class="{xuanjiShow:xuanjiShow,android:platform=='android' }" @click="showList">
+				<text class="text ios-icon">选集</text>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script>
+	const animation = weex.requireModule('animation');
+	const modal = weex.requireModule('modal');
+	export default {
+		data() {
+			return {
+				xuanjiShow:true,
+				platform:null
+			}
+		},
+		beforeCreate() {
+			// #ifdef APP-PLUS-NVUE
+			var domModule = weex.requireModule('dom');
+			domModule.addRule('fontFace', {
+				fontFamily: 'texticons',
+				src: "url('../../../static/text-icon.ttf')"
+			});
+			// #endif
+		},
+		created(){
+			uni.getSystemInfo({
+				success: (e) => {
+					// #ifndef MP
+					this.platform = e.platform
+					// #endif
+				}
+			})
+		},
+		mounted(){
+			uni.$on("videoButtomShow",()=>{
+				this.animateControls(0,this.$refs.bottom)
+			})
+			uni.$on("videoButtomHide",()=>{
+				this.animateControls(40,this.$refs.bottom)
+			})
+			uni.$on("videoButtomXuanjiShow",()=>{
+				this.xuanjiShow = false
+			})
+			uni.$on("videoButtomXuanjiHide",()=>{
+				this.xuanjiShow = true
+			})
+		},
+		destroyed() {
+			uni.$off("videoButtomShow")
+			uni.$off("videoButtomHide")
+			uni.$off("videomargin")
+			uni.$off("videoButtomXuanjiShow")
+			uni.$off("videoButtomXuanjiHide")
+		},
+		methods: {
+			animateControls(distance,el){
+				animation.transition(el, {
+					styles: {
+						transform: `translate(0px, ${distance}px)`,
+					},
+					duration: 350, //ms
+					timingFunction: 'ease',
+					delay: 0 //ms
+					}, () => {
+						
+					}
+				)
+			},
+			playNext(){
+				uni.$emit("playNext")
+			},
+			showList(){
+				uni.$emit("fullHide")
+				uni.getSubNVueById('list').show('auto', 300);
+			}
+		}
+	}
+</script>
+
+<style>
+.bottom{
+	/* #ifndef APP-PLUS-NVUE */
+	display: flex;
+	/* #endif */
+	height: 38px;
+	align-items: center;
+	justify-content: space-between;
+	position: relative;
+	transform: translateY(40px);
+	/* background-color: #007AFF; */
+}
+.button{
+	position: absolute;
+	left: 0px;
+	right: 10px;
+	bottom: 0px;
+	/* #ifndef APP-PLUS-NVUE */
+	display: flex;
+	/* #endif */
+	height: 38px;
+}
+.text {
+	
+}
+.ios-icon {
+	font-size: 14px;
+	color: #fff;
+	font-family: texticons;
+}
+.next{
+	position: absolute;
+	left:0;
+	top:0;
+	height: 38px;
+	align-items: center;
+	justify-content: center;
+}
+.xuanji{
+	position: absolute;
+	right:0px;
+	top:0;
+	height: 38px;
+	align-items: center;
+	justify-content: center;
+}
+.xuanjiShow{
+	transform: translateY(40px);
+}
+.android{
+	transform: translateY(0px) !important;
+}
+</style>

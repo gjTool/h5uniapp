@@ -16,7 +16,8 @@
 
 ### h5uniapp微信小程序二维码
 
-- [h5uniapp微信小程序二维码](https://www.gjtool.cn/download/h5uniapp_weixin.jpg)  
+
+-  ![h5uniapp微信小程序二维码](https://www.gjtool.cn/download/h5uniapp_weixin.jpg)
 
 ### h5uniapp安卓APP下载
 

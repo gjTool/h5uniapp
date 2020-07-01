@@ -30,7 +30,7 @@
 					<swiper-item v-for="(tabItem,i) in tabBars" :key="i">
 						<scroll-view class="panel-scroll-box" :scroll-y="enableScroll">
 							<view v-for="(item, index) in tabItem.contentList" :key="index" class="news-item" @click="navToDetails(item)">
-								<view v-if="item.cover" class="img-list">
+								<view v-show="item.cover" class="img-list">
 									<image class="img" @error="imgError(item)" :src="item.cover" lazy-load="true"></image>
 								</view>
 								<view class="text-list">
@@ -44,6 +44,14 @@
 			</view>
 			<!-- 加载图标 -->
 			<mixLoading class="mix-loading" v-if="loading"></mixLoading>
+			<!-- #ifdef H5 -->
+			<view class="weixin-advert" v-if="weixinAdvert" @click="closeImg" id="weixin-advert">
+				<view class="img-box">
+					<text class="text">长按图片识别小程序码，进入看电影小程序。微信授权登陆即可观看电影</text>
+					<image class="img" id="weixin-img" src="/static/weixin_advert.jpeg" ></image>
+				</view>
+			</view>
+			<!-- #endif -->
 		</view>
 		<view class="" v-if="index==0" style="overflow-y: scroll !important;flex: 1;">
 			<uni-nav-bar :status-bar="true" :background-color="'#ec706b'" class="uni-nav-bar">
@@ -210,7 +218,8 @@
 				weatherBodydata: {
 				},
 				forecastList: [],
-				height:"100%"
+				height:"100%",
+				weixinAdvert:true
 			};
 		},
 		computed: {
@@ -388,6 +397,11 @@
 			}
 		},
 		methods: {
+			closeImg(e){
+				if(e.target.id !== "weixin-img"){
+					this.weixinAdvert = false
+				}
+			},
 			imgError(item) {
 				item.cover = '/static/404.jpg';
 			},
@@ -492,7 +506,7 @@
 							} else {
 								_this.contentData = res.data.list;
 							}
-							// _this.contentData.length = 33;
+							_this.contentData.length = 33;
 							_this.getList(tabItem, _this.contentData);
 						} else {
 							_this.getList(tabItem, []);
@@ -771,7 +785,7 @@
 		flex: 1;
 		height: 100%;
 		justify-content: space-around;
-
+		flex-wrap: wrap;
 		.panel-item {
 			background: #fff;
 			padding: 30px 0;
@@ -802,6 +816,7 @@
 		align-items: center;
 		justify-content: center;
 		box-sizing: border-box;
+		flex-direction: column;
 	}
 
 	.text-list {
@@ -913,6 +928,34 @@
 
 		text {
 			color: #fff;
+		}
+	}
+	.weixin-advert{
+		width: 100%;
+		height: 100%;
+		flex: 1;
+		position: fixed;
+		top: 0;
+		left: 0;
+		background-color: rgba(0,0,0,0.3);
+		z-index: 999;
+		display: felx;
+		justify-content: center;
+		align-items: center;
+		.img-box{
+			text-align: center;
+			display: felx;
+			justify-content: center;
+			align-items: center;
+			.text{
+				color: #fff;
+				padding: 0 10px;
+			}
+			.img{
+				width: 200px;
+				height: 200px;
+				
+			}
 		}
 	}
 </style>

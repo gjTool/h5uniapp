@@ -13,6 +13,8 @@ $RECYCLE.BIN/
 # Node.js
 node_modules/
 
+/unpackage/debug/
+/unpackage/dist/
 
 unpackage/debug/
 unpackage/dist/

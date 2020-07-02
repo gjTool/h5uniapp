@@ -1,20 +1,5 @@
-# Windows
-[Dd]esktop.ini
-Thumbs.db
-$RECYCLE.BIN/
-
-# macOS
-.DS_Store
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-
-# Node.js
-node_modules/
-
-/unpackage/debug/
-/unpackage/dist/
-
-unpackage/debug/
-unpackage/dist/
+node_modules
+package-lock.json
+.vscode
+.github
+unpackage

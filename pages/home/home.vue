@@ -570,10 +570,20 @@
 							item.name = obj.name;
 							let text = str.replace(item.name,"");
 							if(text.indexOf("更新")!=-1){
-								item.imgText = text
+								if(item.genre.indexOf("综艺")!=-1){
+									let numstr = res.data.list[res.data.list.length-1].num;
+									if(numstr.indexOf("集")!=-1 || numstr.indexOf("期")!=-1){
+										item.imgText = "更新至"+numstr;
+									}else{
+										item.imgText = "更新至"+numstr+"期";
+									}
+									
+								}else{
+									item.imgText = text
+								}
 							}else if(text.indexOf("完结")!=-1){
 								if(item.genre.indexOf("综艺")==-1){
-									 res.data.data.length+"集全"
+									item.imgText =  res.data.list.length+"集全"
 								}else{
 									item.imgText = text
 								}
@@ -935,7 +945,7 @@
 		position: relative;
 		.img-genre{
 			position: absolute;
-			background-color: rgba(0,0,0,0.3);
+			background-color: rgba(0,0,0,0.4);
 			color: #fff;
 			left:0;
 			top: 0;
@@ -946,7 +956,7 @@
 		}
 		.img-text{
 			position: absolute;
-			background-color: rgba(0,0,0,0.3);
+			background-color: rgba(0,0,0,0.4);
 			color: #fff;
 			left:0;
 			bottom: 0;

@@ -195,7 +195,12 @@
 							}
 							data[i] = obj;
 						}
-						this.list = data;
+						if(this.detailData.genre.indexOf("综艺")!=-1){
+							this.list = data.reverse();
+						}else{
+							this.list = data;
+						}
+						
 						let item = this.list[0];
 						this.videoTitle = this.title + " " + item.num
 					}
@@ -379,8 +384,8 @@
 		font-size: 16px;
 
 		button {
-			margin-top: 10px;
-			margin-right: 10px;
+			margin-top: 5px;
+			margin-right: 5px;
 		}
 	}
 

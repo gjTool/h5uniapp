@@ -572,7 +572,11 @@
 							if(text.indexOf("更新")!=-1){
 								item.imgText = text
 							}else if(text.indexOf("完结")!=-1){
-								item.imgText = text
+								if(item.genre.indexOf("综艺")==-1){
+									 res.data.data.length+"集全"
+								}else{
+									item.imgText = text
+								}
 							}else if(text.indexOf("集")!=-1){
 								item.imgText = text
 							}else if(text.indexOf("期")!=-1){
@@ -947,9 +951,9 @@
 			left:0;
 			bottom: 0;
 			width: 100%;
-			// height: 30px;
-			text-align: right;
+			text-align: left;
 			font-size: 10px;
+			padding-left: 4px;
 			padding-right: 4px;
 		}
 	}

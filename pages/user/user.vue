@@ -23,6 +23,9 @@
 				<view class="text">{{ item.text }}</view>
 				<text class="iconfont iconyou"></text>
 			</view>
+			<view class="u-text" v-if="text">
+				<text>{{text}}</text>
+			</view>
 		</view>
 	</view>
 </template>
@@ -32,8 +35,8 @@ export default {
 	data() {
 		return {
 			list: [
-				// {img:'../../static/jianjie.png',text:'最近浏览'},
-				{ img: '../../static/tab-download-current.png', text: '我的收藏' }
+				{img: '../../static/tab-download-current.png', text: '最近浏览' },
+				{img:'../../static/wxlogin.png',text:'联系作者'}
 			],
 			data: uni.setStorageSync("userInfo"),
 			SessionKey: '',
@@ -42,6 +45,7 @@ export default {
 			avatarUrl: null,
 			background:"#fff",
 			index:0,
+			text:"",
 			isCanUse: uni.setStorageSync('isCanUse') //默认为true
 		};
 	},
@@ -49,6 +53,7 @@ export default {
 		let _this = this;
 		let option = uni.getStorageSync('config');
 		this.index = option.index
+		this.text = option.text
 	},
 	onLoad() {
 		let _this = this;
@@ -65,7 +70,6 @@ export default {
 				let authSetting=res.authSetting
 				if (!res.authSetting['scope.userInfo']) {
 					//这里调用授权
-					// console.log('当前未授权');
 					_this.isCanUse = true;
 					_this.data ={};
 					uni.setStorageSync('userInfo',{});
@@ -74,7 +78,6 @@ export default {
 					//用户已经授权过了
 					_this.isCanUse = false;
 					_this.data = uni.setStorageSync("userInfo")
-					// console.log('当前已授权',_this.data );
 					_this.background = "RGB(248,249,251)"
 					uni.getUserInfo({
 						provider: 'weixin',
@@ -113,6 +116,15 @@ export default {
 		listJump(index) {
 			if (index === 0) {
 				let url = `/pages/index/index`;
+				if(this.index==0){
+					url=""
+				}
+				uni.navigateTo({
+					url: url
+				});
+			}
+			if (index === 1) {
+				let url = `/pages/lx/lx`;
 				if(this.index==0){
 					url=""
 				}
@@ -306,5 +318,10 @@ export default {
 	border-radius: 80rpx;
 	margin: 70rpx 50rpx;
 	font-size: 35rpx;
+}
+.u-text{
+	padding: 30px;
+	font-size: 12px;
+	color: #777;
 }
 </style>

@@ -36,7 +36,7 @@
 		},{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "我的收藏",
+				"navigationBarTitleText": "最近浏览",
 				"app-plus": {
 					"navigationBarTextStyle": "white",
 					"bounce": "none",
@@ -249,6 +249,10 @@
             "style" : {
 				"navigationBarTitleText": "授权登录"
 			}
+        }
+        ,{
+            "path" : "pages/lx/lx",
+            "style" : {}
         }
     ],
 	"globalStyle": {

@@ -5,7 +5,7 @@
 		<scroll-view class="scroll" scroll-y v-if="index==1">
 			<view class="scroll-content">
 				<view class="image-box">
-					<image :src="obj.cover" @error="imgError(obj)"></image>
+					<image :src="obj.cover" @error="imgError(obj)" class="img"  show-menu-by-longpress></image>
 				</view>
 				<view class="text-right">
 					<view class="text-name"><text>名称</text>：<text>{{obj.name? obj.name : ""}}</text></view>
@@ -341,5 +341,8 @@
 			color: #007AFF;
 			font-weight: 500;
 		}
+	}
+	.img{
+		pointer-events: auto !important;
 	}
 </style>

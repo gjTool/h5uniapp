@@ -9,7 +9,7 @@
 				{{ item.name }}
 			</view>
 		</scroll-view>
-		<view class="panel-content">
+		<view class="panel-content" v-if="index==1">
 			<!-- 内容部分 -->
 			<swiper id="swiper" class="swiper-box" :duration="300" :current="tabCurrentIndex" @change="changeTab">
 				<swiper-item v-for="(tabItem,i) in tabBars" :key="i">
@@ -602,7 +602,7 @@ page,
 
 .panel-scroll-box {
 	height: 100%;
-
+	flex:1;
 	.panel-item {
 		background: #fff;
 		padding: 30px 0;

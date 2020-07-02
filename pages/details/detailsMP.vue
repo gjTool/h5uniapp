@@ -7,7 +7,7 @@
 		</view>
 		<scroll-view class="scroll" scroll-y v-if="index==1">
 			<view class="scroll-content">
-				<view class="image-box"><image :src="obj.cover" @error="imgError(obj)"></image></view>
+				<view class="image-box"><image :src="obj.cover" class="img" @error="imgError(obj)" show-menu-by-longpress></image></view>
 				<view class="text-right">
 					<view>
 						<text>年份</text>
@@ -362,4 +362,7 @@ cover-image {
 .cover-view {
 	color: #ffffff;
 }
+.img{
+		pointer-events: auto !important;
+	}
 </style>

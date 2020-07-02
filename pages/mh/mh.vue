@@ -9,7 +9,7 @@
 		  :class="{ black: black }" >
 		 	<view class="scroll-content">
 				<view class="img-list" v-for="(item,index) in list" :key="index">
-					<image class="img" mode="widthFix" :src="item.img" @error="imgError(item)"  lazy-load="true" ></image>
+					<image class="img" mode="widthFix" :src="item.img" @error="imgError(item)"  lazy-load="true" show-menu-by-longpress></image>
 				</view>
 		 		<!-- <movable-area scale-area >
 		 			<movable-view scale :x="x" :y="y" direction="all" >

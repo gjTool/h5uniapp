@@ -24,7 +24,7 @@
 					{{ item.name }}
 				</view>
 			</scroll-view>
-			<view class="panel-content" :style="{'margin-top':marginTop,'height':height}">
+			<view class="panel-content" :style="{'margin-top':marginTop,'padding-bottom':paddingBottom,'height':height}">
 				<!-- 内容部分 -->
 				<swiper id="swiper" class="swiper-box" :duration="300" :current="tabCurrentIndex" @change="changeTab">
 					<swiper-item v-for="(tabItem,i) in tabBars" :key="i">
@@ -32,6 +32,12 @@
 							<view v-for="(item, index) in tabItem.contentList" :key="index" class="news-item" @click="navToDetails(item)">
 								<view v-show="item.cover" class="img-list">
 									<image class="img" @error="imgError(item)" :src="item.cover" lazy-load="true"></image>
+									<view class="img-text" v-show="item.imgText">
+										{{ item.imgText }}
+									</view>
+									<view class="img-genre" >
+										{{ item.genre }}
+									</view>
 								</view>
 								<view class="text-list">
 									<text class="title">{{ item.name }}</text>
@@ -213,13 +219,19 @@
 				ipad: false,
 				top: "64px",
 				marginTop: "98px",
+				paddingBottom:"0px",
 				index: 0,
 				weatherBody:{},
 				weatherBodydata: {
 				},
 				forecastList: [],
 				height:"100%",
-				weixinAdvert:true
+				weixinAdvert:true,
+				ysurlRequest:null,
+				ysurlRequestList:[],
+				mhurlRequest:null,
+				mhurlRequestList:[],
+				searchWord:"20"
 			};
 		},
 		computed: {
@@ -235,6 +247,8 @@
 		async onLoad() {
 			// 获取屏幕宽度
 			let windowWidth = uni.getSystemInfoSync().windowWidth;
+			// 获取屏幕高度
+			let windowHeight = uni.getSystemInfoSync().windowHeight;
 			// 获取状态栏高度
 			this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
 			// #ifdef MP
@@ -242,30 +256,20 @@
 			this.marginTop = (this.statusBarHeight + 78) + "px";
 			if (this.index == 0) {
 				this.marginTop = (this.statusBarHeight + 44) + "px";
-				// this.mtop = "20px";
-				// this.pbottom = "74px";
 			}
 			// #endif
 			// #ifdef H5
 			this.top = "44px";
 			this.marginTop = "88px";
-			this.height=(uni.getSystemInfoSync().windowHeight-88)+"px"
+			this.height=(windowHeight-88)+"px"
 			// #endif
 			if (windowWidth >= 768) {
 				this.ipad = true;
 			}
-			// #ifdef MP
-			setTimeout(()=>{
-				if (this.index == 1) {
-					this.marginTop = (this.statusBarHeight + 88) + "px";
-					this.height=(uni.getSystemInfoSync().windowHeight-88)+"px"
-				}
-			},300)
-			// #endif
 			// #ifdef APP-PLUS
 			this.top = "0px";
 			this.marginTop = "44px";
-			this.height=(uni.getSystemInfoSync().windowHeight-44)+"px"
+			this.height=(windowHeight-44)+"px"
 			// #endif
 		},
 		onNavigationBarSearchInputChanged(e) {},
@@ -336,7 +340,8 @@
 												setTimeout(()=>{
 													if (_this.index == 1) {
 														_this.marginTop = (_this.statusBarHeight + 88) + "px";
-														_this.height=(uni.getSystemInfoSync().windowHeight-88)+"px";
+														_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+														// _this.paddingBottom = "44px";
 														if (!_this.contentData.length) {
 															_this.loading = true;
 															_this.keyWord = '1';
@@ -389,7 +394,7 @@
 			// #endif
 			if (this.index == 1) {
 				this.loading = true;
-				this.keyWord = '1';
+				this.keyWord = this.searchWord;
 				let tabItem1 = this.tabBars[0];
 				this.loadList(tabItem1);
 				let tabItem2 = this.tabBars[1];
@@ -420,13 +425,12 @@
 					duration: 0
 				});
 				if (this.index == 1) {
-					if (this.keyWord.trim() != '') {
+					if(this.tabCurrentIndex == 0){
 						let tabItem1 = this.tabBars[0];
 						this.loadList(tabItem1);
+					}else{
 						let tabItem2 = this.tabBars[1];
 						this.loadList(tabItem2);
-						let tabItem3 = this.tabBars[2];
-						this.loadList(tabItem3);
 					}
 				} else {
 					this.getWeather(this.keyWord)
@@ -481,13 +485,18 @@
 					search = 'ysname';
 				}
 				if (this.keyWord.trim() == '') {
-					return;
+					this.keyWord = this.searchWord
 				}
 				this.loading = true;
 				if (this.loadListRequest) {
 					// this.loadListRequest.abort();
 				}
-
+				if(this.ysurlRequestList.length){
+					this.clearYsurlRequestList()
+				}
+				if(this.mhurlRequestList.length){
+					this.clearMhurlRequestList()
+				}
 				this.loadListRequest = uni.request({
 					url: config.baseUrl + '?' + search + '=' + this.keyWord + '&_=' + new Date().getTime(),
 					method: 'GET',
@@ -506,7 +515,7 @@
 							} else {
 								_this.contentData = res.data.list;
 							}
-							_this.contentData.length = 33;
+							_this.contentData.length = 18;
 							_this.getList(tabItem, _this.contentData);
 						} else {
 							_this.getList(tabItem, []);
@@ -522,13 +531,99 @@
 				let list = data;
 				tabItem.contentList = []; //刷新前清空数组
 				list.forEach((item, i) => {
+					let genre = item.genre;
 					if (tabItem && tabItem.id == '3' && !item.cover) {
 						item.cover = '/static/404.jpg';
 					}
 					item._type = tabItem.id;
+					item.imgText = "";
+					item.genre = genre ? genre:"";
 					tabItem.contentList.push(item);
 				});
 				this.first = true;
+				if( tabItem.id == '3'){
+					for(let k=0;k<tabItem.contentList.length;k++){
+						((k)=>{
+							this.getCover(tabItem.contentList[k])
+						})(k)
+					}
+				}else if( tabItem.id == '1'){
+					for(let k=0;k<tabItem.contentList.length;k++){
+						((k)=>{
+							this.getMhCover(tabItem.contentList[k])
+						})(k)
+					}
+				}
+			},
+			getCover(item){
+				let ysurlRequest = uni.request({
+					url: config.baseUrl,
+					data: {
+						ysurl: item.url
+					},
+					method: 'GET',
+					complete: res => {
+						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+							let obj = res.data.data;
+							let str = item.name;
+							item.cover = obj.cover;
+							item.name = obj.name;
+							let text = str.replace(item.name,"");
+							if(text.indexOf("更新")!=-1){
+								item.imgText = text
+							}else if(text.indexOf("完结")!=-1){
+								item.imgText = text
+							}else if(text.indexOf("集")!=-1){
+								item.imgText = text
+							}else if(text.indexOf("期")!=-1){
+								item.imgText = text
+							}else{
+								item.imgText = item.time+"更新"
+							}
+							// console.log(res.data)
+						}
+					}
+				})	
+				this.ysurlRequest = ysurlRequest;
+				return ysurlRequest;
+			},
+			clearYsurlRequestList(){
+				if(this.ysurlRequestList.length){
+					this.ysurlRequestList.forEach((item)=>{
+						item.abort();
+					})
+					this.ysurlRequestList = [];
+				}
+			},
+			getMhCover(item){
+				let mhurlRequest = uni.request({
+					url: config.baseUrl,
+					data: {
+						mhurl1: item.url
+					},
+					method: 'GET',
+					complete: res => {
+						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+							let obj = res.data.data;
+							let str = item.name;
+							item.cover = obj.cover;
+							item.name = obj.name;
+							item.imgText = obj.time?obj.time+"更新":""
+							item.genre = obj.tag ?obj.tag:"其他";
+							// console.log(res.data)
+						}
+					}
+				})	
+				this.mhurlRequest = mhurlRequest;
+				return mhurlRequest;
+			},
+			clearMhurlRequestList(){
+				if(this.mhurlRequestList.length){
+					this.mhurlRequestList.forEach((item)=>{
+						item.abort();
+					})
+					this.mhurlRequestList = [];
+				}
 			},
 			//详情
 			navToDetails(item) {
@@ -782,10 +877,8 @@
 	}
 
 	.panel-scroll-box {
-		flex: 1;
+		flex:1;
 		height: 100%;
-		justify-content: space-around;
-		flex-wrap: wrap;
 		.panel-item {
 			background: #fff;
 			padding: 30px 0;
@@ -802,11 +895,8 @@
 		position: relative;
 		/* #ifndef MP */
 		max-width: 150px;
-		width: 33%;
 		/* #endif */
-		/* #ifdef MP */
 		width: 33%;
-		/* #endif */
 		padding: 5px;
 		border-bottom-width: 1px;
 		border-color: #eee;
@@ -816,7 +906,6 @@
 		align-items: center;
 		justify-content: center;
 		box-sizing: border-box;
-		flex-direction: column;
 	}
 
 	.text-list {
@@ -839,6 +928,30 @@
 		background-color: #fff;
 		width: 100%;
 		height: 153px;
+		position: relative;
+		.img-genre{
+			position: absolute;
+			background-color: rgba(0,0,0,0.3);
+			color: #fff;
+			left:0;
+			top: 0;
+			text-align: left;
+			font-size: 10px;
+			padding-left: 4px;
+			padding-right: 4px;
+		}
+		.img-text{
+			position: absolute;
+			background-color: rgba(0,0,0,0.3);
+			color: #fff;
+			left:0;
+			bottom: 0;
+			width: 100%;
+			// height: 30px;
+			text-align: right;
+			font-size: 10px;
+			padding-right: 4px;
+		}
 	}
 
 	.img {

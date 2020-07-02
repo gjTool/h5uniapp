@@ -4,6 +4,11 @@ export default {
 		// #ifdef APP-PLUS
 		plus.screen.lockOrientation('portrait-primary');
 		// #endif
+		// #ifdef MP
+		wx.stopDeviceMotionListening({
+			complete:()=>{}
+		})
+		// #endif
 	},
 	onShow: function() {
 		// console.log('App Show');

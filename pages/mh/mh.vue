@@ -183,13 +183,22 @@
 				this.show = !this.show;
 				// #ifdef APP-PLUS
 				if (this.show) {
+					plus.navigator.setFullscreen(false);
+					this.titleNView.show('auto', 0);
+				} else {
+					plus.navigator.setFullscreen(true);
+					this.titleNView.hide('auto', 0);
+				}
+				this.getBattery()
+				// #endif
+				// #ifdef MP
+				if (this.show) {
 					// plus.navigator.setFullscreen(false);
 					// this.titleNView.show('auto', 0);
 				} else {
 					// plus.navigator.setFullscreen(true);
 					// this.titleNView.hide('auto', 0);
 				}
-				this.getBattery()
 				// #endif
 			},
 			getScrollTopTotal() {

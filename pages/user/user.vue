@@ -16,6 +16,9 @@
 				<view class="text">欢迎使用pdfh5咨讯查询，您在这里可以查询到当地天气详情</view>
 				<text class="iconfont iconyou"></text>
 			</view>
+			<view class="u-text" v-if="text">
+				<text>{{text}}</text>
+			</view>
 		</view>
 		<view class="listFunction" v-if="!isCanUse && index==1">
 			<view class="listStrip" v-for="(item, index) in list" :key="index" @click="listJump(index)">
@@ -35,18 +38,18 @@ export default {
 	data() {
 		return {
 			list: [
-				{img: '../../static/tab-download-current.png', text: '最近浏览' },
+				{img: '../../static/zuijin.png', text: '最近浏览' },
 				{img:'../../static/wxlogin.png',text:'联系作者'}
 			],
-			data: uni.setStorageSync("userInfo"),
+			data: uni.getStorageSync("userInfo"),
 			SessionKey: '',
 			OpenId: '',
 			nickName: null,
 			avatarUrl: null,
 			background:"#fff",
-			index:0,
+			index:uni.getStorageSync('config').index,
 			text:"",
-			isCanUse: uni.setStorageSync('isCanUse') //默认为true
+			isCanUse: uni.getStorageSync('isCanUse') //默认为true
 		};
 	},
 	onReady(){
@@ -57,13 +60,12 @@ export default {
 	},
 	onLoad() {
 		let _this = this;
-		_this.isCanUse = uni.setStorageSync('isCanUse') || true;
-		_this.data = uni.setStorageSync("userInfo");
+		_this.isCanUse = uni.getStorageSync('isCanUse') || true;
 	},
 	onShow() {
 		let _this = this;
-		_this.isCanUse = uni.setStorageSync('isCanUse');
-		_this.data = uni.setStorageSync("userInfo");
+		_this.isCanUse = uni.getStorageSync('isCanUse');
+		_this.data = uni.getStorageSync("userInfo");
 		// #ifdef MP-WEIXIN
 		uni.getSetting({
 			success(res) {
@@ -77,7 +79,7 @@ export default {
 				} else {
 					//用户已经授权过了
 					_this.isCanUse = false;
-					_this.data = uni.setStorageSync("userInfo")
+					_this.data = uni.getStorageSync("userInfo")
 					_this.background = "RGB(248,249,251)"
 					uni.getUserInfo({
 						provider: 'weixin',
@@ -159,13 +161,13 @@ export default {
 	.personal {
 		text-align: center;
 		color: #000;
-		font-size: 32upx;
+		font-size: 16px;
 		position: relative;
-		top: 10upx;
+		top: 5px;
 		.iconshezhi1 {
 			position: absolute;
-			right: 30upx;
-			font-size: 42upx;
+			right: 15px;
+			font-size: 21px;
 		}
 	}
 	.headPortrait {
@@ -173,19 +175,19 @@ export default {
 		// margin-top: 40upx;
 		flex-direction: column;
 		align-items: center;
-		padding: 30upx 50upx 10upx;
+		padding: 15px 25px 5px;
 		// border-bottom: 1px solid #ccc;
 		image {
-			width: 160upx;
-			height: 160upx;
+			width: 90px;
+			height: 90px;
 			border-radius: 50%;
 			border: 1px solid #a8dbfa;
 			background: #fff;
 		}
 		.name {
-			font-size: 34upx;
+			font-size: 17px;
 			color: #000;
-			margin-top: 20upx;
+			margin-top: 10px;
 		}
 	}
 	.myQrCode {
@@ -193,7 +195,7 @@ export default {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: 28upx;
+		font-size: 14px;
 		text {
 			// font-size: 36upx;
 		}
@@ -204,22 +206,22 @@ export default {
 		margin: auto;
 		margin-top: 4vh;
 		box-sizing: border-box;
-		padding: 30upx;
-		box-shadow: 0 2upx 4upx #e7e7e7;
+		padding: 15px;
+		box-shadow: 0 1px 2px #e7e7e7;
 		border-radius: 10px;
 		.currentQuota {
 			display: flex;
 			align-items: center;
-			padding: 10upx 0;
+			padding: 5px 0;
 			.numberFrame {
 				width: 50%;
 				text-align: center;
 				.number {
-					font-size: 38upx;
+					font-size: 19px;
 					color: #000;
 				}
 				.text {
-					font-size: 28upx;
+					font-size: 14px;
 					color: #efefef;
 				}
 			}
@@ -246,12 +248,12 @@ export default {
 			width: 33.333333%;
 			text-align: center;
 			color: #000;
-			font-size: 32upx;
+			font-size: 16px;
 			// line-height:28upx;
 			image {
-				width: 60upx;
-				height: 60upx;
-				margin-bottom: 10upx;
+				width: 30px;
+				height: 30px;
+				margin-bottom: 5px;
 			}
 		}
 	}
@@ -264,19 +266,19 @@ export default {
 		display: flex;
 		align-items: center;
 		border-bottom: 1px solid #CCC;
-		padding: 30upx;
+		padding: 10px;
 		position: relative;
 		// &:last-of-type{
 		// 	border: none;
 		// }
 		image {
-			width: 50upx;
-			height: 50upx;
+			width: 20px;
+			height: 20px;
 		}
 		.text {
-			padding-left: 15px;
+			padding-left: 10px;
 			color: #000;
-			font-size: 32upx;
+			font-size: 14px;
 		}
 		.iconyou {
 			position: absolute;
@@ -290,34 +292,34 @@ export default {
 	height: 40px;
 }
 .header {
-	margin: 90rpx 0 90rpx 50rpx;
+	margin: 45px 0 45px 25px;
 	border-bottom: 1px solid #ccc;
 	text-align: center;
-	width: 650rpx;
-	height: 300rpx;
-	line-height: 450rpx;
+	width: 325px;
+	height: 150px;
+	line-height: 225px;
 }
 
 .header image {
-	width: 200rpx;
-	height: 200rpx;
+	width: 100px;
+	height: 100px;
 }
 
 .content {
-	margin-left: 50rpx;
-	margin-bottom: 90rpx;
+	margin-left: 25px;
+	margin-bottom: 45px;
 }
 
 .content text {
 	display: block;
 	color: #9d9d9d;
-	margin-top: 40rpx;
+	margin-top: 20px;
 }
 
 .bottom {
-	border-radius: 80rpx;
-	margin: 70rpx 50rpx;
-	font-size: 35rpx;
+	border-radius: 40px;
+	margin: 35rpx 25px;
+	font-size: 17px;
 }
 .u-text{
 	padding: 30px;

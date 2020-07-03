@@ -33,7 +33,7 @@ export default {
 	},
 	onLoad() {
 		let _this = this;
-		_this.isCanUse = uni.setStorageSync('isCanUse')||true;
+		_this.isCanUse = uni.getStorageSync('isCanUse')||true;
 	},
 	onShow() {
 		
@@ -42,9 +42,6 @@ export default {
 		//第一授权获取用户信息===》按钮触发
 		wxGetUserInfo() {
 			let _this = this;
-			// uni.showLoading({
-			// 	title: '登录中...'
-			// });
 			// 1.wx获取登录用户code
 			uni.login({
 				provider: 'weixin',
@@ -57,31 +54,38 @@ export default {
 							//获取用户信息后向调用信息更新方法
 							let nickName = infoRes.userInfo.nickName; //昵称
 							let avatarUrl = infoRes.userInfo.avatarUrl; //头像
-							_this.data = infoRes.userInfo;
-							try {
-								uni.setStorageSync('userInfo', infoRes.userInfo);
-								uni.setStorageSync('isCanUse', false); //记录是否第一次授权  false:表示不是第一次授权
-								_this.isCanUse = false;
-								// _this.updateUserInfo(); //调用更新信息方法
-								uni.navigateBack()
-							} catch (e) {}
-						}
-					});
-
-					//2.将用户登录code传递到后台置换用户SessionKey、OpenId等信息
-					uni.request({
-						url: 'https://www.gjtool.cn/wxlogin',
-						data: {
-							code: code
-						},
-						method: 'GET',
-						header: {
-							'content-type': 'application/json'
-						},
-						success: res => {
-							//openId、或SessionKdy存储//隐藏loading
-							uni.hideLoading();
-							// console.log("wxlogin res",res);
+							//2.将用户登录code传递到后台置换用户SessionKey、OpenId等信息
+							uni.showLoading({
+								title: '登录中...'
+							});
+							uni.request({
+								url: 'https://www.gjtool.cn/wxlogin',
+								data: {
+									code: code
+								},
+								method: 'POST',
+								success: res => {
+									//openId、或SessionKdy存储//隐藏loading
+									uni.hideLoading();
+									 // session_key: 'sfgBKehUeO83svMivS4TmA==',
+									 // openid: 'ojV0G5niVZ_kT__Kpo_ejmCHsnbg'
+									try {
+										infoRes.userInfo.session_key=res.data.session_key;
+										infoRes.userInfo.openid=res.data.openid;
+										uni.setStorageSync('userInfo', infoRes.userInfo);
+										uni.setStorageSync('isCanUse', false); //记录是否第一次授权  false:表示不是第一次授权
+										_this.isCanUse = false;
+										// _this.updateUserInfo(); //调用更新信息方法
+										uni.navigateBack()
+									} catch (e) {}
+								},
+								error:err=>{
+									uni.hideLoading();
+									uni.showToast({
+										title:"登陆失败，请稍后重试"
+									})
+								}
+							});
 						}
 					});
 				}

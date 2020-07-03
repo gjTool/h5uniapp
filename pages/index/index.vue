@@ -100,14 +100,15 @@ export default {
 			type: '',
 			selectObj: '', //选择的小说，电影，漫画
 			index:0,
-			selectObjIndex: 0 //选择的索引值
+			selectObjIndex: 0 ,//选择的索引值
+			openid:""
 		};
 	},
 	computed: {},
 	async onLoad() {
 		// 获取屏幕宽度
 		windowWidth = uni.getSystemInfoSync().windowWidth;
-		
+		this.openid = uni.getStorageSync("userInfo").openid;
 	},
 	onNavigationBarButtonTap(e) {
 		if (e.index == 0) {
@@ -133,11 +134,6 @@ export default {
 						key: 'config',
 						data: data
 					});
-					if (!data || !data.enable) {
-						uni.reLaunch({
-							url: '/pages/gonggao/gonggao'
-						});
-					}
 				}
 			}
 		});
@@ -203,14 +199,22 @@ export default {
 			}
 			//跳转漫画
 			if (item._type == '1') {
+				let url = `/pages/details/mhdetails?data=${JSON.stringify(item)}`
+				if (this.index == 0) {
+					url = ""
+				}
 				uni.navigateTo({
-					url: `/pages/details/mhdetails?data=${JSON.stringify(item)}`
+					url: url
 				});
 			}
 			//跳转小说
 			if (item._type == '2') {
+				let url =  `/pages/details/xsdetails?data=${JSON.stringify(item)}`
+				if (this.index == 0) {
+					url = ""
+				}
 				uni.navigateTo({
-					url: `/pages/details/xsdetails?data=${JSON.stringify(item)}`
+					url: url
 				});
 			}
 		},
@@ -221,21 +225,6 @@ export default {
 			}
 			//跳转漫画
 			if (item._type == '1') {
-			}
-			//跳转小说
-			if (item._type == '2') {
-				uni.navigateTo({
-					url:
-						'/pages/xslist/xslist?xsname=' +
-						encodeURIComponent(item.name) +
-						'&num=' +
-						encodeURIComponent(item.num) +
-						'&from=index' +
-						'&url=' +
-						item.url +
-						'&cover=' +
-						item.cover
-				});
 			}
 		},
 		downloadXs() {

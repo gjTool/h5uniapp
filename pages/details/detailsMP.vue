@@ -5,7 +5,27 @@
 			 show-mute-btn  enable-play-gesture enable-progress-gesture show-screen-lock-button
 			  @touchstart="mytouchstart" @longtap="mylongtap" @touchend="mytouchend" vslide-gesture-in-fullscreen 
 			   @controlstoggle="mycontrolstoggle" @fullscreenchange="myfullscreenchange">
+				<cover-view class="rate" @click="rateBtn" v-show="rateShow">x{{Rate===1?"1.0":Rate===2?"2.0":Rate}}</cover-view>
+				<cover-view class="rate-list-box" v-show="rateListShow" @click="closeratelist">
+					<cover-view class="rate-list" >
+						<cover-view  class="rate-title">倍速播放</cover-view>
+						<cover-view class="rate-item" :class="{'active':Rate===0.5}" @click="setRate(0.5)">x0.5</cover-view>
+						<cover-view class="rate-item" :class="{'active':Rate===0.8}" @click="setRate(0.8)">x0.8</cover-view>
+						<cover-view class="rate-item" :class="{'active':Rate===1.0}" @click="setRate(1.0)">x1.0</cover-view>
+						<cover-view class="rate-item" :class="{'active':Rate===1.25}" @click="setRate(1.25)">x1.25</cover-view>
+						<cover-view class="rate-item" :class="{'active':Rate===1.5}" @click="setRate(1.5)">x1.5</cover-view>
+						<cover-view class="rate-item" :class="{'active':Rate===2.0}" @click="setRate(2.0)">x2.0</cover-view>
+					</cover-view>
+				</cover-view>
 				
+				<cover-view class="xuanji" @click="xuanjiBtn" v-show="xuanjiShow">选集</cover-view>
+				<cover-view class="xuanji-list-box"  v-show="xuanjiListShow">
+					<cover-view class="xuanji-list" overflow-y="scroll" @click="closexuanjilist">
+						<cover-view class="xuanji-item" v-for="(item,k) in list" :key="k" @click="play2(item, k)">
+							<cover-view  class="item" :class="{'active':num===k}">{{item.num}}</cover-view>
+						</cover-view>
+					</cover-view>
+				</cover-view>
 			</video>
 		</view>
 		<scroll-view class="scroll" scroll-y v-if="index==1">
@@ -104,7 +124,14 @@
 				controlsShow: true,
 				isjiesuo: true,
 				suoShow:false,
-				Rate: 1
+				Rate: 1,
+				rateShow:false,
+				rateTimer:null,
+				rateListShow:false,
+				xuanjiShow:false,
+				xuanjiTimer:null,
+				xuanjiListShow:false,
+				openid:""
 			};
 		},
 		onReady: function(res) {
@@ -139,6 +166,7 @@
 		},
 		onUnload() {},
 		onLoad(options) {
+			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
 			this.title = this.detailData.name
 			uni.setNavigationBarTitle({
@@ -208,6 +236,42 @@
 			});
 		},
 		methods: {
+			//关闭选集列表
+			closexuanjilist(){
+				if(this.isfullScreen){
+					// this.xuanjiShow = true;
+					this.xuanjiListShow = false;
+				}
+			},
+			//选集按钮点击
+			xuanjiBtn(){
+				if(this.isfullScreen){
+					// this.xuanjiShow = false;
+					this.xuanjiListShow = true;
+				}
+			},
+			//关闭倍速列表
+			closeratelist(){
+				if(this.isfullScreen){
+					this.rateListShow = false;
+					// this.rateShow = true;
+				}
+			},
+			//倍速按钮点击
+			rateBtn(){
+				if(this.isfullScreen){
+					this.rateListShow = true;
+					// this.rateShow = false;
+				}
+			},
+			setRate(num){
+				if(this.isfullScreen){
+					this.videoContext.playbackRate(num);
+					this.Rate = num;
+					this.rateListShow = false;
+					// this.rateShow = true;
+				}
+			},
 			//触摸开始
 			mytouchstart(event) {
 				if(this.isfullScreen){
@@ -234,11 +298,20 @@
 			//控制栏显示、隐藏 event.detail = {show}
 			mycontrolstoggle(event) {
 				this.controlsShow = event.detail.show;
+				clearTimeout(this.xuanjiTimer)
 				if(this.isfullScreen){
-				
+					this.rateShow = this.controlsShow;
+					this.xuanjiShow = this.controlsShow;
+					if(event.detail.show){
+						this.xuanjiTimer = setTimeout(()=>{
+							this.xuanjiShow = false;
+							this.rateShow = false;
+						},5000)
+					}
 				}
 				if(!event.detail.show){
-					
+					this.rateShow = false;
+					this.xuanjiShow = false;
 				}
 			},
 			//全屏、退出全屏 direction 有效值为 vertical 或 horizontal
@@ -246,7 +319,16 @@
 				let fullScreen = event.detail.fullScreen;
 				this.isfullScreen = fullScreen;
 				if(this.isfullScreen){
-					
+					this.rateShow = true;
+					this.xuanjiShow = true;
+					clearTimeout(this.xuanjiTimer)
+					this.xuanjiTimer = setTimeout(()=>{
+						this.xuanjiShow = false;
+						this.rateShow = false;
+					},5000)
+				}else{
+					this.rateShow = false;
+					this.xuanjiShow = false;
 				}
 			},
 			fullscreenchange() {},
@@ -277,7 +359,8 @@
 				item.num = obj.num;
 				item.title = this.title;
 				this.num = index;
-				this.videoTitle = this.title + " " + item.num
+				this.videoTitle = this.title + " " + item.num;
+				this.closexuanjilist()
 			}
 		}
 	};
@@ -455,5 +538,94 @@
 		top: 50%;
 		left: 30px;
 		margin-top: -15px;
+	}
+	.rate{
+		position: absolute;
+		width: 60px;
+		height: 30px;
+		top: 50%;
+		right: 10px;
+		margin-top: -40px;
+		color: #fff;
+		font-size: 14px;
+	}
+		
+	.rate-list-box{
+		position: absolute;
+		left: 0;
+		top:0;
+		width: 100%;
+		height: 100%;
+		z-index:100;
+		background-color: rgba(0,0,0,0.3);
+		.rate-list{
+			position: absolute;
+			right: 0;
+			top:0;
+			width: 80px;
+			height: 100%;
+			background-color: rgba(0,0,0,1);
+			text-align: center;
+			.rate-title{
+				color: #fff;
+				display: block;
+				height: 30px;
+				margin-top: 10px;
+			}
+			.rate-item{
+				color: #fff;
+				display: block;
+				height: 30px;
+				margin-top: 10px;
+			}
+			.rate-item.active{
+				color: green;
+				font-weight: 600;
+			}
+		}
+	}
+	.xuanji{
+		position: absolute;
+		width: 60px;
+		height: 30px;
+		top: 50%;
+		right: 10px;
+		margin-top: 10px;
+		color: #fff;
+		font-size: 14px;
+	}
+	.xuanji-list-box{
+		position: absolute;
+		left: 0;
+		top:0;
+		width: 100%;
+		height: 100%;
+		z-index:100;
+		background-color: rgba(0,0,0,0.9);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.xuanji-list{
+			width: 100%;
+			height: 100%;
+			white-space: pre-wrap;
+			padding: 10px 20px;
+			overflow-y: scroll;
+			.xuanji-item{
+				text-align: center;
+				.item{
+					color: #fff;
+					font-size: 14px;
+					padding: 5px 8px;
+					margin: 10px 10px 0 10px;
+					background-color: rgba(255,255,255,0.2);
+				}
+				.item.active{
+					color: green;
+					font-weight: 600;
+					background-color: rgba(255,255,255,0.4);
+				}
+			}
+		}
 	}
 </style>

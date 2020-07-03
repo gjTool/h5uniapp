@@ -220,7 +220,7 @@
 				top: "64px",
 				marginTop: "98px",
 				paddingBottom:"0px",
-				index: 0,
+				index: uni.getStorageSync('config').index,
 				weatherBody:{},
 				weatherBodydata: {
 				},
@@ -231,7 +231,8 @@
 				ysurlRequestList:[],
 				mhurlRequest:null,
 				mhurlRequestList:[],
-				searchWord:"20"
+				searchWord:"20",
+				openid:""
 			};
 		},
 		computed: {
@@ -245,6 +246,7 @@
 			}
 		},
 		async onLoad() {
+			let _this = this;
 			// 获取屏幕宽度
 			let windowWidth = uni.getSystemInfoSync().windowWidth;
 			// 获取屏幕高度
@@ -271,6 +273,21 @@
 			this.marginTop = "44px";
 			this.height=(windowHeight-44)+"px"
 			// #endif
+			// #ifdef MP
+			if (_this.index == 1) {
+				_this.marginTop = (_this.statusBarHeight + 88) + "px";
+				_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+				// _this.paddingBottom = "44px";
+				if (!_this.contentData.length) {
+					_this.loading = true;
+					_this.keyWord = '1';
+					let tabItem1 = _this.tabBars[0];
+					_this.loadList(tabItem1);
+					let tabItem2 = _this.tabBars[1];
+					_this.loadList(tabItem2);
+				}
+			}
+			// #endif
 		},
 		onNavigationBarSearchInputChanged(e) {},
 		onNavigationBarSearchInputConfirmed(e) {
@@ -282,6 +299,7 @@
 		},
 		onShow() {
 			let _this = this;
+			this.openid = uni.getStorageSync("userInfo").openid;
 			// #ifdef APP-PLUS
 			plus.navigator.setFullscreen(false);
 			// #endif
@@ -304,10 +322,19 @@
 							data: option
 						});
 						_this.marginTop = (_this.statusBarHeight + 44) + "px";
+						if(option.alertText2){
+							uni.showModal({
+								title: '提示',
+								content: option.alertText2,
+								success: function(res) {
+									
+								}
+							});
+						}
 					} else {
 						//用户已经授权过了
 						_this.isCanUse = false;
-						_this.data = uni.setStorageSync("userInfo")
+						_this.data = uni.getStorageSync("userInfo")
 						// console.log('当前已授权',_this.data );
 						_this.background = "RGB(248,249,251)"
 						uni.getUserInfo({
@@ -336,23 +363,15 @@
 												// #ifndef MP
 												_this.index = 1
 												// #endif
-												// #ifdef MP
-												setTimeout(()=>{
-													if (_this.index == 1) {
-														_this.marginTop = (_this.statusBarHeight + 88) + "px";
-														_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-														// _this.paddingBottom = "44px";
-														if (!_this.contentData.length) {
-															_this.loading = true;
-															_this.keyWord = '1';
-															let tabItem1 = _this.tabBars[0];
-															_this.loadList(tabItem1);
-															let tabItem2 = _this.tabBars[1];
-															_this.loadList(tabItem2);
+												if(res.data.alertText2){
+													uni.showModal({
+														title: '提示',
+														content: res.data.alertText2,
+														success: function(res) {
+															
 														}
-													}
-												},300)
-												// #endif
+													});
+												}
 											}
 										}
 									});

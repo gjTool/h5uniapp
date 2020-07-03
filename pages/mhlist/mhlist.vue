@@ -2,7 +2,7 @@
 	<view class="content">
 	<!-- 	<uni-nav-bar :status-bar="true" left-icon="arrowleft" @click-left="back" :title="title" :background-color="'#ec706b'"
 		 class="uni-nav-bar" :right-text="sort" @click-right="sortlist" /> -->
-		<view class="uni-xs-list"  v-if="index==0">
+		<view class="uni-xs-list"  v-if="index==1">
 			<!-- 下拉刷新组件 -->
 			<mix-pulldown-refresh ref="mixPulldownRefresh" :top="0" @refresh="onPulldownReresh" @setEnableScroll="setEnableScroll">
 				<scroll-view class="scroll" :scroll-y="enableScroll" scroll-y style="padding:20upx;">
@@ -53,7 +53,9 @@
 				sort: "升序",
 				from: "xs",
 				index:0,
-				cover:""
+				cover:"",
+				openid:"",
+				detailData:null
 			}
 		},
 		methods: {
@@ -107,8 +109,16 @@
 			},
 			itemClick(item, index) {
 				uni.setStorage({
-					key: "mhNum" + this.mhname,
-					data: index
+					key: this.openid+"mhNum" + this.url1,
+					data:{
+						num:index,
+						data:{
+							title:this.mhlist[index].num,
+							name:this.mhname,
+							cover:this.cover,
+							url:this.url1
+						}
+					} 
 				});
 				this.num = index;
 				try {
@@ -160,7 +170,7 @@
 				uni.request({
 					url: config.baseUrl,
 					data: {
-						mhurl1: this.url1
+						mhurl1: _this.url1
 					},
 					method: "GET",
 					complete: (res) => {
@@ -174,7 +184,7 @@
 								callback && callback("ok")
 							}, 200)
 							try {
-								uni.setStorageSync('mhlist' + _this.mhname, _this.mhlist);
+								uni.setStorageSync('mhlist' + _this.url1, _this.mhlist);
 							} catch (e) {}
 						} else {
 							callback && callback("fail")
@@ -221,17 +231,19 @@
 		},
 		onLoad(options) {
 			let _this = this;
-			this.mhname = decodeURIComponent(options.mhname);
-			this.num = decodeURIComponent(options.num);
-			this.from = decodeURIComponent(options.from);
-			this.url1 = decodeURIComponent(options.url);
-			this.cover = decodeURIComponent(options.cover);
+			this.openid = uni.getStorageSync("userInfo").openid;
+			this.detailData =  JSON.parse(options.data);
+			this.mhname = decodeURIComponent(this.detailData.mhname);
+			this.num = decodeURIComponent(this.detailData.num);
+			this.from = decodeURIComponent(this.detailData.from);
+			this.url1 = decodeURIComponent(this.detailData.url);
+			this.cover = decodeURIComponent(this.detailData.cover);
 			this.title = this.mhname;
 			uni.setNavigationBarTitle({
 				title: this.title
 			});
 		
-			_this.mhlist = uni.getStorageSync('mhlist' + this.mhname);
+			_this.mhlist = uni.getStorageSync('mhlist' + this.url1);
 			// _this.getCacheState(_this.mhlist)
 			setTimeout(() => {
 				_this.scrollTo()

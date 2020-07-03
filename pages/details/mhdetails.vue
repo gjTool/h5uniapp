@@ -58,7 +58,8 @@
 				title:"",
 				obj:{},
 				index:0,
-				type:"h5" // h5 video
+				type:"h5" ,// h5 video
+				openid:""
 			}
 		},
 		onNavigationBarButtonTap(val) {
@@ -78,9 +79,10 @@
 			// #endif
 		},
 		onLoad(options){
+			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
 			this.title = this.detailData.name;
-			this.num = uni.getStorageSync("mhNum" + this.title);
+			this.num = uni.getStorageSync(this.openid+"mhNum" + this.detailData.url).num;
 			this.num = this.num ? this.num : 0;
 			uni.setNavigationBarTitle({
 				title: this.title
@@ -101,7 +103,7 @@
 						this.detailData.cover = this.obj.cover;
 						// this.getCacheState(data)
 						try {
-							uni.setStorageSync('mhlist'+this.title, this.list);
+							uni.setStorageSync('mhlist'+this.detailData.url, this.list);
 						} catch (e) {}
 					} 
 				}
@@ -109,9 +111,13 @@
 			//监听事件
 			this.$eventHub.$on('changeMhNum', (data) => {
 				this.num = data;
+				this.detailData.title =  this.list[this.num].num;
 				uni.setStorage({
-					key: "mhNum" + this.title,
-					data: this.num
+					key: this.openid+"mhNum" + this.detailData.url,
+					data: {
+						num:this.num,
+						data:this.detailData
+					}
 				});
 			})
 		},
@@ -121,12 +127,16 @@
 			},
 			play(item,index){
 				this.num = index;
+				this.detailData.title =  this.list[index].num;
 				uni.setStorage({
-					key: "mhNum" + this.title,
-					data: index
+					key: this.openid+"mhNum" + this.detailData.url,
+					data: {
+						num:index,
+						data:this.detailData
+					}
 				});
 				try {
-					uni.setStorageSync('mhlist'+item.name, this.list);
+					uni.setStorageSync('mhlist'+this.detailData.url, this.list);
 				} catch (e) {}
 				uni.navigateTo({
 					url: '/pages/mh/mh?src=' + encodeURIComponent(item.url) + "&name=" + encodeURIComponent(item.num) + "&mhname=" +
@@ -211,9 +221,15 @@
 				}
 			},
 			gotomhlist() {
+				let data = {
+					mhname:this.title,
+					num:this.num,
+					from:"mhdetails",
+					url:this.detailData.url,
+					cover:this.detailData.cover
+				}
 				uni.navigateTo({
-					url: '/pages/mhlist/mhlist?mhname=' + encodeURIComponent(this.title) + '&num=' + encodeURIComponent(this.num) +
-						'&from=mhdetails'+ "&url="+this.detailData.url+"&cover="+this.detailData.cover
+					url: `/pages/mhlist/mhlist?data=${JSON.stringify(data)}`
 				});
 			}
 		}

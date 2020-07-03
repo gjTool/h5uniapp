@@ -97,7 +97,8 @@
 				x:0,
 				y:0,
 				currentWebview:null,
-				titleNView:null
+				titleNView:null,
+				openid:""
 			}
 		},
 		onNavigationBarButtonTap(e) {
@@ -174,9 +175,15 @@
 				});
 			},
 			gotomhlist() {
+				let data = {
+					mhname:this.title,
+					num:this.num,
+					from:"mh",
+					url:this.detailData.url,
+					cover:this.detailData.cover
+				}
 				uni.navigateTo({
-					url: '/pages/mhlist/mhlist?mhname=' + encodeURIComponent(this.mhname) + '&num=' + encodeURIComponent(this.num) +
-						'&from=mh' + '&url=' + this.url1 + "&cover=" + this.cover
+					url: `/pages/mhlist/mhlist?data=${JSON.stringify(data)}`
 				});
 			},
 			scrollClick() {
@@ -266,8 +273,16 @@
 				    title: this.title 
 				});
 				uni.setStorage({
-					key: 'mhNum' + _this.mhname,
-					data: num
+					key: this.openid+'mhNum' + this.url1,
+					data: {
+						num:num,
+						data:{
+							title:this.title,
+							name:this.mhname,
+							cover:this.cover,
+							url:this.url1
+						}
+					} 
 				});
 				try {
 					const value = uni.getStorageSync('mhShouCang');
@@ -442,13 +457,14 @@
 		},
 		onLoad(options) {
 			let _this = this;
+			this.openid = uni.getStorageSync("userInfo").openid;
 			this.title = decodeURIComponent(options.name);
 			this.url = decodeURIComponent(options.src);
 			this.mhname = decodeURIComponent(options.mhname);
 			this.cover = decodeURIComponent(options.cover);
 			this.num = decodeURIComponent(options.num);
 			this.url1 = decodeURIComponent(options.url);
-			_this.mhlist = uni.getStorageSync('mhlist' + this.mhname);
+			_this.mhlist = uni.getStorageSync('mhlist' + this.url1);
 			uni.setNavigationBarTitle({
 			    title: this.title 
 			});
@@ -465,7 +481,7 @@
 							_this.mhlist = data;
 							// _this.getCacheState(data)
 							try {
-								uni.setStorageSync('mhlist' + _this.mhname, _this.mhlist);
+								uni.setStorageSync('mhlist' + _this.url1, _this.mhlist);
 							} catch (e) {}
 							// _this.reloadContent()
 						} else {

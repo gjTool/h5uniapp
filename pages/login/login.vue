@@ -66,7 +66,6 @@ export default {
 								method: 'POST',
 								success: res => {
 									//openId、或SessionKdy存储//隐藏loading
-									uni.hideLoading();
 									 // session_key: 'sfgBKehUeO83svMivS4TmA==',
 									 // openid: 'ojV0G5niVZ_kT__Kpo_ejmCHsnbg'
 									try {
@@ -76,13 +75,19 @@ export default {
 										uni.setStorageSync('isCanUse', false); //记录是否第一次授权  false:表示不是第一次授权
 										_this.isCanUse = false;
 										// _this.updateUserInfo(); //调用更新信息方法
-										uni.navigateBack()
+										_this.$eventHub.$emit('isCanUse',0)
+										_this.$eventHub.$emit('isCanUse2',0)
+										setTimeout(()=>{
+											uni.hideLoading();
+											uni.navigateBack()
+										},300)
 									} catch (e) {}
 								},
 								error:err=>{
 									uni.hideLoading();
 									uni.showToast({
-										title:"登陆失败，请稍后重试"
+										title:"登陆失败，请稍后重试",
+										icon: 'none'
 									})
 								}
 							});

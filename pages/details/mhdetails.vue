@@ -5,7 +5,7 @@
 		<scroll-view class="scroll" scroll-y v-if="index==1">
 			<view class="scroll-content">
 				<view class="image-box">
-					<image :src="obj.cover" @error="imgError(obj)" class="img"  show-menu-by-longpress></image>
+					<image :src="obj.cover" @error="imgError(obj)" class="img" show-menu-by-longpress></image>
 				</view>
 				<view class="text-right">
 					<view class="text-name"><text>名称</text>：<text>{{obj.name? obj.name : ""}}</text></view>
@@ -51,38 +51,37 @@
 		data() {
 			return {
 				visible: false,
-				num:0,
+				num: 0,
 				loading: true,
 				detailData: {},
-				list:[],
-				title:"",
-				obj:{},
-				index:0,
-				type:"h5" ,// h5 video
-				openid:""
+				list: [],
+				title: "",
+				obj: {},
+				index: 0,
+				type: "h5", // h5 video
+				openid: ""
 			}
 		},
 		onNavigationBarButtonTap(val) {
-			if (val.index == 1) {
-			}
+			if (val.index == 1) {}
 			if (val.index == 0) {
 				uni.showToast({
 					title: '点击了收藏'
 				});
 			}
 		},
-		onReady(){
+		onReady() {
 			let option = uni.getStorageSync('config');
 			this.index = option.index
 			// #ifndef MP
 			this.index = 1
 			// #endif
 		},
-		onLoad(options){
+		onLoad(options) {
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
 			this.title = this.detailData.name;
-			this.num = uni.getStorageSync(this.openid+"mhNum" + this.detailData.url).num;
+			this.num = config.getMhZJnum(this.detailData.url);
 			this.num = this.num ? this.num : 0;
 			uni.setNavigationBarTitle({
 				title: this.title
@@ -94,53 +93,48 @@
 				},
 				method: "GET",
 				complete: (res) => {
-					 this.loading = false
+					this.loading = false
 					if (res.statusCode == 200 && res.data && res.data.code == 0) {
 						let data = res.data.list
 						this.list = data;
 						this.obj = res.data.data
-						
+
 						this.detailData.cover = this.obj.cover;
 						// this.getCacheState(data)
 						try {
-							uni.setStorageSync('mhlist'+this.detailData.url, this.list);
+							uni.setStorageSync('mhlist' + this.detailData.url, this.list);
+						
+							this.detailData.title = this.list[this.num].num;
+							this.detailData.Time = new Date().getTime();
+							this.detailData.saveTime = config.getDate("/"); 
+							config.setMhZJ(this.num, this.detailData)
 						} catch (e) {}
-					} 
+					}
 				}
 			});
 			//监听事件
 			this.$eventHub.$on('changeMhNum', (data) => {
 				this.num = data;
-				this.detailData.title =  this.list[this.num].num;
-				uni.setStorage({
-					key: this.openid+"mhNum" + this.detailData.url,
-					data: {
-						num:this.num,
-						data:this.detailData
-					}
-				});
+				this.detailData.title = this.list[this.num].num;
+				this.detailData.Time = new Date().getTime();
+				this.detailData.saveTime = config.getDate("/"); 
+				config.setMhZJ(data, this.detailData)
 			})
 		},
 		methods: {
-			imgError(obj){
+			imgError(obj) {
 				obj.cover = "/static/404.jpg"
 			},
-			play(item,index){
+			play(item, index) {
 				this.num = index;
-				this.detailData.title =  this.list[index].num;
-				uni.setStorage({
-					key: this.openid+"mhNum" + this.detailData.url,
-					data: {
-						num:index,
-						data:this.detailData
-					}
-				});
+				this.detailData.title = this.list[index].num;
+				this.detailData.mum = this.num;
+				config.setMhZJ(this.num, this.detailData)
 				try {
-					uni.setStorageSync('mhlist'+this.detailData.url, this.list);
+					uni.setStorageSync('mhlist' + this.detailData.url, this.list);
 				} catch (e) {}
 				uni.navigateTo({
-					url: '/pages/mh/mh?src=' + encodeURIComponent(item.url) + "&name=" + encodeURIComponent(item.num) + "&mhname=" +
-						encodeURIComponent(this.title) + "&num=" + encodeURIComponent(this.num)+ "&url="+this.detailData.url+"&cover="+this.detailData.cover
+					url: '/pages/mh/mh?src=' + encodeURIComponent(item.url) + "&data=" + JSON.stringify(this.detailData)
 				});
 			},
 			back() {
@@ -148,13 +142,13 @@
 					delta: 1
 				})
 			},
-			download(){
+			download() {
 				uni.showToast({
 					title: '点击了下载',
 					icon: 'none'
 				});
 			},
-			shoucang(){
+			shoucang() {
 				try {
 					const value = uni.getStorageSync('mhShouCang');
 					if (value) {
@@ -173,7 +167,7 @@
 							uni.showToast({
 								title: "已经收藏过啦"
 							})
-						}else {
+						} else {
 							value.push(this.detailData)
 							uni.setStorage({
 								key: 'mhShouCang',
@@ -185,7 +179,7 @@
 								}
 							});
 						}
-						
+
 					} else {
 						let data = [];
 						this.detailData.num = this.num;
@@ -215,21 +209,21 @@
 							uni.showToast({
 								title: "收藏成功"
 							})
-				
+
 						}
 					});
 				}
 			},
 			gotomhlist() {
 				let data = {
-					mhname:this.title,
-					num:this.num,
-					from:"mhdetails",
-					url:this.detailData.url,
-					cover:this.detailData.cover
+					mhname: this.title,
+					num: this.num,
+					from: "mhdetails",
+					url: this.detailData.url,
+					cover: this.detailData.cover
 				}
 				uni.navigateTo({
-					url: `/pages/mhlist/mhlist?data=${JSON.stringify(data)}`
+					url: `/pages/mhlist/mhlist?data=${JSON.stringify(data)}&obj=${JSON.stringify(this.detailData)}`
 				});
 			}
 		}
@@ -240,14 +234,14 @@
 	page {
 		height: 100%;
 	}
-	
+
 	.content {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
 		background: #fff;
 	}
-	
+
 	.scroll {
 		flex: 1;
 		position: relative;
@@ -260,12 +254,12 @@
 		// padding-top: 64px;
 		/* #endif */
 	}
-	
+
 	.scroll-content {
 		display: flex;
 		flex-direction: column;
 	}
-	
+
 	.image-box {
 		width: 170px;
 		height: 230px;
@@ -273,18 +267,18 @@
 		margin-left: 5px;
 		display: flex;
 	}
-	
+
 	uni-image {
 		width: 170px;
 		height: 230px;
 	}
-	
+
 	.text-box {
 		margin-top: 10px;
 		padding: 5px;
 		font-size: 12px;
 	}
-	
+
 	.text-right {
 		width: calc(100% - 180px);
 		font-size: 12px;
@@ -294,7 +288,7 @@
 		padding: 5px;
 		font-size: 14px;
 	}
-	
+
 	.text-bottom {
 		position: absolute;
 		/* #ifdef APP-PLUS */
@@ -305,60 +299,62 @@
 		/* #endif */
 		left: 150px;
 	}
-	
+
 	switch {
 		transform: scale(0.7);
 	}
-	
+
 	.play-button {
 		margin-right: 10px;
 		margin-top: 20px;
 		display: inline-block;
 	}
-	
+
 	.list-box {
 		padding: 10px;
 		font-size: 16px;
 	}
-	
+
 	.performer {
 		/* #ifdef APP-PLUS */
 		// height: 320upx;
-		height: calc( 100% -  230px);
+		height: calc(100% - 230px);
 		/* #endif */
 		/* #ifdef H5 */
 		// height: 310upx;
-		height: calc( 100% -  230px);
+		height: calc(100% - 230px);
 		/* #endif */
 		overflow: hidden;
 		text-indent: 25px;
 	}
-	
-	.text-name {
-	
-	}
+
+	.text-name {}
+
 	.button-box {
 		margin-top: 10px;
 	}
+
 	.text-zx {
 		font-size: 14px;
 		padding-left: 10px;
 		padding-top: 10px;
 		margin-top: 10px;
-		.text-item{
-		}
-		.text-zx-title {
-			
-		}
+
+		.text-item {}
+
+		.text-zx-title {}
+
 		.text-zx-content {
 			color: #333;
 		}
-		.text-zx-content.active{
+
+		.text-zx-content.active {
 			color: #007AFF;
 			font-weight: 500;
 		}
 	}
-	.img{
+
+	.img {
 		pointer-events: auto !important;
 	}
 </style>

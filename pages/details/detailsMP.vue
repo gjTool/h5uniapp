@@ -2,30 +2,30 @@
 	<view class="content">
 		<view class="video-box" v-if="index==1">
 			<video id="myVideo" :title="videoTitle" class="myVideo" autoplay :src="src" controls show-casting-button direction="90"
-			 show-mute-btn  enable-play-gesture enable-progress-gesture show-screen-lock-button
-			  @touchstart="mytouchstart" @longtap="mylongtap" @touchend="mytouchend" vslide-gesture-in-fullscreen 
-			   @controlstoggle="mycontrolstoggle" @fullscreenchange="myfullscreenchange">
-				<cover-view class="rate" @click="rateBtn" v-show="rateShow">x{{Rate===1?"1.0":Rate===2?"2.0":Rate}}</cover-view>
-				<cover-view class="rate-list-box" v-show="rateListShow" @click="closeratelist">
-					<cover-view class="rate-list" >
-						<cover-view  class="rate-title">倍速播放</cover-view>
-						<cover-view class="rate-item" :class="{'active':Rate===0.5}" @click="setRate(0.5)">x0.5</cover-view>
-						<cover-view class="rate-item" :class="{'active':Rate===0.8}" @click="setRate(0.8)">x0.8</cover-view>
-						<cover-view class="rate-item" :class="{'active':Rate===1.0}" @click="setRate(1.0)">x1.0</cover-view>
-						<cover-view class="rate-item" :class="{'active':Rate===1.25}" @click="setRate(1.25)">x1.25</cover-view>
-						<cover-view class="rate-item" :class="{'active':Rate===1.5}" @click="setRate(1.5)">x1.5</cover-view>
-						<cover-view class="rate-item" :class="{'active':Rate===2.0}" @click="setRate(2.0)">x2.0</cover-view>
-					</cover-view>
-				</cover-view>
-				
-				<cover-view class="xuanji" @click="xuanjiBtn" v-show="xuanjiShow">选集</cover-view>
-				<cover-view class="xuanji-list-box"  v-show="xuanjiListShow">
-					<cover-view class="xuanji-list" overflow-y="scroll" @click="closexuanjilist">
-						<cover-view class="xuanji-item" v-for="(item,k) in list" :key="k" @click="play2(item, k)">
-							<cover-view  class="item" :class="{'active':num===k}">{{item.num}}</cover-view>
-						</cover-view>
-					</cover-view>
-				</cover-view>
+			 show-mute-btn enable-play-gesture enable-progress-gesture show-screen-lock-button @touchstart="mytouchstart"
+			 @loadedmetadata="loadedmetadata" @longtap="mylongtap" @touchend="mytouchend" vslide-gesture-in-fullscreen
+			 @timeupdate="mytimeupdate" @controlstoggle="mycontrolstoggle" @fullscreenchange="myfullscreenchange">
+				<view class="rate" @click="rateBtn" v-show="rateShow">x{{Rate===1?"1.0":Rate===2?"2.0":Rate}}</view>
+				<view class="rate-list-box" v-show="rateListShow" @click="closeratelist">
+					<view class="rate-list" overflow-y="true">
+						<view class="rate-title">倍速播放</view>
+						<view class="rate-item" :class="{'active':Rate===0.5}" @click="setRate(0.5)">x0.5</view>
+						<view class="rate-item" :class="{'active':Rate===0.8}" @click="setRate(0.8)">x0.8</view>
+						<view class="rate-item" :class="{'active':Rate===1.0}" @click="setRate(1.0)">x1.0</view>
+						<view class="rate-item" :class="{'active':Rate===1.25}" @click="setRate(1.25)">x1.25</view>
+						<view class="rate-item" :class="{'active':Rate===1.5}" @click="setRate(1.5)">x1.5</view>
+						<view class="rate-item" :class="{'active':Rate===2.0}" @click="setRate(2.0)">x2.0</view>
+					</view>
+				</view>
+
+				<view class="xuanji" @click="xuanjiBtn" v-show="xuanjiShow&&xunjiif">选集</view>
+				<view class="xuanji-list-box" v-show="xuanjiListShow" @click="closexuanjilist">
+					<view class="xuanji-list" overflow-y="true">
+						<view class="xuanji-item" v-for="(item,k) in list" :key="k" @click="play2(item, k)">
+							<view class="item" :class="{'active':num===k}">{{item.num}}</view>
+						</view>
+					</view>
+				</view>
 			</video>
 		</view>
 		<scroll-view class="scroll" scroll-y v-if="index==1">
@@ -123,26 +123,21 @@
 				isfullScreen: false,
 				controlsShow: true,
 				isjiesuo: true,
-				suoShow:false,
+				suoShow: false,
 				Rate: 1,
-				rateShow:false,
-				rateTimer:null,
-				rateListShow:false,
-				xuanjiShow:false,
-				xuanjiTimer:null,
-				xuanjiListShow:false,
-				openid:""
+				rateShow: false,
+				rateTimer: null,
+				rateListShow: false,
+				xuanjiShow: false,
+				xuanjiTimer: null,
+				xuanjiListShow: false,
+				openid: "",
+				timeupdateTimer: null,
+				xunjiif:true
 			};
 		},
 		onReady: function(res) {
-			// #ifndef MP-ALIPAY
-			this.videoContext = uni.createVideoContext('myVideo')
-			// #endif
-			let option = uni.getStorageSync('config');
-			this.index = option.index
-			// #ifndef MP
-			this.index = 1
-			// #endif
+		
 		},
 		computed: {
 			src() {
@@ -166,12 +161,22 @@
 		},
 		onUnload() {},
 		onLoad(options) {
+			// #ifndef MP-ALIPAY
+			this.videoContext = uni.createVideoContext('myVideo')
+			// #endif
+			let option = uni.getStorageSync('config');
+			this.index = option.index
+			// #ifndef MP
+			this.index = 1
+			// #endif
+		
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
 			this.title = this.detailData.name
 			uni.setNavigationBarTitle({
 				title: this.detailData.name
 			});
+			
 			uni.request({
 				url: config.baseUrl,
 				data: {
@@ -223,67 +228,122 @@
 							}
 							data[i] = obj;
 						}
-						if(this.detailData.genre.indexOf("综艺")!=-1){
+						if (this.detailData.genre.indexOf("综艺") != -1) {
 							this.list = data.reverse();
-						}else{
+						} else {
 							this.list = data;
 						}
-						
+
 						let item = this.list[0];
-						this.videoTitle = this.title + " " + item.num
+						this.videoTitle = this.title + " " + item.num;
+						
+						let op = config.getYsZJnum(this.detailData.url);
+						this.num = op.num ? op.num : 0;
+						if(op.currentTime){
+							this.videoContext.seek(op.currentTime);
+						}
+						if (
+							this.list.length <= 4 &&
+							this.detailData.genre.indexOf('综艺') == -1 &&
+							this.detailData.genre.indexOf('日韩动漫') == -1 &&
+							(this.detailData.genre.indexOf('剧') <= -1 ||
+								this.detailData.genre.indexOf('剧情片') != -1 ||
+								this.detailData.genre.indexOf('喜剧片') != -1 ||
+								this.detailData.genre.indexOf('悲剧片') != -1)
+						) {
+							this.xunjiif = false;
+						}
 					}
 				}
 			});
 		},
 		methods: {
+			//秒数转换时间
+			formatSeconds(value) {
+				var theTime = parseInt(value); // 秒
+				var middle = 0; // 分
+				var hour = 0; // 小时
+				if (theTime > 60) {
+					middle = parseInt(theTime / 60);
+					theTime = parseInt(theTime % 60);
+					if (middle > 60) {
+						hour = parseInt(middle / 60);
+						middle = parseInt(middle % 60);
+					}
+				}
+				var result = "" + parseInt(theTime) + "秒";
+				if (middle > 0) {
+					result = "" + parseInt(middle) + "分" + result;
+				}
+				if (hour > 0) {
+					result = "" + parseInt(hour) + "小时" + result;
+				}
+				return result;
+			},
+			//数据加载
+			loadedmetadata() {
+				this.videoContext.playbackRate(this.Rate);
+			},
+			//进度条变化
+			mytimeupdate(event) {
+				let currentTime = event.detail.currentTime;
+				let duration = event.detail.duration;
+
+				clearTimeout(this.xuanjiTimer);
+				clearTimeout(this.timeupdateTimer);
+				this.timeupdateTimer = setTimeout(() => {
+					 let title = this.list[this.num].num;
+					 title +=" "+this.formatSeconds(currentTime);
+					 this.detailData.currentTime = currentTime;
+					 this.detailData.title = title;
+					 this.detailData.Time = new Date().getTime();
+					 this.detailData.saveTime = config.getDate("/"); 
+					 config.setYsZJ(this.num, this.detailData)
+				}, 250)
+			},
 			//关闭选集列表
-			closexuanjilist(){
-				if(this.isfullScreen){
-					// this.xuanjiShow = true;
+			closexuanjilist() {
+				if (this.isfullScreen) {
 					this.xuanjiListShow = false;
 				}
 			},
 			//选集按钮点击
-			xuanjiBtn(){
-				if(this.isfullScreen){
-					// this.xuanjiShow = false;
+			xuanjiBtn() {
+				if (this.isfullScreen) {
 					this.xuanjiListShow = true;
 				}
 			},
 			//关闭倍速列表
-			closeratelist(){
-				if(this.isfullScreen){
+			closeratelist() {
+				if (this.isfullScreen) {
 					this.rateListShow = false;
-					// this.rateShow = true;
 				}
 			},
 			//倍速按钮点击
-			rateBtn(){
-				if(this.isfullScreen){
+			rateBtn() {
+				if (this.isfullScreen) {
 					this.rateListShow = true;
-					// this.rateShow = false;
 				}
 			},
-			setRate(num){
-				if(this.isfullScreen){
+			setRate(num) {
+				if (this.isfullScreen) {
 					this.videoContext.playbackRate(num);
 					this.Rate = num;
 					this.rateListShow = false;
-					// this.rateShow = true;
 				}
 			},
 			//触摸开始
 			mytouchstart(event) {
-				if(this.isfullScreen){
-					
+				if (this.isfullScreen) {
+
 				}
-				
+
 				// console.log("触摸开始")
 			},
 			//触摸结束
 			mytouchend(event) {
-				if(this.isfullScreen){
-					
+				if (this.isfullScreen) {
+
 				}
 				if (this.islongtap) {
 					this.videoContext.playbackRate(this.Rate)
@@ -299,17 +359,17 @@
 			mycontrolstoggle(event) {
 				this.controlsShow = event.detail.show;
 				clearTimeout(this.xuanjiTimer)
-				if(this.isfullScreen){
+				if (this.isfullScreen) {
 					this.rateShow = this.controlsShow;
 					this.xuanjiShow = this.controlsShow;
-					if(event.detail.show){
-						this.xuanjiTimer = setTimeout(()=>{
+					if (event.detail.show) {
+						this.xuanjiTimer = setTimeout(() => {
 							this.xuanjiShow = false;
 							this.rateShow = false;
-						},5000)
+						}, 5000)
 					}
 				}
-				if(!event.detail.show){
+				if (!event.detail.show) {
 					this.rateShow = false;
 					this.xuanjiShow = false;
 				}
@@ -318,24 +378,28 @@
 			myfullscreenchange(event) {
 				let fullScreen = event.detail.fullScreen;
 				this.isfullScreen = fullScreen;
-				if(this.isfullScreen){
+				clearTimeout(this.xuanjiTimer)
+				if (this.isfullScreen) {
 					this.rateShow = true;
 					this.xuanjiShow = true;
-					clearTimeout(this.xuanjiTimer)
-					this.xuanjiTimer = setTimeout(()=>{
+					this.xuanjiTimer = setTimeout(() => {
 						this.xuanjiShow = false;
 						this.rateShow = false;
-					},5000)
-				}else{
+					}, 5000)
+				} else {
 					this.rateShow = false;
 					this.xuanjiShow = false;
+					this.rateListShow = false;
+					this.xuanjiListShow = false;
 				}
 			},
 			fullscreenchange() {},
 			playClick() {},
 			videoErrorCallback(e) {},
 			back() {
-				uni.navigateBack()
+				uni.navigateBack({
+					delta: 1
+				})
 			},
 			shoucang() {
 				uni.showToast({
@@ -382,6 +446,13 @@
 		position: relative;
 		background-color: #f8f8f8;
 		height: 0;
+	}
+
+	.scroll::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		color: transparent;
+		display: none;
 	}
 
 	.scroll-content {
@@ -480,9 +551,16 @@
 		height: 74px;
 		/* #endif */
 		/* #ifdef MP */
-		height: 140px;
+		height: 126px;
 		/* #endif */
 		overflow: hidden;
+	}
+
+	.performer::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		color: transparent;
+		display: none;
 	}
 
 	.text-name {}
@@ -513,12 +591,7 @@
 		line-height: 32px;
 	}
 
-	cover-view,
-	cover-image {
-		display: inline-block;
-	}
-
-	.cover-view {
+	.view {
 		color: #ffffff;
 	}
 
@@ -526,10 +599,7 @@
 		pointer-events: auto !important;
 	}
 
-	cover-view,
-	cover-image {
-		display: inline-block;
-	}
+
 
 	.jiesuo {
 		position: absolute;
@@ -539,7 +609,8 @@
 		left: 30px;
 		margin-top: -15px;
 	}
-	.rate{
+
+	.rate {
 		position: absolute;
 		width: 60px;
 		height: 30px;
@@ -549,42 +620,58 @@
 		color: #fff;
 		font-size: 14px;
 	}
-		
-	.rate-list-box{
+
+	.rate-list-box {
 		position: absolute;
 		left: 0;
-		top:0;
+		top: 0;
 		width: 100%;
 		height: 100%;
-		z-index:100;
-		background-color: rgba(0,0,0,0.3);
-		.rate-list{
+		z-index: 100;
+		background-color: rgba(0, 0, 0, 0.3);
+
+		.rate-list {
 			position: absolute;
 			right: 0;
-			top:0;
+			top: 0;
 			width: 80px;
 			height: 100%;
-			background-color: rgba(0,0,0,1);
+			background-color: rgba(0, 0, 0, 1);
 			text-align: center;
-			.rate-title{
+			overflow-y: scroll;
+			-webkit-overflow-scrolling: touch;
+
+			.rate-title {
 				color: #fff;
 				display: block;
 				height: 30px;
-				margin-top: 10px;
+				line-height: 30px;
+				margin-top: 6px;
 			}
-			.rate-item{
+
+			.rate-item {
 				color: #fff;
 				display: block;
-				height: 30px;
-				margin-top: 10px;
+				height: 26px;
+				line-height: 26px;
+				margin-top: 8px;
 			}
-			.rate-item.active{
+
+			.rate-item.active {
 				color: green;
 				font-weight: 600;
 			}
 		}
+
+		.rate-list::-webkit-scrollbar {
+			width: 0;
+			height: 0;
+			color: transparent;
+			display: none;
+		}
 	}
-	.xuanji{
+
+	.xuanji {
 		position: absolute;
 		width: 60px;
 		height: 30px;
@@ -594,38 +681,57 @@
 		color: #fff;
 		font-size: 14px;
 	}
-	.xuanji-list-box{
+
+	.xuanji-list-box {
 		position: absolute;
 		left: 0;
-		top:0;
+		top: 0;
 		width: 100%;
 		height: 100%;
-		z-index:100;
-		background-color: rgba(0,0,0,0.9);
+		z-index: 100;
+		background-color: rgba(0, 0, 0, 0.3);
 		display: flex;
-		justify-content: center;
+		justify-content: flex-end;
 		align-items: center;
-		.xuanji-list{
-			width: 100%;
+
+		.xuanji-list {
+			// position: absolute;
+			// right: 0;
+			// top:0;
+			width: 260px;
 			height: 100%;
+			background-color: rgba(0, 0, 0, 1);
 			white-space: pre-wrap;
-			padding: 10px 20px;
+			padding: 10px 10px;
 			overflow-y: scroll;
-			.xuanji-item{
+			-webkit-overflow-scrolling: touch;
+
+			.xuanji-item {
 				text-align: center;
-				.item{
+				display: inline-block;
+
+				.item {
 					color: #fff;
 					font-size: 14px;
+					line-height: 20px;
 					padding: 5px 8px;
 					margin: 10px 10px 0 10px;
-					background-color: rgba(255,255,255,0.2);
+					background-color: rgba(255, 255, 255, 0.2);
+					display: inline-block;
 				}
-				.item.active{
+
+				.item.active {
 					color: green;
 					font-weight: 600;
-					background-color: rgba(255,255,255,0.4);
 				}
 			}
+		}
+
+		.xuanji-list::-webkit-scrollbar {
+			width: 0;
+			height: 0;
+			color: transparent;
+			display: none;
 		}
 	}
 </style>

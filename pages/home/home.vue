@@ -247,6 +247,20 @@
 		},
 		async onLoad() {
 			let _this = this;
+			/**
+			 * 启动页广告
+			 *  初始化的时机应该是在splash关闭时，否则会造成在app端广告显示了数秒后首屏才渲染出来
+			 */
+			let option = uni.getStorageSync('config');
+			if (option && !option.advert) {
+				this.timedown = 0;
+			}
+			// #ifdef MP || H5
+			this.timedown = 0;
+			// #endif
+			// #ifdef APP-PLUS
+			plus.navigator.setFullscreen(false);
+			// #endif
 			// 获取屏幕宽度
 			let windowWidth = uni.getSystemInfoSync().windowWidth;
 			// 获取屏幕高度
@@ -264,6 +278,13 @@
 			this.top = "44px";
 			this.marginTop = "88px";
 			this.height=(windowHeight-88)+"px"
+			_this.index = 1;
+			_this.loading = true;
+			_this.keyWord = _this.searchWord;
+			let tabItem1 = _this.tabBars[0];
+			_this.loadList(tabItem1);
+			let tabItem2 = _this.tabBars[1];
+			_this.loadList(tabItem2);
 			// #endif
 			if (windowWidth >= 768) {
 				this.ipad = true;
@@ -271,22 +292,86 @@
 			// #ifdef APP-PLUS
 			this.top = "0px";
 			this.marginTop = "44px";
-			this.height=(windowHeight-44)+"px"
+			this.height=(windowHeight-44)+"px";
 			// #endif
 			// #ifdef MP
-			if (_this.index == 1) {
-				_this.marginTop = (_this.statusBarHeight + 88) + "px";
-				_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-				// _this.paddingBottom = "44px";
-				if (!_this.contentData.length) {
-					_this.loading = true;
-					_this.keyWord = '1';
-					let tabItem1 = _this.tabBars[0];
-					_this.loadList(tabItem1);
-					let tabItem2 = _this.tabBars[1];
-					_this.loadList(tabItem2);
+			uni.getSetting({
+				success(res) {
+					let authSetting=res.authSetting
+					if (!res.authSetting['scope.userInfo']) {
+						//这里调用授权
+						// console.log('当前未授权');
+						if(!_this.forecastList.length){
+							_this.getWeather("北京")
+						}
+					} else {
+						if (_this.index == 1  ) {
+							_this.marginTop = (_this.statusBarHeight + 88) + "px";
+							_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+							// _this.paddingBottom = "44px";
+							if (!_this.contentData.length) {
+								_this.loading = true;
+								_this.keyWord = _this.searchWord;
+								let tabItem1 = _this.tabBars[0];
+								_this.loadList(tabItem1);
+								let tabItem2 = _this.tabBars[1];
+								_this.loadList(tabItem2);
+							}
+						}else{
+							if(!_this.forecastList.length){
+								_this.getWeather("北京")
+							}
+						}
+						
+					}
 				}
-			}
+			});
+		
+			//监听事件
+			this.$eventHub.$on('isCanUse', (num) => {
+				uni.request({
+					url: 'https://www.gjtool.cn/download/config.json',
+					method: 'GET',
+					complete: res => {
+						if (res.statusCode == 200 && res.data) {
+							uni.setStorage({
+								key: 'config',
+								data: res.data
+							});
+							_this.index = res.data.index;
+							// #ifndef MP
+							_this.index = 1
+							// #endif
+							if(_this.index == 0){
+								if(!_this.forecastList.length){
+									_this.getWeather("北京")
+								}
+							}else{
+								_this.marginTop = (_this.statusBarHeight + 88) + "px";
+								_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+								// _this.paddingBottom = "44px";
+								if (!_this.contentData.length) {
+									_this.loading = true;
+									_this.keyWord = _this.searchWord;
+									let tabItem1 = _this.tabBars[0];
+									_this.loadList(tabItem1);
+									let tabItem2 = _this.tabBars[1];
+									_this.loadList(tabItem2);
+								}
+							}
+							if(res.data.alertText2){
+								uni.showModal({
+									title: '提示',
+									content: res.data.alertText2,
+									success: function(res) {
+										
+									}
+								});
+							}
+						}
+					}
+				});
+			})
 			// #endif
 		},
 		onNavigationBarSearchInputChanged(e) {},
@@ -311,10 +396,11 @@
 						//这里调用授权
 						// console.log('当前未授权');
 						_this.isCanUse = true;
-						_this.data ={};
-						uni.setStorageSync('userInfo',{});
-						uni.setStorageSync('isCanUse', true); //记录是否第一次授权  false:表示不是第一次授权
+						uni.setStorageSync('isCanUse', true);
 						_this.index = 0;
+						if(!_this.forecastList.length){
+							_this.getWeather("北京")
+						}
 						let option = uni.getStorageSync('config');
 						option.index = 0;
 						uni.setStorage({
@@ -334,47 +420,50 @@
 					} else {
 						//用户已经授权过了
 						_this.isCanUse = false;
-						_this.data = uni.getStorageSync("userInfo")
-						// console.log('当前已授权',_this.data );
 						_this.background = "RGB(248,249,251)"
+						uni.setStorageSync('isCanUse', false); 
+						if(_this.index ==1){
+							_this.marginTop = (_this.statusBarHeight + 88) + "px";
+							_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+						}else{
+							_this.marginTop = (_this.statusBarHeight + 44) + "px";
+						}
 						uni.getUserInfo({
 							provider: 'weixin',
 							success: function(infoRes) {
 								//获取用户信息后向调用信息更新方法
-								let nickName = infoRes.userInfo.nickName; //昵称
-								let avatarUrl = infoRes.userInfo.avatarUrl; //头像
-								_this.data = infoRes.userInfo;
-								// console.log("infoRes1",infoRes)
 								try {
-									uni.setStorageSync('userInfo', infoRes.userInfo);
-									uni.setStorageSync('isCanUse', false); //记录是否第一次授权  false:表示不是第一次授权
 									_this.isCanUse = false;
-									// _this.updateUserInfo(); //调用更新信息方法
-									uni.request({
-										url: 'https://www.gjtool.cn/download/config.json',
-										method: 'GET',
-										complete: res => {
-											if (res.statusCode == 200 && res.data) {
-												uni.setStorage({
-													key: 'config',
-													data: res.data
-												});
-												_this.index = res.data.index;
-												// #ifndef MP
-												_this.index = 1
-												// #endif
-												if(res.data.alertText2){
-													uni.showModal({
-														title: '提示',
-														content: res.data.alertText2,
-														success: function(res) {
+									// uni.request({
+									// 	url: 'https://www.gjtool.cn/download/config.json',
+									// 	method: 'GET',
+									// 	complete: res => {
+									// 		if (res.statusCode == 200 && res.data) {
+									// 			uni.setStorage({
+									// 				key: 'config',
+									// 				data: res.data
+									// 			});
+									// 			_this.index = res.data.index;
+									// 			// #ifndef MP
+									// 			_this.index = 1
+									// 			// #endif
+									// 			if(_this.index == 0){
+									// 				if(!_this.forecastList.length){
+									// 					_this.getWeather("北京")
+									// 				}
+									// 			}
+									// 			if(res.data.alertText2){
+									// 				uni.showModal({
+									// 					title: '提示',
+									// 					content: res.data.alertText2,
+									// 					success: function(res) {
 															
-														}
-													});
-												}
-											}
-										}
-									});
+									// 					}
+									// 				});
+									// 			}
+									// 		}
+									// 	}
+									// });
 								} catch (e) {}
 								
 							}
@@ -387,38 +476,8 @@
 		},
 		onHide() {},
 		onReady() {
-			/**
-			 * 启动页广告
-			 *  初始化的时机应该是在splash关闭时，否则会造成在app端广告显示了数秒后首屏才渲染出来
-			 */
-			let option = uni.getStorageSync('config');
-			if (option && !option.advert) {
-				this.timedown = 0;
-			}
-			// #ifdef MP || H5
-			this.timedown = 0;
-			// #endif
-			// #ifdef APP-PLUS
-			plus.navigator.setFullscreen(false);
-			// #endif
 			
-			// this.index = option.index;
-			// #ifdef MP
-			if (this.index == 0) {
-				this.getWeather("北京")
-			}
-			// #endif
-			// #ifndef MP
-			this.index = 1
-			// #endif
-			if (this.index == 1) {
-				this.loading = true;
-				this.keyWord = this.searchWord;
-				let tabItem1 = this.tabBars[0];
-				this.loadList(tabItem1);
-				let tabItem2 = this.tabBars[1];
-				this.loadList(tabItem2);
-			}
+			
 		},
 		methods: {
 			closeImg(e){
@@ -516,6 +575,9 @@
 				if(this.mhurlRequestList.length){
 					this.clearMhurlRequestList()
 				}
+				if (this.index == 0 ) {
+					return
+				}
 				this.loadListRequest = uni.request({
 					url: config.baseUrl + '?' + search + '=' + this.keyWord + '&_=' + new Date().getTime(),
 					method: 'GET',
@@ -575,6 +637,9 @@
 				}
 			},
 			getCover(item){
+				if (this.index == 0 ) {
+					return
+				}
 				let ysurlRequest = uni.request({
 					url: config.baseUrl,
 					data: {
@@ -629,6 +694,9 @@
 				}
 			},
 			getMhCover(item){
+				if (this.index == 0 ) {
+					return
+				}
 				let mhurlRequest = uni.request({
 					url: config.baseUrl,
 					data: {
@@ -918,6 +986,12 @@
 			border-bottom: 2px solid #000;
 		}
 	}
+	.panel-scroll-box::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		color: transparent;
+		display: none;
+	}
 
 	view {
 		display: flex;
@@ -929,20 +1003,20 @@
 		/* #ifndef MP */
 		max-width: 150px;
 		/* #endif */
-		width: 33%;
+		width: 33.3%;
 		padding: 5px;
 		border-bottom-width: 1px;
 		border-color: #eee;
 		display: flex;
 		float: left;
 		text-align: center;
-		align-items: center;
+		// align-items: center;
 		justify-content: center;
 		box-sizing: border-box;
 	}
 
 	.text-list {
-		width: 125px;
+		width: 100%;
 		height: 42px;
 		padding: 4px;
 	}
@@ -960,7 +1034,10 @@
 		flex-direction: row;
 		background-color: #fff;
 		width: 100%;
-		height: 153px;
+		// height: 153px;
+		max-height: 240px;
+		height: 306upx;
+		
 		position: relative;
 		.img-genre{
 			position: absolute;
@@ -1096,6 +1173,7 @@
 			.text{
 				color: #fff;
 				padding: 0 10px;
+				font-size: 16px;
 			}
 			.img{
 				width: 200px;

@@ -39,9 +39,9 @@ export default {
 		return {
 			list: [
 				{img: '../../static/zuijin.png', text: '最近浏览' },
-				{img:'../../static/wxlogin.png',text:'联系作者'}
+				{img:'../../static/wxlogin.png',text:'联系方式'}
 			],
-			data: uni.getStorageSync("userInfo"),
+			data:uni.getStorageSync("userInfo"),
 			SessionKey: '',
 			OpenId: '',
 			nickName: null,
@@ -52,15 +52,83 @@ export default {
 			isCanUse: uni.getStorageSync('isCanUse') //默认为true
 		};
 	},
-	onReady(){
+	onLoad() {
 		let _this = this;
 		let option = uni.getStorageSync('config');
 		this.index = option.index
 		this.text = option.text
-	},
-	onLoad() {
-		let _this = this;
 		_this.isCanUse = uni.getStorageSync('isCanUse') || true;
+		//监听事件
+		this.$eventHub.$on('isCanUse2', (num) => {
+			let option = uni.getStorageSync('config');
+			this.index = option.index;
+			if(this.index==0){
+				uni.request({
+					url: 'https://www.gjtool.cn/download/config.json',
+					method: 'GET',
+					complete: res => {
+						if (res.statusCode == 200 && res.data) {
+							uni.setStorage({
+								key: 'config',
+								data: res.data
+							});
+							_this.index = res.data.index;
+							// #ifndef MP
+							_this.index = 1
+							// #endif
+						}
+					}
+				});
+			}
+		})
+		uni.getSetting({
+			success(res) {
+				let authSetting=res.authSetting
+				if (!res.authSetting['scope.userInfo']) {
+					//这里调用授权
+					_this.isCanUse = true;
+					_this.data ={};
+					uni.setStorageSync('userInfo',{});
+					uni.setStorageSync('isCanUse', true); //记录是否第一次授权  false:表示不是第一次授权
+				} else {
+					//用户已经授权过了
+					_this.isCanUse = false;
+					_this.background = "RGB(248,249,251)";
+					uni.setStorageSync('isCanUse', false); 
+					uni.login({
+						provider: 'weixin',
+						success: function(loginRes) {
+							let code = loginRes.code;
+							uni.getUserInfo({
+								provider: 'weixin',
+								success: function(infoRes) {
+									uni.request({
+										url: 'https://www.gjtool.cn/wxlogin',
+										data: {
+											code: code
+										},
+										method: 'POST',
+										success: res => {
+											try {
+												infoRes.userInfo.session_key=res.data.session_key;
+												infoRes.userInfo.openid=res.data.openid;
+												uni.setStorageSync('userInfo', infoRes.userInfo);
+												_this.isCanUse = false;
+												_this.$eventHub.$emit('isCanUse',0)
+												_this.$eventHub.$emit('isCanUse2',0)
+											} catch (e) {}
+										},
+										error:err=>{
+											
+										}
+									});
+								}
+							});
+						}
+					})
+				}
+			}
+		});
 	},
 	onShow() {
 		let _this = this;
@@ -79,36 +147,41 @@ export default {
 				} else {
 					//用户已经授权过了
 					_this.isCanUse = false;
-					_this.data = uni.getStorageSync("userInfo")
-					_this.background = "RGB(248,249,251)"
-					uni.getUserInfo({
-						provider: 'weixin',
-						success: function(infoRes) {
-							//获取用户信息后向调用信息更新方法
-							let nickName = infoRes.userInfo.nickName; //昵称
-							let avatarUrl = infoRes.userInfo.avatarUrl; //头像
-							_this.data = infoRes.userInfo;
-							// console.log("infoRes1",infoRes)
-							try {
-								uni.setStorageSync('userInfo', infoRes.userInfo);
-								uni.setStorageSync('isCanUse', false); //记录是否第一次授权  false:表示不是第一次授权
-								_this.isCanUse = false;
-								// _this.updateUserInfo(); //调用更新信息方法
-								uni.request({
-									url: 'https://www.gjtool.cn/download/config.json',
-									method: 'GET',
-									complete: res => {
-										if (res.statusCode == 200 && res.data) {
-											uni.setStorage({
-												key: 'config',
-												data: res.data
-											});
-										}
+					_this.background = "RGB(248,249,251)";
+					uni.setStorageSync('isCanUse', false); 
+					if(!_this.data){
+						uni.login({
+							provider: 'weixin',
+							success: function(loginRes) {
+								let code = loginRes.code;
+								uni.getUserInfo({
+									provider: 'weixin',
+									success: function(infoRes) {
+										uni.request({
+											url: 'https://www.gjtool.cn/wxlogin',
+											data: {
+												code: code
+											},
+											method: 'POST',
+											success: res => {
+												try {
+													infoRes.userInfo.session_key=res.data.session_key;
+													infoRes.userInfo.openid=res.data.openid;
+													uni.setStorageSync('userInfo', infoRes.userInfo);
+													_this.isCanUse = false;
+													_this.$eventHub.$emit('isCanUse',0)
+													_this.$eventHub.$emit('isCanUse2',0)
+												} catch (e) {}
+											},
+											error:err=>{
+												
+											}
+										});
 									}
 								});
-							} catch (e) {}
-						}
-					});
+							}
+						})
+					}
 				}
 			}
 		});

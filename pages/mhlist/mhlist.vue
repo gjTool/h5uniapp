@@ -1,8 +1,8 @@
 <template>
 	<view class="content">
-	<!-- 	<uni-nav-bar :status-bar="true" left-icon="arrowleft" @click-left="back" :title="title" :background-color="'#ec706b'"
+		<!-- 	<uni-nav-bar :status-bar="true" left-icon="arrowleft" @click-left="back" :title="title" :background-color="'#ec706b'"
 		 class="uni-nav-bar" :right-text="sort" @click-right="sortlist" /> -->
-		<view class="uni-xs-list"  v-if="index==1">
+		<view class="uni-xs-list" v-if="index==1">
 			<!-- 下拉刷新组件 -->
 			<mix-pulldown-refresh ref="mixPulldownRefresh" :top="0" @refresh="onPulldownReresh" @setEnableScroll="setEnableScroll">
 				<scroll-view class="scroll" :scroll-y="enableScroll" scroll-y style="padding:20upx;">
@@ -11,10 +11,10 @@
 					</view>
 					<view class="text-view" :ref="index == num ?'active':'' " v-for="(item,index) in mhlist" :key="index" :class="{'active':index == num}"
 					 @click="itemClick(item,index)">
-						<text  class="text">{{item.num}}</text>
+						<text class="text">{{item.num}}</text>
 						<text v-show="item.state ? true:false" class="cache">已缓存</text>
 					</view>
-					
+
 					<view class="list-bottom">
 						<text>到底了～</text>
 					</view>
@@ -52,10 +52,11 @@
 				list: [],
 				sort: "升序",
 				from: "xs",
-				index:0,
-				cover:"",
-				openid:"",
-				detailData:null
+				index: 0,
+				cover: "",
+				openid: "",
+				detailData: null,
+				detailDataObj:{}
 			}
 		},
 		methods: {
@@ -63,17 +64,17 @@
 			onPulldownReresh() {
 				this.getmhlist((state) => {
 					this.$refs.mixPulldownRefresh && this.$refs.mixPulldownRefresh.endPulldownRefresh();
-					if(state == "ok"){
+					if (state == "ok") {
 						uni.showToast({
-							title:"刷新成功"
+							title: "刷新成功"
 						})
-					}else {
+					} else {
 						uni.showToast({
-							title:"刷新失败",
-							icon:"none"
+							title: "刷新失败",
+							icon: "none"
 						})
 					}
-					
+
 				})
 			},
 			//设置scroll-view是否允许滚动，在小程序里下拉刷新时避免列表可以滑动
@@ -108,18 +109,13 @@
 				})
 			},
 			itemClick(item, index) {
-				uni.setStorage({
-					key: this.openid+"mhNum" + this.url1,
-					data:{
-						num:index,
-						data:{
-							title:this.mhlist[index].num,
-							name:this.mhname,
-							cover:this.cover,
-							url:this.url1
-						}
-					} 
-				});
+				// config.setMhZJ(index, {
+				// 	title: this.mhlist[index].num,
+				// 	name: this.mhname,
+				// 	cover: this.cover,
+				// 	url: this.url1
+				// })
+
 				this.num = index;
 				try {
 					const value = uni.getStorageSync('mhShouCang');
@@ -145,11 +141,10 @@
 					this.$eventHub.$emit('changeMhContent', item, index);
 					setTimeout(() => {
 						this.back()
-					}, 100)
+					}, 300)
 				} else {
 					uni.redirectTo({
-						url: '/pages/mh/mh?src=' + encodeURIComponent(item.url) + "&name=" + encodeURIComponent(item.num) + "&mhname=" +
-							encodeURIComponent(this.mhname) + "&num=" + encodeURIComponent(this.num) + "&url=" + this.url1+ "&cover="+this.cover
+						url: '/pages/mh/mh?src=' + encodeURIComponent(item.url) + "&data="+JSON.stringify(this.detailDataObj) 
 					});
 				}
 			},
@@ -157,7 +152,7 @@
 				let _this = this;
 				// 获取屏幕高度
 				let windowHeight = uni.getSystemInfoSync().windowHeight;
-				let len = (parseInt(_this.num) + 6) * 33 - windowHeight / 2 + 64+44
+				let len = (parseInt(_this.num) + 6) * 33 - windowHeight / 2 + 64 + 44
 				len = len - windowHeight >= 0 ? len : 0
 				uni.pageScrollTo({
 					scrollTop: len,
@@ -192,7 +187,7 @@
 					}
 				});
 			},
-			getCacheState(xslist){
+			getCacheState(xslist) {
 				let _this = this;
 				let value = uni.getStorageSync('xsDownload');
 				if (value) {
@@ -200,9 +195,9 @@
 						if (value[i].name == _this.xsname) {
 							let arr = value[i].data;
 							value[i].xslist = xslist;
-							arr.forEach((item)=>{
-								xslist.forEach((obj)=>{
-									if(item.numName == obj.num && item.state == "done"){
+							arr.forEach((item) => {
+								xslist.forEach((obj) => {
+									if (item.numName == obj.num && item.state == "done") {
 										obj.state = "done";
 									}
 								})
@@ -211,18 +206,17 @@
 							break;
 						}
 					}
-					uni.setStorageSync('xsDownload',value);
+					uni.setStorageSync('xsDownload', value);
 				}
 			}
 		},
 		onNavigationBarButtonTap(val) {
-			if (val.index == 1) {
-			}
+			if (val.index == 1) {}
 			if (val.index == 0) {
 				this.sortlist()
 			}
 		},
-		onReady(){
+		onReady() {
 			let option = uni.getStorageSync('config');
 			this.index = option.index
 			// #ifndef MP
@@ -232,7 +226,8 @@
 		onLoad(options) {
 			let _this = this;
 			this.openid = uni.getStorageSync("userInfo").openid;
-			this.detailData =  JSON.parse(options.data);
+			this.detailData = JSON.parse(options.data);
+			this.detailDataObj = JSON.parse(options.obj);
 			this.mhname = decodeURIComponent(this.detailData.mhname);
 			this.num = decodeURIComponent(this.detailData.num);
 			this.from = decodeURIComponent(this.detailData.from);
@@ -242,7 +237,7 @@
 			uni.setNavigationBarTitle({
 				title: this.title
 			});
-		
+
 			_this.mhlist = uni.getStorageSync('mhlist' + this.url1);
 			// _this.getCacheState(_this.mhlist)
 			setTimeout(() => {
@@ -262,6 +257,12 @@
 	.content .uni-xs-list .scroll {
 		background-color: #FFFFFF;
 	}
+	.content .uni-xs-list .scroll::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		color: transparent;
+		display: none;
+	}	 
 
 	.active {
 		color: #007AFF;
@@ -287,7 +288,8 @@
 		font-size: 14px;
 		position: relative;
 		padding-right: 50px;
-		.cache{
+
+		.cache {
 			position: absolute;
 			top: 6px;
 			right: 0;

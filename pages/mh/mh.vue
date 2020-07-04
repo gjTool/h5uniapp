@@ -5,22 +5,23 @@
 		<!-- <view class="text-item text-item-top" v-show="!show" :class="{ black: black }">
 		 	<text>{{title}}</text>
 		 </view> -->
-		 <view  v-if="index==1" @touchmove="handletouchmove" @touchstart="handletouchstart" @touchend="handletouchend" class="scroll" id="scrollview"
-		  :class="{ black: black }" >
-		 	<view class="scroll-content">
+		<view v-if="index==1" @touchmove="handletouchmove" @touchstart="handletouchstart" @touchend="handletouchend" class="scroll"
+		 id="scrollview" :class="{ black: black }">
+			<view class="scroll-content">
 				<view class="img-list" v-for="(item,index) in list" :key="index">
-					<image class="img" mode="widthFix" :src="item.img" @error="imgError(item)"  lazy-load="true" show-menu-by-longpress></image>
+					<image class="img" mode="widthFix" :src="item.img" @error="imgError(item)" @load="imgLoad" lazy-load="true"
+					 show-menu-by-longpress></image>
 				</view>
-		 		<!-- <movable-area scale-area >
+				<!-- <movable-area scale-area >
 		 			<movable-view scale :x="x" :y="y" direction="all" >
 		 				
 		 			</movable-view>
 		 		</movable-area> -->
-		 		<!-- 加载图标 -->
-		 		<mixLoading class="mix-loading" v-if="loading"></mixLoading>
-		 	</view>
-		 </view>
-		 
+				<!-- 加载图标 -->
+				<mixLoading class="mix-loading" v-if="loading"></mixLoading>
+			</view>
+		</view>
+
 
 		<!-- <view class="text-item  text-item-bottom" v-show="!show" :class="{ black: black }">
 			<battery class="battery" :proQuantity="level"></battery>
@@ -71,17 +72,17 @@
 				xsurl2Request: null,
 				scrollTimer: null,
 				scrollTopTotal: 0,
-				index:0,
+				index: 0,
 				style: {
 					pageHeight: 0,
 					contentViewHeight: 0,
 					footViewHeight: 0,
 					mitemHeight: 0
 				},
-				platform:"",
-				main:null,
-				Intent:null,
-				IntentFilter:null,
+				platform: "",
+				main: null,
+				Intent: null,
+				IntentFilter: null,
 				UIDevice: null,
 				battery: {}, //电池对象
 				level: 100, //电量百分比 
@@ -94,19 +95,19 @@
 				lastY: 0,
 				ditance: 120, //滑动的判定距离
 				cover: "",
-				x:0,
-				y:0,
-				currentWebview:null,
-				titleNView:null,
-				openid:""
+				x: 0,
+				y: 0,
+				currentWebview: null,
+				titleNView: null,
+				openid: "",
+				detailData: {}
 			}
 		},
 		onNavigationBarButtonTap(e) {
 			if (e.index == 0) {
 				this.gotomhlist();
 			}
-			if (e.index == 1) {
-			}
+			if (e.index == 1) {}
 		},
 		created() {
 			const res = uni.getSystemInfoSync(); //获取手机可使用窗口高度     api为获取系统信息同步接口
@@ -115,15 +116,22 @@
 			this.platform = uni.getSystemInfoSync().platform
 		},
 		methods: {
+			imgLoad() {
+				this.loading = false
+			},
 			imgError(item) {
 				item.img = '/static/404.jpg';
+				uni.showToast({
+					title: "加载图片出现错误",
+					icon: 'none'
+				})
 			},
 			back() {
 				uni.navigateBack({
 					delta: 1
 				})
 			},
-			prev(){
+			prev() {
 				let _this = this;
 				if (_this.num <= 0) {
 					uni.showToast({
@@ -144,8 +152,9 @@
 					this.url = this.mhlist[this.num].url
 					this.reloadContent()
 				}, 0);
+
 			},
-			next(){
+			next() {
 				let _this = this;
 				if (_this.num >= this.mhlist.length - 1) {
 					uni.showToast({
@@ -168,7 +177,7 @@
 					this.reloadContent()
 				}, 0);
 			},
-			download(){
+			download() {
 				uni.showToast({
 					title: '点击了下载',
 					icon: 'none'
@@ -176,14 +185,14 @@
 			},
 			gotomhlist() {
 				let data = {
-					mhname:this.title,
-					num:this.num,
-					from:"mh",
-					url:this.detailData.url,
-					cover:this.detailData.cover
+					mhname: this.title,
+					num: this.num,
+					from: "mh",
+					url: this.url1,
+					cover: this.cover
 				}
 				uni.navigateTo({
-					url: `/pages/mhlist/mhlist?data=${JSON.stringify(data)}`
+					url: `/pages/mhlist/mhlist?data=${JSON.stringify(data)}&obj=${JSON.stringify(this.detailData)}`
 				});
 			},
 			scrollClick() {
@@ -233,7 +242,7 @@
 				let _this = this;
 				_this.getTIme();
 				// #ifdef APP-PLUS
-				if(this.platform == "ios"){
+				if (this.platform == "ios") {
 					let dev = _this.UIDevice.currentDevice();
 					if (!dev.isBatteryMonitoringEnabled()) {
 						dev.setBatteryMonitoringEnabled(true);
@@ -244,7 +253,7 @@
 					} else {
 						_this.level = Math.round(level);
 					}
-				}else{
+				} else {
 					let recevier = plus.android.implements('io.dcloud.feature.internal.reflect.BroadcastReceiver', {
 						onReceive: function(context, intent) {
 							let action = intent.getAction();
@@ -264,26 +273,21 @@
 				}
 				// #endif
 			},
-			reloadContent(){
+			reloadContent() {
 				let _this = this;
 				let num = this.num
 				num = parseInt(num)
-				this.title  = this.mhlist[num].num;
+				this.title = this.mhlist[num].num;
 				uni.setNavigationBarTitle({
-				    title: this.title 
+					title: this.title
 				});
-				uni.setStorage({
-					key: this.openid+'mhNum' + this.url1,
-					data: {
-						num:num,
-						data:{
-							title:this.title,
-							name:this.mhname,
-							cover:this.cover,
-							url:this.url1
-						}
-					} 
-				});
+				this.detailData.title = this.title;
+				this.detailData.num = num;
+				this.detailData.Time = new Date().getTime();
+				this.detailData.saveTime = config.getDate("/");
+				config.setMhZJ(num, this.detailData)
+
+				this.$eventHub.$emit('changeMhNum', num);
 				try {
 					const value = uni.getStorageSync('mhShouCang');
 					if (value) {
@@ -311,13 +315,12 @@
 					},
 					method: "GET",
 					complete: (res) => {
-						this.loading = false
 						if (res.statusCode == 200 && res.data && res.data.code == 0) {
 							this.list = res.data.list;
-							if(!this.list.length){
+							if (!this.list.length) {
 								uni.showToast({
-									title:"获取漫画数据失败",
-									icon:"none"
+									title: "获取漫画数据失败",
+									icon: "none"
 								})
 							}
 							setTimeout(() => {
@@ -326,20 +329,20 @@
 									duration: 0
 								})
 							}, 0)
-						}else{
+
+						} else {
 							uni.showToast({
-								title:"获取漫画数据失败",
-								icon:"none"
+								title: "获取漫画数据失败",
+								icon: "none"
 							})
 						}
-						this.loading = false
 					}
 				});
 			},
 			handletouchmove: function(event) {
 				clearTimeout(this.handletouchmoveTimer)
 				this.handletouchmoveTimer = setTimeout(() => {
-					if(event.changedTouches || event.changedTouches[0]){
+					if (event.changedTouches || event.changedTouches[0]) {
 						return
 					}
 					let currentX = event.changedTouches[0].pageX;
@@ -386,13 +389,13 @@
 				}, 300)
 			},
 			handletouchstart: function(event) {
-				if(event.changedTouches && event.changedTouches[0]){
+				if (event.changedTouches && event.changedTouches[0]) {
 					this.lastX = event.changedTouches[0].pageX;
 					this.lastY = event.changedTouches[0].pageY;
 				}
 			},
 			handletouchend: function(event) {
-			
+
 			}
 		},
 		//监听页面滚动
@@ -433,7 +436,7 @@
 				default:
 					// #ifdef H5
 					_this.battery = navigator.battery || navigator.mozBattery || navigator.webkitBattery;
-		
+
 					function updateBatteryStatus(info) {
 						_this.level = _this.battery.level * 100;
 						_this.getTIme()
@@ -455,18 +458,30 @@
 			// plus.navigator.setFullscreen(false);
 			// #endif
 		},
+		onShow(){
+			let _this = this;
+			setTimeout(()=>{
+				_this.mhlist = uni.getStorageSync('mhlist' + this.url1);
+				this.title =_this.mhlist[this.num].num;
+				uni.setNavigationBarTitle({
+					title: this.title
+				});
+			},300)
+		},
 		onLoad(options) {
 			let _this = this;
 			this.openid = uni.getStorageSync("userInfo").openid;
-			this.title = decodeURIComponent(options.name);
+			this.detailData = JSON.parse(options.data);
+
+			this.title = this.detailData.title;
 			this.url = decodeURIComponent(options.src);
-			this.mhname = decodeURIComponent(options.mhname);
-			this.cover = decodeURIComponent(options.cover);
-			this.num = decodeURIComponent(options.num);
-			this.url1 = decodeURIComponent(options.url);
+			this.mhname = this.detailData.name;
+			this.cover = this.detailData.cover;
+			this.num = this.detailData.num ? this.detailData.num :0;
+			this.url1 = this.detailData.url;
 			_this.mhlist = uni.getStorageSync('mhlist' + this.url1);
 			uni.setNavigationBarTitle({
-			    title: this.title 
+				title: this.title
 			});
 			setTimeout(() => {
 				uni.request({
@@ -494,7 +509,7 @@
 				});
 			}, 100)
 			this.reloadContent();
-			
+
 			//监听事件
 			this.$eventHub.$on('changeMhContent', (data, index) => {
 				this.title = data.num;
@@ -502,7 +517,7 @@
 					title: this.title
 				});
 				this.num = index;
-				this.url =  data.url;
+				this.url = data.url;
 				this.reloadContent();
 			});
 		},
@@ -511,59 +526,67 @@
 
 <style lang="scss">
 	.img-list {
-		width:750upx;
+		width: 750upx;
 	}
-	.img{
-		width:750upx;
+
+	.img {
+		width: 750upx;
 		will-change: transform;
 		display: block;
 	}
-	.content{
+
+	.content {
 		display: flex;
 		flex-direction: column;
 		background: #fff;
 	}
+
 	.scroll {
 		flex: 1;
 		justify-content: center;
 		align-items: center;
 	}
-	
+	.scroll::-webkit-scrollbar {
+		width: 0;
+		height: 0;
+		color: transparent;
+		display: none;
+	}	 
 	.scroll-content {
 		display: flex;
 		flex-direction: column;
 		background-color: #007AFF;
 	}
-	
+
 	.text-item {
 		padding: 0 6px;
 		text-indent: 16px;
 		font-size: 18px;
 	}
-	
+
 	.text-item.text-grey {
 		color: #444;
 		font-size: 14px;
 		text-indent: 0px;
 		text-align: center;
 	}
-	
+
 	.text-item.black {
 		color: #555;
 	}
-	
+
 	.scroll,
 	.uni-scroll-view,
 	.scroll-content {
 		background-color: transparent;
 	}
-	
+
 	.scroll.black,
 	.uni-scroll-view.black,
 	.scroll-content.black {
 		background-color: #070707;
 	}
-	
+
 	.bottom-tools {
 		width: 100%;
 		// height: 44px;
@@ -577,28 +600,28 @@
 		justify-content: space-between;
 		align-items: center;
 		transition: all 0.1s;
-	
+
 		.bottom-button {
 			color: #ffffff !important;
 			border: 1px solid #ffffff !important;
 		}
 	}
-	
+
 	.bottom-tools.hide {
 		transform: translateY(100%);
 	}
-	
+
 	.bottom-tools.sow {
 		transform: translateY(0);
 	}
-	
+
 	.text-item-top {
 		position: fixed;
 		top: 0;
 		left: 0;
 		width: 100%;
 		height: 20px;
-		background-color:transparent;
+		background-color: transparent;
 		z-index: 1;
 		font-size: 12px;
 		color: #555555;
@@ -607,7 +630,7 @@
 		text-overflow: ellipsis;
 		text-indent: 0px;
 	}
-	
+
 	.text-item-bottom {
 		position: fixed;
 		bottom: 0;
@@ -619,12 +642,12 @@
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
-	
+
 		.battery {
 			font-size: 10px;
 			margin-right: 30px;
 		}
-	
+
 		.time {
 			font-size: 12px;
 			color: #555555;
@@ -634,11 +657,12 @@
 			top: 0;
 			left: 0;
 		}
-		.time.android{
+
+		.time.android {
 			top: 4px;
 		}
 	}
-	
+
 	.text-item-top.black,
 	.text-item-bottom.black {
 		background-color: #070707;

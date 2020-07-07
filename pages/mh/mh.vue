@@ -100,6 +100,7 @@
 				currentWebview: null,
 				titleNView: null,
 				openid: "",
+				obj:{},
 				detailData: {}
 			}
 		},
@@ -468,6 +469,13 @@
 				});
 			},300)
 		},
+		onShareAppMessage(res) {
+		  return {
+			title: "["+this.obj.status+"漫画]"+this.mhname+" "+this.title,
+			imageUrl:this.detailData.cover,
+			path: '/pages/mh/mh?src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
+		  }
+		},
 		onLoad(options) {
 			let _this = this;
 			this.openid = uni.getStorageSync("userInfo").openid;
@@ -493,6 +501,7 @@
 					complete: res => {
 						if (res.statusCode == 200 && res.data && res.data.code == 0) {
 							let data = res.data.list;
+							_this.obj = res.data.data
 							_this.mhlist = data;
 							// _this.getCacheState(data)
 							try {

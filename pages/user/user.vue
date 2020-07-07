@@ -34,6 +34,7 @@
 </template>
 
 <script>
+	import config from '@/config';
 export default {
 	data() {
 		return {
@@ -49,22 +50,29 @@ export default {
 			background:"#fff",
 			index:uni.getStorageSync('config').index,
 			text:"",
-			isCanUse: uni.getStorageSync('isCanUse') //默认为true
+			isCanUse: uni.getStorageSync('isCanUse'), //默认为true
+			configTimer:null
 		};
+	},
+	onShareAppMessage(res) {
+	  return {
+		title: "[免费vip影视]登陆即可观看" ,
+		imageUrl:"/static/share.jpg",
+		path: '/pages/home/home'
+	  }
 	},
 	onLoad() {
 		let _this = this;
 		let option = uni.getStorageSync('config');
 		this.index = option.index
 		this.text = option.text
-		_this.isCanUse = uni.getStorageSync('isCanUse') || true;
 		//监听事件
 		this.$eventHub.$on('isCanUse2', (num) => {
 			let option = uni.getStorageSync('config');
 			this.index = option.index;
 			if(this.index==0){
 				uni.request({
-					url: 'https://www.gjtool.cn/download/config.json',
+					url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
 					method: 'GET',
 					complete: res => {
 						if (res.statusCode == 200 && res.data) {
@@ -85,7 +93,7 @@ export default {
 			success(res) {
 				let authSetting=res.authSetting
 				if (!res.authSetting['scope.userInfo']) {
-					//这里调用授权
+					//未授权
 					_this.isCanUse = true;
 					_this.data ={};
 					uni.setStorageSync('userInfo',{});
@@ -132,9 +140,19 @@ export default {
 	},
 	onShow() {
 		let _this = this;
+		let option = uni.getStorageSync('config');
+		
+		_this.text = option.text
 		_this.isCanUse = uni.getStorageSync('isCanUse');
 		_this.data = uni.getStorageSync("userInfo");
+		if(_this.isCanUse===false){
+			_this.index = option.index;
+		}else{
+			_this.index = 0;
+		}
 		// #ifdef MP-WEIXIN
+		clearTimeout(config.configTimer)
+		
 		uni.getSetting({
 			success(res) {
 				let authSetting=res.authSetting
@@ -183,6 +201,30 @@ export default {
 						})
 					}
 				}
+				
+				config.configTimer = setTimeout(()=>{
+					uni.request({
+						url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
+						method: 'GET',
+						complete: res => {
+							if (res.statusCode == 200 && res.data) {
+								uni.setStorage({
+									key: 'config',
+									data: res.data
+								});
+								if(!_this.isCanUse){
+									_this.index = res.data.index;
+									_this.text = res.data.text
+									// #ifndef MP
+									_this.index = 1
+									// #endif
+								}else{
+									_this.index = 0
+								}
+							}
+						}
+					});
+				},3000)
 			}
 		});
 		//#endif

@@ -210,7 +210,7 @@
 				tabCurrentIndex: 0, //当前选项卡索引
 				scrollLeft: 0, //顶部选项卡左滑距离
 				enableScroll: true,
-				contentData: {},
+				contentData:[],
 				loading: false,
 				first: false,
 				keyWord: '',
@@ -231,8 +231,9 @@
 				ysurlRequestList:[],
 				mhurlRequest:null,
 				mhurlRequestList:[],
-				searchWord:"20",
-				openid:""
+				searchWord:uni.getStorageSync('config').searchWord || "2020",
+				openid:"",
+				configTimer:null
 			};
 		},
 		computed: {
@@ -245,6 +246,13 @@
 				// return arr[Math.floor(Math.random() * 3)]
 			}
 		},
+		onShareAppMessage(res) {
+		  return {
+			title: "[免费vip影视]登陆即可观看" ,
+			imageUrl:"/static/share.jpg",
+			path: '/pages/home/home'
+		  }
+		},
 		async onLoad() {
 			let _this = this;
 			/**
@@ -255,6 +263,7 @@
 			if (option && !option.advert) {
 				this.timedown = 0;
 			}
+			_this.isCanUse = uni.getStorageSync('isCanUse');
 			// #ifdef MP || H5
 			this.timedown = 0;
 			// #endif
@@ -268,10 +277,22 @@
 			// 获取状态栏高度
 			this.statusBarHeight = uni.getSystemInfoSync().statusBarHeight;
 			// #ifdef MP
+			_this.index = option.index;
 			this.top = (this.statusBarHeight + 44) + "px";
 			this.marginTop = (this.statusBarHeight + 78) + "px";
-			if (this.index == 0) {
-				this.marginTop = (this.statusBarHeight + 44) + "px";
+			if(_this.index ==1){
+				_this.marginTop = (_this.statusBarHeight + 88) + "px";
+				_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+				if(!_this.isCanUse){
+					_this.loading = true;
+					_this.keyWord = _this.searchWord;
+					let tabItem1 = _this.tabBars[0];
+					_this.loadList(tabItem1);
+					let tabItem2 = _this.tabBars[1];
+					_this.loadList(tabItem2);
+				}
+			}else{
+				_this.marginTop = (_this.statusBarHeight + 44) + "px";
 			}
 			// #endif
 			// #ifdef H5
@@ -299,8 +320,13 @@
 				success(res) {
 					let authSetting=res.authSetting
 					if (!res.authSetting['scope.userInfo']) {
+						_this.index = 0;
+						_this.isCanUse = true;
+						uni.setStorageSync('userInfo',{});
+						uni.setStorageSync('isCanUse', true); 
 						//这里调用授权
 						// console.log('当前未授权');
+						_this.marginTop = (_this.statusBarHeight + 44) + "px";
 						if(!_this.forecastList.length){
 							_this.getWeather("北京")
 						}
@@ -308,7 +334,6 @@
 						if (_this.index == 1  ) {
 							_this.marginTop = (_this.statusBarHeight + 88) + "px";
 							_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-							// _this.paddingBottom = "44px";
 							if (!_this.contentData.length) {
 								_this.loading = true;
 								_this.keyWord = _this.searchWord;
@@ -318,6 +343,7 @@
 								_this.loadList(tabItem2);
 							}
 						}else{
+							_this.marginTop = (_this.statusBarHeight + 44) + "px";
 							if(!_this.forecastList.length){
 								_this.getWeather("北京")
 							}
@@ -330,7 +356,7 @@
 			//监听事件
 			this.$eventHub.$on('isCanUse', (num) => {
 				uni.request({
-					url: 'https://www.gjtool.cn/download/config.json',
+					url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
 					method: 'GET',
 					complete: res => {
 						if (res.statusCode == 200 && res.data) {
@@ -342,7 +368,9 @@
 							// #ifndef MP
 							_this.index = 1
 							// #endif
+							
 							if(_this.index == 0){
+								_this.marginTop = (_this.statusBarHeight + 44) + "px";
 								if(!_this.forecastList.length){
 									_this.getWeather("北京")
 								}
@@ -362,6 +390,7 @@
 							if(res.data.alertText2){
 								uni.showModal({
 									title: '提示',
+									showCancel:false,
 									content: res.data.alertText2,
 									success: function(res) {
 										
@@ -385,10 +414,20 @@
 		onShow() {
 			let _this = this;
 			this.openid = uni.getStorageSync("userInfo").openid;
+			let option = uni.getStorageSync('config');
+			_this.isCanUse = uni.getStorageSync('isCanUse');
+			// if(_this.isCanUse===false){
+			// 	_this.index = option.index;
+			// }else{
+			// 	_this.index = 0;
+			// }
+			
 			// #ifdef APP-PLUS
 			plus.navigator.setFullscreen(false);
 			// #endif
 			// #ifdef MP-WEIXIN
+			clearTimeout(config.configTimer)
+			
 			uni.getSetting({
 				success(res) {
 					let authSetting=res.authSetting
@@ -411,6 +450,7 @@
 						if(option.alertText2){
 							uni.showModal({
 								title: '提示',
+								showCancel:false,
 								content: option.alertText2,
 								success: function(res) {
 									
@@ -434,41 +474,50 @@
 								//获取用户信息后向调用信息更新方法
 								try {
 									_this.isCanUse = false;
-									// uni.request({
-									// 	url: 'https://www.gjtool.cn/download/config.json',
-									// 	method: 'GET',
-									// 	complete: res => {
-									// 		if (res.statusCode == 200 && res.data) {
-									// 			uni.setStorage({
-									// 				key: 'config',
-									// 				data: res.data
-									// 			});
-									// 			_this.index = res.data.index;
-									// 			// #ifndef MP
-									// 			_this.index = 1
-									// 			// #endif
-									// 			if(_this.index == 0){
-									// 				if(!_this.forecastList.length){
-									// 					_this.getWeather("北京")
-									// 				}
-									// 			}
-									// 			if(res.data.alertText2){
-									// 				uni.showModal({
-									// 					title: '提示',
-									// 					content: res.data.alertText2,
-									// 					success: function(res) {
-															
-									// 					}
-									// 				});
-									// 			}
-									// 		}
-									// 	}
-									// });
 								} catch (e) {}
 								
 							}
 						});
 					}
+					config.configTimer = setTimeout(()=>{
+						uni.request({
+							url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
+							method: 'GET',
+							complete: res => {
+								if (res.statusCode == 200 && res.data) {
+									uni.setStorage({
+										key: 'config',
+										data: res.data
+									});
+									if(!_this.isCanUse){
+										_this.index = res.data.index;
+										_this.text = res.data.text
+										// #ifndef MP
+										_this.index = 1
+										// #endif
+									}else{
+										_this.index = 0
+									}
+									if(_this.index == 0){
+										_this.marginTop = (_this.statusBarHeight + 44) + "px";
+										if(!_this.forecastList.length){
+											_this.getWeather("北京")
+										}
+									}else{
+										_this.marginTop = (_this.statusBarHeight + 88) + "px";
+										_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+									}
+									uni.showModal({
+										title: '提示',
+										showCancel:false,
+										content: res.data.alertText2,
+										success: function(res) {
+										}
+									});
+								}
+							}
+						});
+					},3000)
 				}
 			});
 			//#endif

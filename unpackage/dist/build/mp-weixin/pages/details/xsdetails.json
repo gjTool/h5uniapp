@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "小说详情",
-  "usingComponents": {
-    "mix-loading": "/components/mix-loading/mix-loading",
-    "uni-icons": "/components/uni-icons/uni-icons",
-    "uni-nav-bar": "/components/uni-nav-bar/uni-nav-bar"
-  }
-}

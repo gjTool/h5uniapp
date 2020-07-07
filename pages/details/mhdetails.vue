@@ -77,6 +77,13 @@
 			this.index = 1
 			// #endif
 		},
+		onShareAppMessage(res) {
+		  return {
+			title: "["+this.obj.status+"漫画]"+this.title ,
+			imageUrl:this.detailData.cover,
+			path: '/pages/details/mhdetails?data='+JSON.stringify(this.detailData)
+		  }
+		},
 		onLoad(options) {
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);

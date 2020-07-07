@@ -3,7 +3,7 @@ let baseUrl = value;
 baseUrl = "https://www.gjtool.cn/py"
 uni.setStorageSync('baseUrl', baseUrl);
 uni.request({
-	url: 'https://www.gjtool.cn/download/config.json',
+	url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
 	method: 'GET',
 	complete: res => {
 		if (res.statusCode == 200 && res.data) {
@@ -212,6 +212,7 @@ let getDate = function(w) {
 		return obj.y + '年' + obj.m + '月' + obj.d + '日' + '星期' + obj.w + ' ' + obj.h + ':' + obj.mi + ':' + obj.s
 	}
 }
+let configTimer=-1;
 export default {
 	baseUrl,
 	alert,
@@ -221,5 +222,6 @@ export default {
 	getYsZJ,
 	getYsZJnum,
 	setYsZJ,
-	getDate
+	getDate,
+	configTimer
 }

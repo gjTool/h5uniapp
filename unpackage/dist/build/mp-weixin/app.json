@@ -2,17 +2,15 @@
   "pages": [
     "pages/home/home",
     "pages/index/index",
-    "pages/download/download",
-    "pages/gonggao/gonggao",
     "pages/details/details",
     "pages/video/video",
+    "pages/details/detailsMP",
     "pages/details/mhdetails",
-    "pages/details/xsdetails",
     "pages/mh/mh",
-    "pages/xs/xs",
-    "pages/xslist/xslist",
     "pages/mhlist/mhlist",
-    "pages/details/detailsMP"
+    "pages/user/user",
+    "pages/login/login",
+    "pages/lx/lx"
   ],
   "subPackages": [],
   "window": {
@@ -35,13 +33,14 @@
         "text": "首页"
       },
       {
-        "pagePath": "pages/index/index",
+        "pagePath": "pages/user/user",
         "iconPath": "static/tab-shoucang.png",
         "selectedIconPath": "static/tab-shoucang-current.png",
         "text": "我的"
       }
     ]
   },
+  "permission": {},
   "usingComponents": {},
   "sitemapLocation": "sitemap.json"
 }

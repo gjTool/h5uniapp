@@ -3,7 +3,7 @@
 		<view class="video-box" v-if="index==1">
 			<video id="myVideo" :title="videoTitle" class="myVideo" autoplay :src="src" controls show-casting-button direction="90"
 			 show-mute-btn enable-play-gesture enable-progress-gesture show-screen-lock-button @touchstart="mytouchstart"
-			 @loadedmetadata="loadedmetadata" @longtap="mylongtap" @touchend="mytouchend" vslide-gesture-in-fullscreen
+			 @loadedmetadata="loadedmetadata" @longtap="mylongtap" @play="myplay" @touchend="mytouchend" vslide-gesture-in-fullscreen
 			 @timeupdate="mytimeupdate" @controlstoggle="mycontrolstoggle" @fullscreenchange="myfullscreenchange">
 				<view class="rate" @click="rateBtn" v-show="rateShow">x{{Rate===1?"1.0":Rate===2?"2.0":Rate}}</view>
 				<view class="rate-list-box" v-show="rateListShow" @click="closeratelist">
@@ -133,7 +133,8 @@
 				xuanjiListShow: false,
 				openid: "",
 				timeupdateTimer: null,
-				xunjiif:true
+				xunjiif:true,
+				jindu:false
 			};
 		},
 		onReady: function(res) {
@@ -160,6 +161,13 @@
 			}
 		},
 		onUnload() {},
+		onShareAppMessage(res) {
+		  return {
+			title:  "["+this.detailData.genre+"]"+this.title,
+			imageUrl:this.detailData.cover,
+			path: '/pages/details/detailsMP?data='+JSON.stringify(this.detailData)
+		  }
+		},
 		onLoad(options) {
 			// #ifndef MP-ALIPAY
 			this.videoContext = uni.createVideoContext('myVideo')
@@ -169,14 +177,12 @@
 			// #ifndef MP
 			this.index = 1
 			// #endif
-		
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
 			this.title = this.detailData.name
 			uni.setNavigationBarTitle({
 				title: this.detailData.name
 			});
-			
 			uni.request({
 				url: config.baseUrl,
 				data: {
@@ -236,12 +242,9 @@
 
 						let item = this.list[0];
 						this.videoTitle = this.title + " " + item.num;
-						
 						let op = config.getYsZJnum(this.detailData.url);
 						this.num = op.num ? op.num : 0;
-						if(op.currentTime){
-							this.videoContext.seek(op.currentTime);
-						}
+						
 						if (
 							this.list.length <= 4 &&
 							this.detailData.genre.indexOf('综艺') == -1 &&
@@ -279,6 +282,15 @@
 					result = "" + parseInt(hour) + "小时" + result;
 				}
 				return result;
+			},
+			myplay(){
+				if(!this.jindu){
+					this.jindu = true;
+					let op = config.getYsZJnum(this.detailData.url);
+					if(op.currentTime){
+						this.videoContext.seek(op.currentTime);
+					}
+				}
 			},
 			//数据加载
 			loadedmetadata() {
@@ -397,6 +409,7 @@
 			playClick() {},
 			videoErrorCallback(e) {},
 			back() {
+				this.jindu = false;
 				uni.navigateBack({
 					delta: 1
 				})
@@ -646,7 +659,7 @@
 				display: block;
 				height: 30px;
 				line-height: 30px;
-				margin-top: 6px;
+				margin-top: 30px;
 			}
 
 			.rate-item {
@@ -702,7 +715,7 @@
 			height: 100%;
 			background-color: rgba(0, 0, 0, 1);
 			white-space: pre-wrap;
-			padding: 10px 10px;
+			padding: 20px 10px 10px 10px;
 			overflow-y: scroll;
 			-webkit-overflow-scrolling: touch;
 

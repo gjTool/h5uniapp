@@ -31,7 +31,7 @@
 			this.imgList = option.imgList;
 			if(this.index== 1){
 				uni.request({
-					url: 'https://www.gjtool.cn/download/config.json',
+					url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
 					method: 'GET',
 					complete: res => {
 						if (res.statusCode == 200 && res.data) {

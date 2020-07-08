@@ -79,7 +79,7 @@
 		},
 		onShareAppMessage(res) {
 		  return {
-			title: "["+this.obj.status+"漫画]"+this.title ,
+			title: "[漫画]"+this.title ,
 			imageUrl:this.detailData.cover,
 			path: '/pages/details/mhdetails?data='+JSON.stringify(this.detailData)
 		  }

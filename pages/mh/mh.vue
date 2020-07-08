@@ -471,7 +471,7 @@
 		},
 		onShareAppMessage(res) {
 		  return {
-			title: "["+this.obj.status+"漫画]"+this.mhname+" "+this.title,
+			title: "[漫画]"+this.mhname+" "+this.title,
 			imageUrl:this.detailData.cover,
 			path: '/pages/mh/mh?src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
 		  }

@@ -205,6 +205,11 @@
 						name: '漫画',
 						id: '1',
 						contentList: []
+					},
+					{
+						name: '小说',
+						id: '2',
+						contentList: []
 					}
 				],
 				tabCurrentIndex: 0, //当前选项卡索引
@@ -242,8 +247,6 @@
 			},
 			advertImgUrl() {
 				return '/static/advert/1.jpg';
-				// let arr = ["/static/advert/1.jpg", "/static/advert/2.jpg", "/static/advert/3.jpg"]
-				// return arr[Math.floor(Math.random() * 3)]
 			}
 		},
 		onShareAppMessage(res) {
@@ -252,6 +255,13 @@
 			imageUrl:"/static/share.jpg",
 			path: '/pages/home/home'
 		  }
+		},
+		onShareTimeline(){
+			return {
+				title: "[免费vip影视]登陆即可观看" ,
+				imageUrl:"/static/share.jpg",
+				query: ''
+			}
 		},
 		async onLoad() {
 			let _this = this;
@@ -290,6 +300,8 @@
 					_this.loadList(tabItem1);
 					let tabItem2 = _this.tabBars[1];
 					_this.loadList(tabItem2);
+					let tabItem3 = _this.tabBars[2];
+					_this.loadList(tabItem3);
 				}
 			}else{
 				_this.marginTop = (_this.statusBarHeight + 44) + "px";
@@ -306,6 +318,8 @@
 			_this.loadList(tabItem1);
 			let tabItem2 = _this.tabBars[1];
 			_this.loadList(tabItem2);
+			let tabItem3 = _this.tabBars[2];
+			_this.loadList(tabItem3);
 			// #endif
 			if (windowWidth >= 768) {
 				this.ipad = true;
@@ -341,6 +355,8 @@
 								_this.loadList(tabItem1);
 								let tabItem2 = _this.tabBars[1];
 								_this.loadList(tabItem2);
+								let tabItem3 = _this.tabBars[2];
+								_this.loadList(tabItem3);
 							}
 						}else{
 							_this.marginTop = (_this.statusBarHeight + 44) + "px";
@@ -364,6 +380,11 @@
 								key: 'config',
 								data: res.data
 							});
+							if(res.data.baseUrl){
+								uni.setStorageSync('baseUrl', res.data.baseUrl);
+							}else{
+								uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
+							}
 							_this.index = res.data.index;
 							// #ifndef MP
 							_this.index = 1
@@ -385,6 +406,8 @@
 									_this.loadList(tabItem1);
 									let tabItem2 = _this.tabBars[1];
 									_this.loadList(tabItem2);
+									let tabItem3 = _this.tabBars[2];
+									_this.loadList(tabItem3);
 								}
 							}
 							if(res.data.alertText2){
@@ -489,6 +512,11 @@
 										key: 'config',
 										data: res.data
 									});
+									if(res.data.baseUrl){
+										uni.setStorageSync('baseUrl', res.data.baseUrl);
+									}else{
+										uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
+									}
 									if(!_this.isCanUse){
 										_this.index = res.data.index;
 										_this.text = res.data.text
@@ -555,9 +583,12 @@
 					if(this.tabCurrentIndex == 0){
 						let tabItem1 = this.tabBars[0];
 						this.loadList(tabItem1);
-					}else{
+					}else if(this.tabCurrentIndex == 1){
 						let tabItem2 = this.tabBars[1];
 						this.loadList(tabItem2);
+					}else if(this.tabCurrentIndex == 2){
+						let tabItem3 = this.tabBars[2];
+						this.loadList(tabItem3);
 					}
 				} else {
 					this.getWeather(this.keyWord)
@@ -628,7 +659,7 @@
 					return
 				}
 				this.loadListRequest = uni.request({
-					url: config.baseUrl + '?' + search + '=' + this.keyWord + '&_=' + new Date().getTime(),
+					url: uni.getStorageSync('baseUrl')+ '?' + search + '=' + this.keyWord + '&_=' + new Date().getTime(),
 					method: 'GET',
 					complete: res => {
 						if (res.statusCode == 200 && res.data && res.data.code == 0) {
@@ -690,7 +721,7 @@
 					return
 				}
 				let ysurlRequest = uni.request({
-					url: config.baseUrl,
+					url: uni.getStorageSync('baseUrl'),
 					data: {
 						ysurl: item.url
 					},
@@ -747,7 +778,7 @@
 					return
 				}
 				let mhurlRequest = uni.request({
-					url: config.baseUrl,
+					url: uni.getStorageSync('baseUrl'),
 					data: {
 						mhurl1: item.url
 					},
@@ -803,6 +834,17 @@
 				//跳转漫画
 				if (item._type == '1') {
 					let url = `/pages/details/mhdetails?data=${JSON.stringify(item)}`;
+					if (this.index == 0) {
+						url = ""
+					}
+					uni.navigateTo({
+						url: url
+					});
+				}
+				console.log(item)
+				//跳转小说
+				if (item._type == '2') {
+					let url = `/pages/details/xsdetails?data=${JSON.stringify(item)}`;
 					if (this.index == 0) {
 						url = ""
 					}

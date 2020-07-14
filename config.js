@@ -1,7 +1,8 @@
-let value = uni.getStorageSync('baseUrl');
-let baseUrl = value;
-baseUrl = "https://www.gjtool.cn/py"
-uni.setStorageSync('baseUrl', baseUrl);
+let baseUrl = uni.getStorageSync('baseUrl');
+if(!baseUrl){
+	baseUrl = "https://www.gjtool.cn/py"
+	uni.setStorageSync('baseUrl', baseUrl);
+}
 uni.request({
 	url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
 	method: 'GET',
@@ -11,6 +12,11 @@ uni.request({
 				key: 'config',
 				data: res.data
 			});
+			if(res.data.baseUrl){
+				uni.setStorageSync('baseUrl', res.data.baseUrl);
+			}else{
+				uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
+			}
 		}
 	}
 });

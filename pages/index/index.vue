@@ -71,6 +71,11 @@
 						name: '漫画',
 						id: '1',
 						contentList: []
+					},
+					{
+						name: '小说',
+						id: '2',
+						contentList: []
 					}
 				],
 				tabCurrentIndex: 0, //当前选项卡索引
@@ -103,11 +108,22 @@
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.MhZJList = config.getMhZJ();
 			if(this.MhZJList&&this.MhZJList.length){
-				this.tabBars[1].contentList = this.MhZJList
+				this.tabBars[1].contentList = this.MhZJList;
+				for(let k=0;k<this.tabBars[1].contentList.length;k++){
+					((k)=>{
+						this.getMhCover(this.tabBars[1].contentList[k],k,this.tabBars[1].contentList.length)
+					})(k)
+				}
+				
 			}
 			this.YsZJList = config.getYsZJ();
 			if(this.YsZJList&&this.YsZJList.length){
-				this.tabBars[0].contentList = this.YsZJList
+				this.tabBars[0].contentList = this.YsZJList;
+				for(let k=0;k<this.tabBars[0].contentList.length;k++){
+					((k)=>{
+						this.getCover(this.tabBars[0].contentList[k],k,this.tabBars[0].contentList.length)
+					})(k)
+				}
 			}
 		},
 		onNavigationBarButtonTap(e) {
@@ -139,6 +155,108 @@
 
 		},
 		methods: {
+			getCover(item,k,length){
+				if (this.index == 0 ) {
+					return
+				}
+				let ysurlRequest = uni.request({
+					url: uni.getStorageSync('baseUrl'),
+					data: {
+						ysurl: item.url
+					},
+					method: 'GET',
+					complete: res => {
+						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+							let obj = res.data.data;
+							let str = item.name;
+							item.cover = obj.cover;
+							item.name = obj.name;
+							let text = str.replace(item.name,"");
+							if(text.indexOf("更新")!=-1){
+								if(item.genre.indexOf("综艺")!=-1){
+									let numstr = res.data.list[res.data.list.length-1].num;
+									if(numstr.indexOf("集")!=-1 || numstr.indexOf("期")!=-1){
+										item.imgText = "更新至"+numstr;
+									}else{
+										item.imgText = "更新至"+numstr+"期";
+									}
+									
+								}else{
+									item.imgText = text
+								}
+							}else if(text.indexOf("完结")!=-1){
+								if(item.genre.indexOf("综艺")==-1){
+									item.imgText =  res.data.list.length+"集全"
+								}else{
+									item.imgText = text
+								}
+							}else if(text.indexOf("集")!=-1){
+								item.imgText = text
+							}else if(text.indexOf("期")!=-1){
+								item.imgText = text
+							}else{
+								item.imgText = item.time+"更新"
+							}
+							// console.log(res.data)
+						}
+						if(k==length-1){
+							uni.setStorage({
+								key: this.openid  + "ysZJ",
+								data: this.tabBars[0].contentList
+							});
+						}
+					}
+				})	
+				this.ysurlRequest = ysurlRequest;
+				return ysurlRequest;
+			},
+			clearYsurlRequestList(){
+				if(this.ysurlRequestList.length){
+					this.ysurlRequestList.forEach((item)=>{
+						item.abort();
+					})
+					this.ysurlRequestList = [];
+				}
+			},
+			getMhCover(item,k,length){
+				if (this.index == 0 ) {
+					return
+				}
+				let mhurlRequest = uni.request({
+					url: uni.getStorageSync('baseUrl'),
+					data: {
+						mhurl1: item.url
+					},
+					method: 'GET',
+					complete: res => {
+						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+							let obj = res.data.data;
+							let str = item.name;
+							item.cover = obj.cover;
+							item.name = obj.name;
+							item.imgText = obj.time?obj.time+"更新":""
+							item.genre = obj.tag ?obj.tag:"其他";
+							// console.log(res.data)
+						}
+						if(k==length-1){
+							uni.setStorage({
+								key: this.openid  + "mhZJ",
+								data: this.tabBars[1].contentList
+							});
+						}
+					}
+				})	
+				this.mhurlRequest = mhurlRequest;
+				return mhurlRequest;
+			},
+			clearMhurlRequestList(){
+				if(this.mhurlRequestList.length){
+					this.mhurlRequestList.forEach((item)=>{
+						item.abort();
+					})
+					this.mhurlRequestList = [];
+				}
+			},
 			//详情
 			navToDetails(item) {
 				//跳转影视
@@ -406,7 +524,7 @@
 	}
 
 	.text-list {
-		width: 125px;
+		// width: 125px;
 		height: 42px;
 		padding: 4px;
 	}

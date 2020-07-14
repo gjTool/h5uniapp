@@ -11,7 +11,7 @@
 			:background-color="'#ec706b'"
 			class="uni-nav-bar"
 		/> -->
-		<view v-if="!mode">
+		<view v-if="!mode && index==1">
 			<view class="text-item text-item-top" v-show="!show" :class="{ black: black }">
 				<text>{{ title }}</text>
 			</view>
@@ -43,7 +43,7 @@
 				</view>
 			</view>
 		</view>
-		<view v-if="mode" class="swiper-box">
+		<view v-if="mode && index==1" class="swiper-box">
 			<swiper id="swiper" v-if="pageList.length" class="swiper-box" duration="300" :current="currentIndex" @change="changePage">
 				<swiper-item v-for="pageItem in pageList" :key="pageItem.id">
 					<view class="scroll" @touchmove="handletouchmove" @touchstart="handletouchstart" @touchend="handletouchend" :class="{ black: black }" @click="scrollClick">
@@ -70,7 +70,7 @@
 				</swiper-item>
 			</swiper>
 		</view>
-		<view class="bottom-tools" :class="{ 'show:': show, hide: !show }">
+		<view class="bottom-tools" :class="{ 'show:': show, hide: !show }" v-if="index==1">
 			<view class="bottom-view">
 				<button class="bottom-button bottom-button1" type="primary" size="mini" plain="true" @click="prev">上一章</button>
 				<slider v-if="xslist.length" class="bottom-slider" :value="num" min="0" :max="xslist.length" disabled block-size="12" />
@@ -148,7 +148,9 @@ export default {
 			windowWidth: 0,
 			windowHeight: 0,
 			pageIndex: 0,
-			currentWebview: null
+			currentWebview: null,
+			index: 0,
+			openid: ""
 		};
 	},
 	computed: {
@@ -166,6 +168,20 @@ export default {
 		this.windowWidth = res.windowWidth;
 		this.windowHeight = res.windowHeight;
 		this.platform = uni.getSystemInfoSync().platform
+	},
+	onShareAppMessage(res) {
+	  return {
+		title: "[小说]"+this.xsname+" "+this.title,
+		imageUrl:this.detailData.cover,
+		path: '/pages/xs/xs?src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
+	  }
+	},
+	onShareTimeline(){
+		return {
+			title: "[小说]"+this.xsname+" "+this.title,
+			imageUrl:this.detailData.cover,
+			query: 'src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
+		}
 	},
 	methods: {
 		changePage(e) {
@@ -218,7 +234,7 @@ export default {
 		reloadContent() {
 			let _this = this;
 			let num = this.num;
-			num = parseInt(num);
+		num = isNaN( parseInt(num)) ? 0:parseInt(num);
 			uni.setStorage({
 				key: 'xsNum' + _this.xsname,
 				data: num
@@ -282,7 +298,7 @@ export default {
 				_this.loading = true;
 				_this.setCacheValue(num, [], 'loading');
 				_this.xsurl2Request = uni.request({
-					url: config.baseUrl,
+					url: uni.getStorageSync('baseUrl'),
 					data: {
 						xsurl2: data[num].url
 					},
@@ -317,7 +333,7 @@ export default {
 			}
 			let _this = this;
 			let num = this.num;
-			num = parseInt(num);
+			num = isNaN( parseInt(num)) ? 0:parseInt(num);
 			let xslist = this.xslist;
 			this.loadCache(num + 1);
 			this.loadCache(num + 2);
@@ -334,7 +350,7 @@ export default {
 			let _this = this;
 			let value = uni.getStorageSync('xsDownload');
 			let data = _this.xslist;
-			num = parseInt(num);
+			num = isNaN( parseInt(num)) ? 0:parseInt(num);
 			let flag = false;
 			if (value) {
 				for (let i = 0; i < value.length; i++) {
@@ -360,10 +376,10 @@ export default {
 		getData(num) {
 			let _this = this;
 			let data = this.xslist;
-			num = parseInt(num);
+			num = isNaN( parseInt(num)) ? 0:parseInt(num);
 			let url = data[num].url;
 			uni.request({
-				url: config.baseUrl,
+				url: uni.getStorageSync('baseUrl'),
 				data: {
 					xsurl2: url
 				},
@@ -385,7 +401,7 @@ export default {
 		setCacheValue(num, list, state) {
 			let _this = this;
 			let data = this.xslist;
-			num = parseInt(num);
+			num = isNaN( parseInt(num)) ? 0:parseInt(num);
 			// console.log(_this.cover);
 			let obj = {
 				name: _this.xsname, //小说名称
@@ -695,11 +711,17 @@ export default {
 	//监听页面滚动
 	onPageScroll: function(obj) {
 		this.scrollTop = obj.scrollTop; //实时获取到滚动的值
-		console.log("onPageScroll-------",obj.scrollTop)
+		// console.log("onPageScroll-------",obj.scrollTop)
 		// console.log(this.scrollTopTotal - this.scrollTop)
 	},
 	onReady() {
 		let _this = this;
+		let option = uni.getStorageSync('config');
+		this.index = option.index
+		// #ifndef MP
+		this.index = 1
+		// #endif
+		this.openid = uni.getStorageSync("userInfo").openid;
 		uni.getStorage({
 			key: 'black',
 			success(res) {
@@ -758,17 +780,22 @@ export default {
 		// #ifdef APP-PLUS
 		plus.navigator.setFullscreen(true);
 		// #endif
-		this.title = decodeURIComponent(options.name);
+		this.openid = uni.getStorageSync("userInfo").openid;
+		this.detailData = JSON.parse(options.data);
+		
+		this.title = this.detailData.title;
+		
 		this.url = decodeURIComponent(options.src);
-		this.xsname = decodeURIComponent(options.xsname);
-		this.cover = decodeURIComponent(options.cover);
-		this.num = decodeURIComponent(options.num);
-		this.url1 = decodeURIComponent(options.url);
-		_this.xslist = uni.getStorageSync('xslist' + this.xsname);
+		
+		this.xsname = this.detailData.name;
+		this.cover = this.detailData.cover;
+		this.num = this.detailData.num ? this.detailData.num :0;
+		this.url1 = this.detailData.url;
+		_this.xslist = uni.getStorageSync('xslist' + this.url1);
 		_this.reloadContent();
 		setTimeout(() => {
 			uni.request({
-				url: config.baseUrl,
+				url: uni.getStorageSync('baseUrl'),
 				data: {
 					xsurl1: _this.url1
 				},
@@ -779,7 +806,7 @@ export default {
 						_this.xslist = data;
 						_this.getCacheState(data);
 						try {
-							uni.setStorageSync('xslist' + _this.xsname, _this.xslist);
+							uni.setStorageSync('xslist' + _this.url1, _this.xslist);
 						} catch (e) {}
 						// _this.reloadContent();
 					} else {

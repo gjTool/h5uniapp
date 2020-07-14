@@ -168,6 +168,13 @@
 			path: '/pages/details/detailsMP?data='+JSON.stringify(this.detailData)
 		  }
 		},
+		onShareTimeline(){
+			return {
+				title:  "["+this.detailData.genre+"]"+this.title,
+				imageUrl:this.detailData.cover,
+				query: 'data='+JSON.stringify(this.detailData)
+			}
+		},
 		onLoad(options) {
 			// #ifndef MP-ALIPAY
 			this.videoContext = uni.createVideoContext('myVideo')
@@ -184,7 +191,7 @@
 				title: this.detailData.name
 			});
 			uni.request({
-				url: config.baseUrl,
+				url: uni.getStorageSync('baseUrl'),
 				data: {
 					ysurl: this.detailData.url
 				},

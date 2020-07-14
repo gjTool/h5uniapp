@@ -130,7 +130,7 @@ export default {
 			title: this.detailData.name
 		});
 		uni.request({
-			url: config.baseUrl,
+			url: uni.getStorageSync('baseUrl'),
 			data: {
 				ysurl: this.detailData.url
 			},

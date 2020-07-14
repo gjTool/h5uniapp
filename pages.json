@@ -200,7 +200,64 @@
 					}
 				}
 			}
+		}
+		,{
+			"path": "pages/details/xsdetails",
+			"style": {
+				"navigationBarTitleText": "详情",
+				"app-plus": {
+					"navigationBarTextStyle": "white",
+					"bounce": "none",
+					"titleNView": {
+						// "buttons": [{
+						// 	"width": "60px",
+						// 	"text": "收藏",
+						// 	"fontSize": "16",
+						// 	"float": "right",
+						// 	"color": "#fff"
+						// }]
+					}
+				}
+			}
 		},
+		
+		{
+			"path": "pages/xs/xs",
+			"style": {
+				"app-plus": {
+					"navigationBarTextStyle": "white",
+					"bounce": "none",
+					"titleNView": {
+						"buttons": [{
+							"width": "60px",
+							"text": "目录",
+							"fontSize": "16",
+							"float": "right",
+							"color": "#fff"
+						}]
+					},
+					"scrollIndicator":"none"
+				}
+			}
+		}
+		,{
+		    "path" : "pages/xslist/xslist",
+		    "style" : {
+				"app-plus": {
+					"bounce": "none",
+					"titleNView": {
+						// "buttons": [{
+						// 	"width": "60px",
+						// 	"text": "生序",
+						// 	"fontSize": "16",
+						// 	"float": "right",
+						// 	"color": "#fff"
+						// }]
+					}
+				}
+			}
+		}
+		,
 		
 		{
 			"path": "pages/mh/mh",

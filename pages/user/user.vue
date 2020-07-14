@@ -16,7 +16,7 @@
 				<view class="text">欢迎使用pdfh5咨讯查询，您在这里可以查询到当地天气详情</view>
 				<text class="iconfont iconyou"></text>
 			</view>
-			<view class="u-text" v-if="text">
+			<view class="u-text" v-if="text" @longpress="copyBtn">
 				<text>{{text}}</text>
 			</view>
 		</view>
@@ -26,7 +26,7 @@
 				<view class="text">{{ item.text }}</view>
 				<text class="iconfont iconyou"></text>
 			</view>
-			<view class="u-text" v-if="text">
+			<view class="u-text" v-if="text"  @longpress="copyBtn">
 				<text>{{text}}</text>
 			</view>
 		</view>
@@ -61,6 +61,13 @@ export default {
 		path: '/pages/home/home'
 	  }
 	},
+	onShareTimeline(){
+		return {
+			title: "[免费vip影视]登陆即可观看" ,
+			imageUrl:"/static/share.jpg",
+			query: ''
+		}
+	},
 	onLoad() {
 		let _this = this;
 		let option = uni.getStorageSync('config');
@@ -80,6 +87,11 @@ export default {
 								key: 'config',
 								data: res.data
 							});
+							if(res.data.baseUrl){
+								uni.setStorageSync('baseUrl', res.data.baseUrl);
+							}else{
+								uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
+							}
 							_this.index = res.data.index;
 							// #ifndef MP
 							_this.index = 1
@@ -230,6 +242,21 @@ export default {
 		//#endif
 	},
 	methods: {
+		copyBtn(){
+			uni.setClipboardData({
+				data: this.text,
+				success: function(res) {
+					uni.getClipboardData({
+						success: function(res) {
+							// uni.showToast({
+							// 	title: '已复制到剪贴板',
+							// 	icon: 'none'
+							// });
+						}
+					});
+				}
+			});
+		},
 		listJump(index) {
 			if (index === 0) {
 				let url = `/pages/index/index`;

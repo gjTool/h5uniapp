@@ -84,6 +84,13 @@
 			path: '/pages/details/mhdetails?data='+JSON.stringify(this.detailData)
 		  }
 		},
+		onShareTimeline(){
+			return {
+				title: "[漫画]"+this.title ,
+				imageUrl:this.detailData.cover,
+				query: 'data='+JSON.stringify(this.detailData)
+			}
+		},
 		onLoad(options) {
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
@@ -94,7 +101,7 @@
 				title: this.title
 			});
 			uni.request({
-				url: config.baseUrl,
+				url: uni.getStorageSync('baseUrl'),
 				data: {
 					mhurl1: this.detailData.url
 				},

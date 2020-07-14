@@ -310,7 +310,7 @@
 				}
 				this.loading = true
 				this.xsurl2Request = uni.request({
-					url: config.baseUrl,
+					url: uni.getStorageSync('baseUrl'),
 					data: {
 						mhurl2: this.url
 					},
@@ -476,6 +476,13 @@
 			path: '/pages/mh/mh?src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
 		  }
 		},
+		onShareTimeline(){
+			return {
+				title: "[漫画]"+this.mhname+" "+this.title,
+				imageUrl:this.detailData.cover,
+				query: 'src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
+			}
+		},
 		onLoad(options) {
 			let _this = this;
 			this.openid = uni.getStorageSync("userInfo").openid;
@@ -493,7 +500,7 @@
 			});
 			setTimeout(() => {
 				uni.request({
-					url: config.baseUrl,
+					url: uni.getStorageSync('baseUrl'),
 					data: {
 						mhurl1: _this.url1
 					},

@@ -2,7 +2,7 @@
 	<view class="content">
 		<!-- <uni-nav-bar :status-bar="true" left-icon="arrowleft" @click-left="back" :title="title" :background-color="'#ec706b'"
 		 class="uni-nav-bar" :right-text="sort" @click-right="sortlist" /> -->
-		<view class="uni-xs-list">
+		<view class="uni-xs-list"  v-if="index==1">
 			<!-- 下拉刷新组件 -->
 			<mix-pulldown-refresh ref="mixPulldownRefresh" :top="0" @refresh="onPulldownReresh" @setEnableScroll="setEnableScroll">
 				<scroll-view class="scroll" :scroll-y="enableScroll" scroll-y style="padding:20upx;">
@@ -52,7 +52,9 @@
 				list: [],
 				sort: "升序",
 				from: "xs",
-				cover:""
+				cover:"",
+				index: 0,
+				openid: ""
 			}
 		},
 		methods: {
@@ -157,7 +159,7 @@
 				let _this = this;
 				_this.loading = true
 				uni.request({
-					url: config.baseUrl,
+					url: uni.getStorageSync('baseUrl'),
 					data: {
 						xsurl1: this.url1
 					},
@@ -173,7 +175,7 @@
 								callback && callback("ok")
 							}, 200)
 							try {
-								uni.setStorageSync('xslist' + _this.xsname, _this.xslist);
+								uni.setStorageSync('xslist' + _this.url1, _this.xslist);
 							} catch (e) {}
 						} else {
 							callback && callback("fail")
@@ -206,6 +208,12 @@
 		},
 		onLoad(options) {
 			let _this = this;
+			let option = uni.getStorageSync('config');
+			this.index = option.index
+			// #ifndef MP
+			this.index = 1
+			// #endif
+			this.openid = uni.getStorageSync("userInfo").openid;
 			this.xsname = decodeURIComponent(options.xsname);
 			this.num = decodeURIComponent(options.num);
 			this.from = decodeURIComponent(options.from);
@@ -216,7 +224,7 @@
 				title: this.title
 			});
 		
-			_this.xslist = uni.getStorageSync('xslist' + this.xsname);
+			_this.xslist = uni.getStorageSync('xslist' + this.url1);
 			_this.getCacheState(_this.xslist)
 			setTimeout(() => {
 				_this.scrollTo()

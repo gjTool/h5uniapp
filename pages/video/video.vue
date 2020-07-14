@@ -411,7 +411,7 @@ export default {
 			title: '加载中…'
 		});
 		this.request = uni.request({
-			url: config.baseUrl,
+			url: uni.getStorageSync('baseUrl'),
 			data: {
 				ysurl: this.detailData.url
 			},

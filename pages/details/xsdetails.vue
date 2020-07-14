@@ -3,7 +3,7 @@
 		<!-- <uni-nav-bar :status-bar="true" left-icon="arrowleft" @click-left="back" :title="title" right-text="收藏" @click-right="shoucang"
 		 :background-color="'#ec706b'" class="uni-nav-bar" /> -->
 
-		<scroll-view class="scroll" scroll-y>
+		<scroll-view class="scroll" scroll-y  v-if="index==1">
 			<view class="scroll-content">
 				<view class="image-box">
 					<image :src="obj.cover" @error="imgError(obj)"></image>
@@ -52,6 +52,7 @@
 		},
 		data() {
 			return {
+				index:0,
 				visible: false,
 				num: 0,
 				loading: true,
@@ -59,13 +60,35 @@
 				list: [],
 				obj: {},
 				title: "",
-				type: "h5" // h5 video
+				type: "h5" ,// h5 video
+				openid: ""
+			}
+		},
+		onShareAppMessage(res) {
+		  return {
+			title: "[小说]"+this.title ,
+			imageUrl:this.detailData.cover,
+			path: '/pages/details/xsdetails?data='+JSON.stringify(this.detailData)
+		  }
+		},
+		onShareTimeline(){
+			return {
+				title: "[小说]"+this.title ,
+				imageUrl:this.detailData.cover,
+				query: 'data='+JSON.stringify(this.detailData)
 			}
 		},
 		onShow() {
 			// this.num = uni.getStorageSync("xs"+this.title);
 		},
+		
 		onLoad(options) {
+			let option = uni.getStorageSync('config');
+			this.index = option.index
+			// #ifndef MP
+			this.index = 1
+			// #endif
+			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
 			this.title = this.detailData.name;
 			this.num = uni.getStorageSync("xsNum" + this.title);
@@ -74,7 +97,7 @@
 				title: this.title
 			});
 			uni.request({
-				url: config.baseUrl,
+				url: uni.getStorageSync('baseUrl'),
 				data: {
 					xsurl1: this.detailData.url
 				},
@@ -88,7 +111,7 @@
 						this.detailData.cover = this.obj.cover;
 						this.getCacheState(data)
 						try {
-							uni.setStorageSync('xslist'+this.title, this.list);
+							uni.setStorageSync('xslist'+ this.detailData.url, this.list);
 						} catch (e) {}
 						
 					}
@@ -146,12 +169,14 @@
 					key: "xsNum" + this.title,
 					data: index
 				});
+				this.detailData.title = this.list[index].num;
+				this.detailData.mum = this.num;
+				// config.setMhZJ(this.num, this.detailData)
 				try {
-					uni.setStorageSync('xslist'+item.name, this.list);
+					uni.setStorageSync('xslist' + this.detailData.url, this.list);
 				} catch (e) {}
 				uni.navigateTo({
-					url: '/pages/xs/xs?src=' + encodeURIComponent(item.url) + "&name=" + encodeURIComponent(item.num) + "&xsname=" +
-						encodeURIComponent(this.title) + "&num=" + encodeURIComponent(this.num)+ "&url="+this.detailData.url+"&cover="+this.detailData.cover
+					url: '/pages/xs/xs?src=' + encodeURIComponent(item.url) + "&data=" + JSON.stringify(this.detailData)
 				});
 			},
 			shoucang() {

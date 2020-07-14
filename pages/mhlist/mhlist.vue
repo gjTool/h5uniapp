@@ -163,7 +163,7 @@
 				let _this = this;
 				_this.loading = true
 				uni.request({
-					url: config.baseUrl,
+					url: uni.getStorageSync('baseUrl'),
 					data: {
 						mhurl1: _this.url1
 					},

@@ -100,11 +100,6 @@ let setYsZJ = (num, detailData) => {
 	}
 
 }
-
-
-
-
-
 //获取漫画最近浏览数组
 let getMhZJ = () => {
 	let openid = uni.getStorageSync("userInfo").openid;
@@ -169,6 +164,79 @@ let setMhZJ = (num, detailData) => {
 		} else {
 			uni.setStorage({
 				key: openid + "mhZJ",
+				data: [detailData]
+			});
+		}
+	}
+
+}
+
+
+
+//获取小说最近浏览数组
+let getXsZJ = () => {
+	let openid = uni.getStorageSync("userInfo").openid;
+	let arr = uni.getStorageSync(openid + "xsZJ");
+	if (!openid) {
+		arr = []
+	} else {
+		if(arr && arr.length){
+			arr = unique(arr, "url");
+			arr.sort(compare('Time'))
+		}else{
+			arr = []
+		}
+	}
+	return arr
+}
+//获取小说最近浏览记录章节索引
+let getXsZJindex = (url) => {
+	let arr = getXsZJ(),
+		index = 0;
+	let openid = uni.getStorageSync("userInfo").openid;
+	if (openid) {
+		if (arr && arr.length) {
+			for (let i = 0; i < arr.length; i++) {
+				if (url === arr[i].url) {
+					index = arr[i].index;
+					break
+				}
+			}
+		}
+	}
+	return index
+}
+//设置小说最近浏览
+let setXsZJ = (num, detailData) => {
+	let arr = getXsZJ();
+	let url = detailData.url;
+	let openid = uni.getStorageSync("userInfo").openid;
+	if (openid) {
+		if (arr && arr.length) {
+			let flag = false;
+			detailData.index = index;
+			detailData.url = url;
+			for (let i = 0; i < arr.length; i++) {
+				if (url === arr[i].url) {
+					arr[i] = detailData;
+					flag = true;
+					break
+				}
+			}
+			if (!flag) {
+				arr.push(detailData)
+			}
+			arr.sort(compare('Time'))
+			if (arr.length > 12) {
+				arr = arr.splice(0, 12)
+			}
+			uni.setStorage({
+				key: openid + "xsZJ",
+				data: arr
+			});
+		} else {
+			uni.setStorage({
+				key: openid + "xsZJ",
 				data: [detailData]
 			});
 		}

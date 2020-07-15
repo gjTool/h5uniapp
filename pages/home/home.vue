@@ -426,7 +426,6 @@
 			})
 			// #endif
 		},
-		onNavigationBarSearchInputChanged(e) {},
 		onNavigationBarSearchInputConfirmed(e) {
 			this.confirm({
 				detail: {
@@ -549,11 +548,6 @@
 				}
 			});
 			//#endif
-			
-		},
-		onHide() {},
-		onReady() {
-			
 			
 		},
 		methods: {
@@ -699,6 +693,10 @@
 					item._type = tabItem.id;
 					item.imgText = "";
 					item.genre = genre ? genre:"";
+					if(tabItem.id == '2'){
+						item.imgText = item.num
+						item.genre = item.tag ?item.tag:"其他";
+					}
 					tabItem.contentList.push(item);
 				});
 				this.first = true;

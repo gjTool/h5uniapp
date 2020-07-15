@@ -91,6 +91,9 @@
 				query: 'data='+JSON.stringify(this.detailData)
 			}
 		},
+		onPullDownRefresh(){
+			this.getList()
+		},
 		onLoad(options) {
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
@@ -100,32 +103,7 @@
 			uni.setNavigationBarTitle({
 				title: this.title
 			});
-			uni.request({
-				url: uni.getStorageSync('baseUrl'),
-				data: {
-					mhurl1: this.detailData.url
-				},
-				method: "GET",
-				complete: (res) => {
-					this.loading = false
-					if (res.statusCode == 200 && res.data && res.data.code == 0) {
-						let data = res.data.list
-						this.list = data;
-						this.obj = res.data.data
-
-						this.detailData.cover = this.obj.cover;
-						// this.getCacheState(data)
-						try {
-							uni.setStorageSync('mhlist' + this.detailData.url, this.list);
-						
-							this.detailData.title = this.list[this.num].num;
-							this.detailData.Time = new Date().getTime();
-							this.detailData.saveTime = config.getDate("/"); 
-							config.setMhZJ(this.num, this.detailData)
-						} catch (e) {}
-					}
-				}
-			});
+			this.getList()
 			//监听事件
 			this.$eventHub.$on('changeMhNum', (data) => {
 				this.num = data;
@@ -136,6 +114,35 @@
 			})
 		},
 		methods: {
+			getList(){
+				uni.request({
+					url: uni.getStorageSync('baseUrl'),
+					data: {
+						mhurl1: this.detailData.url
+					},
+					method: "GET",
+					complete: (res) => {
+						this.loading = false
+						uni.stopPullDownRefresh()
+						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+							let data = res.data.list
+							this.list = data;
+							this.obj = res.data.data
+				
+							this.detailData.cover = this.obj.cover;
+							// this.getCacheState(data)
+							try {
+								uni.setStorageSync('mhlist' + this.detailData.url, this.list);
+							
+								this.detailData.title = this.list[this.num].num;
+								this.detailData.Time = new Date().getTime();
+								this.detailData.saveTime = config.getDate("/"); 
+								config.setMhZJ(this.num, this.detailData)
+							} catch (e) {}
+						}
+					}
+				});
+			},
 			imgError(obj) {
 				obj.cover = "/static/404.jpg"
 			},

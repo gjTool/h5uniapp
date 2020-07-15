@@ -167,6 +167,7 @@
 		,{
 		    "path" : "pages/details/detailsMP",
 		    "style" : {
+				"enablePullDownRefresh":true,
 				"navigationBarTitleText": "工具",
 				"app-plus": {
 					"bounce": "none",

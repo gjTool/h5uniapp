@@ -175,6 +175,9 @@
 				query: 'data='+JSON.stringify(this.detailData)
 			}
 		},
+		onPullDownRefresh(){
+			this.getList()
+		},
 		onLoad(options) {
 			// #ifndef MP-ALIPAY
 			this.videoContext = uni.createVideoContext('myVideo')
@@ -190,84 +193,86 @@
 			uni.setNavigationBarTitle({
 				title: this.detailData.name
 			});
-			uni.request({
-				url: uni.getStorageSync('baseUrl'),
-				data: {
-					ysurl: this.detailData.url
-				},
-				method: 'GET',
-				complete: res => {
-					this.loading = false;
-					if (res.statusCode == 200 && res.data && res.data.code == 0) {
-						let data = res.data.list;
-						this.obj = res.data.data;
-						for (let i = 0; i < data.length; i++) {
-							let a = data[i].download;
-							let b = data[i].m3u8url;
-							let c = data[i].onlineurl;
-							let obj = {
-								cover: this.obj.cover,
-								num: data[i].num,
-								download: '',
-								m3u8url: '',
-								onlineurl: ''
-							};
-							if (a.indexOf('.m3u8') != -1) {
-								obj.m3u8url = a;
-							}
-							if (a.indexOf('.mp4') != -1) {
-								obj.download = a;
-							}
-							if (a.indexOf('.m3u8') == -1 && a.indexOf('.mp4') == -1) {
-								obj.onlineurl = a;
-							}
-							if (b.indexOf('.m3u8') != -1) {
-								obj.m3u8url = b;
-							}
-							if (b.indexOf('.mp4') != -1) {
-								obj.download = b;
-							}
-							if (b.indexOf('.m3u8') == -1 && b.indexOf('.mp4') == -1) {
-								obj.onlineurl = b;
-							}
-							if (c.indexOf('.m3u8') != -1) {
-								obj.m3u8url = c;
-							}
-							if (c.indexOf('.mp4') != -1) {
-								obj.download = c;
-							}
-							if (c.indexOf('.m3u8') == -1 && c.indexOf('.mp4') == -1) {
-								obj.onlineurl = c;
-							}
-							data[i] = obj;
-						}
-						if (this.detailData.genre.indexOf("综艺") != -1) {
-							this.list = data.reverse();
-						} else {
-							this.list = data;
-						}
-
-						let item = this.list[0];
-						this.videoTitle = this.title + " " + item.num;
-						let op = config.getYsZJnum(this.detailData.url);
-						this.num = op.num ? op.num : 0;
-						
-						if (
-							this.list.length <= 4 &&
-							this.detailData.genre.indexOf('综艺') == -1 &&
-							this.detailData.genre.indexOf('日韩动漫') == -1 &&
-							(this.detailData.genre.indexOf('剧') <= -1 ||
-								this.detailData.genre.indexOf('剧情片') != -1 ||
-								this.detailData.genre.indexOf('喜剧片') != -1 ||
-								this.detailData.genre.indexOf('悲剧片') != -1)
-						) {
-							this.xunjiif = false;
-						}
-					}
-				}
-			});
+			this.getList()
 		},
 		methods: {
+			getList(){
+				uni.request({
+					url: uni.getStorageSync('baseUrl'),
+					data: {
+						ysurl: this.detailData.url
+					},
+					method: 'GET',
+					complete: res => {
+						this.loading = false;
+						uni.stopPullDownRefresh()
+						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+							let data = res.data.list;
+							this.obj = res.data.data;
+							for (let i = 0; i < data.length; i++) {
+								let a = data[i].download;
+								let b = data[i].m3u8url;
+								let c = data[i].onlineurl;
+								let obj = {
+									cover: this.obj.cover,
+									num: data[i].num,
+									download: '',
+									m3u8url: '',
+									onlineurl: ''
+								};
+								if (a.indexOf('.m3u8') != -1) {
+									obj.m3u8url = a;
+								}
+								if (a.indexOf('.mp4') != -1) {
+									obj.download = a;
+								}
+								if (a.indexOf('.m3u8') == -1 && a.indexOf('.mp4') == -1) {
+									obj.onlineurl = a;
+								}
+								if (b.indexOf('.m3u8') != -1) {
+									obj.m3u8url = b;
+								}
+								if (b.indexOf('.mp4') != -1) {
+									obj.download = b;
+								}
+								if (b.indexOf('.m3u8') == -1 && b.indexOf('.mp4') == -1) {
+									obj.onlineurl = b;
+								}
+								if (c.indexOf('.m3u8') != -1) {
+									obj.m3u8url = c;
+								}
+								if (c.indexOf('.mp4') != -1) {
+									obj.download = c;
+								}
+								if (c.indexOf('.m3u8') == -1 && c.indexOf('.mp4') == -1) {
+									obj.onlineurl = c;
+								}
+								data[i] = obj;
+							}
+							if (this.detailData.genre.indexOf("综艺") != -1) {
+								this.list = data.reverse();
+							} else {
+								this.list = data;
+							}
+							let item = this.list[0];
+							let op = config.getYsZJnum(this.detailData.url);
+							this.num = op.num ? op.num : 0;
+							this.videoTitle = this.title + " " +this.list[this.num].num;
+							if (
+								this.list.length <= 4 &&
+								this.detailData.genre.indexOf('综艺') == -1 &&
+								this.detailData.genre.indexOf('日韩动漫') == -1 &&
+								(this.detailData.genre.indexOf('剧') <= -1 ||
+									this.detailData.genre.indexOf('剧情片') != -1 ||
+									this.detailData.genre.indexOf('喜剧片') != -1 ||
+									this.detailData.genre.indexOf('悲剧片') != -1)
+							) {
+								this.xunjiif = false;
+							}
+						}
+					}
+				});
+			},
 			//秒数转换时间
 			formatSeconds(value) {
 				var theTime = parseInt(value); // 秒

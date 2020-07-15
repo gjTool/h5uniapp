@@ -81,7 +81,9 @@
 		onShow() {
 			// this.num = uni.getStorageSync("xs"+this.title);
 		},
-		
+		onPullDownRefresh(){
+			this.getList()
+		},
 		onLoad(options) {
 			let option = uni.getStorageSync('config');
 			this.index = option.index
@@ -96,28 +98,8 @@
 			uni.setNavigationBarTitle({
 				title: this.title
 			});
-			uni.request({
-				url: uni.getStorageSync('baseUrl'),
-				data: {
-					xsurl1: this.detailData.url
-				},
-				method: "GET",
-				complete: (res) => {
-					this.loading = false
-					if (res.statusCode == 200 && res.data && res.data.code == 0) {
-						let data = res.data.list
-						this.list = data;
-						this.obj = res.data.data;
-						this.detailData.cover = this.obj.cover;
-						this.getCacheState(data)
-						try {
-							uni.setStorageSync('xslist'+ this.detailData.url, this.list);
-						} catch (e) {}
-						
-					}
-				}
-			});
-
+			
+			this.getList()
 			//监听事件
 			this.$eventHub.$on('changeXsNum', (data) => {
 				this.num = data;
@@ -128,6 +110,30 @@
 			})
 		},
 		methods: {
+			getList(){
+				uni.request({
+					url: uni.getStorageSync('baseUrl'),
+					data: {
+						xsurl1: this.detailData.url
+					},
+					method: "GET",
+					complete: (res) => {
+						this.loading = false
+						uni.stopPullDownRefresh()
+						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+							let data = res.data.list
+							this.list = data;
+							this.obj = res.data.data;
+							this.detailData.cover = this.obj.cover;
+							this.getCacheState(data)
+							try {
+								uni.setStorageSync('xslist'+ this.detailData.url, this.list);
+							} catch (e) {}
+							
+						}
+					}
+				});
+			},
 			getCacheState(xslist){
 				let _this = this;
 				let value = uni.getStorageSync('xsDownload');

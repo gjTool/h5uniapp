@@ -101,54 +101,54 @@ export default {
 				});
 			}
 		})
-		uni.getSetting({
-			success(res) {
-				let authSetting=res.authSetting
-				if (!res.authSetting['scope.userInfo']) {
-					//未授权
-					_this.isCanUse = true;
-					_this.data ={};
-					uni.setStorageSync('userInfo',{});
-					uni.setStorageSync('isCanUse', true); //记录是否第一次授权  false:表示不是第一次授权
-				} else {
-					//用户已经授权过了
-					_this.isCanUse = false;
-					_this.background = "RGB(248,249,251)";
-					uni.setStorageSync('isCanUse', false); 
-					uni.login({
-						provider: 'weixin',
-						success: function(loginRes) {
-							let code = loginRes.code;
-							uni.getUserInfo({
-								provider: 'weixin',
-								success: function(infoRes) {
-									uni.request({
-										url: 'https://www.gjtool.cn/wxlogin',
-										data: {
-											code: code
-										},
-										method: 'POST',
-										success: res => {
-											try {
-												infoRes.userInfo.session_key=res.data.session_key;
-												infoRes.userInfo.openid=res.data.openid;
-												uni.setStorageSync('userInfo', infoRes.userInfo);
-												_this.isCanUse = false;
-												_this.$eventHub.$emit('isCanUse',0)
-												_this.$eventHub.$emit('isCanUse2',0)
-											} catch (e) {}
-										},
-										error:err=>{
+		// uni.getSetting({
+		// 	success(res) {
+		// 		let authSetting=res.authSetting
+		// 		if (!res.authSetting['scope.userInfo']) {
+		// 			//未授权
+		// 			_this.isCanUse = true;
+		// 			_this.data ={};
+		// 			uni.setStorageSync('userInfo',{});
+		// 			uni.setStorageSync('isCanUse', true); //记录是否第一次授权  false:表示不是第一次授权
+		// 		} else {
+		// 			//用户已经授权过了
+		// 			_this.isCanUse = false;
+		// 			_this.background = "RGB(248,249,251)";
+		// 			uni.setStorageSync('isCanUse', false); 
+		// 			uni.login({
+		// 				provider: 'weixin',
+		// 				success: function(loginRes) {
+		// 					let code = loginRes.code;
+		// 					uni.getUserInfo({
+		// 						provider: 'weixin',
+		// 						success: function(infoRes) {
+		// 							uni.request({
+		// 								url: 'https://www.gjtool.cn/wxlogin',
+		// 								data: {
+		// 									code: code
+		// 								},
+		// 								method: 'POST',
+		// 								success: res => {
+		// 									try {
+		// 										infoRes.userInfo.session_key=res.data.session_key;
+		// 										infoRes.userInfo.openid=res.data.openid;
+		// 										uni.setStorageSync('userInfo', infoRes.userInfo);
+		// 										_this.isCanUse = false;
+		// 										_this.$eventHub.$emit('isCanUse',0)
+		// 										_this.$eventHub.$emit('isCanUse2',0)
+		// 									} catch (e) {}
+		// 								},
+		// 								error:err=>{
 											
-										}
-									});
-								}
-							});
-						}
-					})
-				}
-			}
-		});
+		// 								}
+		// 							});
+		// 						}
+		// 					});
+		// 				}
+		// 			})
+		// 		}
+		// 	}
+		// });
 	},
 	onShow() {
 		let _this = this;

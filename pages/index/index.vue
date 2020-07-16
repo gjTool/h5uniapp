@@ -161,13 +161,6 @@
 				this.tabBars[2].contentList = this.XsZJList;
 			}
 		},
-		onHide() {
-			this.$refs['share'].close();
-			this.cancelFlag = false;
-		},
-		onReady() {
-
-		},
 		methods: {
 			getCover(item,k,length){
 				if (this.index == 0 ) {
@@ -213,12 +206,10 @@
 							}
 							// console.log(res.data)
 						}
-						if(k==length-1){
-							uni.setStorage({
-								key: this.openid  + "ysZJ",
-								data: this.tabBars[0].contentList
-							});
-						}
+						uni.setStorage({
+							key: this.openid  + "ysZJ",
+							data: this.tabBars[0].contentList
+						});
 					}
 				})	
 				this.ysurlRequest = ysurlRequest;
@@ -252,12 +243,10 @@
 							item.genre = obj.tag ?obj.tag:"其他";
 							// console.log(res.data)
 						}
-						if(k==length-1){
-							uni.setStorage({
-								key: this.openid  + "mhZJ",
-								data: this.tabBars[1].contentList
-							});
-						}
+						uni.setStorage({
+							key: this.openid  + "mhZJ",
+							data: this.tabBars[1].contentList
+						});
 					}
 				})	
 				this.mhurlRequest = mhurlRequest;

@@ -1,24 +1,14 @@
 <template>
-	<view class="content" @click="scrollClick">
-		<!-- <uni-nav-bar
-			:status-bar="true"
-			:show="show"
-			left-icon="arrowleft"
-			@click-left="back"
-			:title="title"
-			right-text="刷新"
-			@click-right="shuaxin"
-			:background-color="'#ec706b'"
-			class="uni-nav-bar"
-		/> -->
-		<view v-if="!mode && index==1">
-			<view class="text-item text-item-top" v-show="!show" :class="{ black: black }">
+	<view class="content">
+		<view v-if="index==1">
+			<view class="text-item text-item-top" v-show="show"  :class="{ black: black }">
 				<text>{{ title }}</text>
 			</view>
 			<view
 				@touchmove="handletouchmove"
 				@touchstart="handletouchstart"
 				@touchend="handletouchend"
+				 @click="scrollClick"
 				class="scroll"
 				id="scrollview"
 				:class="{ black: black }"
@@ -28,47 +18,22 @@
 					<view class="text-item text-grey" v-show="itemshow" :class="{ black: black }"><text>------------- 本章开始 -------------</text></view>
 					<view class="img-list m-item" v-for="(item, index) in list" :key="index">
 						<view class="text-item" :class="{ black: black }">
-							<text class="text-content">{{ item }}</text>
+							<text class="text-content" :style="{'font-size':fontSize+'px'}">{{ item }}</text>
 						</view>
 					</view>
 					<view class="text-item  text-grey" v-show="itemshow" :class="{ black: black }"><text>------------- 本章结束 -------------</text></view>
-					<!-- 加载图标 -->
-					<mixLoading class="mix-loading" v-if="loading"></mixLoading>
 				</view>
 			</view>
+			<!-- 加载图标 -->
+			<mixLoading class="mix-loading" v-if="loading"></mixLoading>
+			<!-- #ifdef APP-PLUS -->
 			<view class="text-item  text-item-bottom" v-show="!show" :class="{ black: black }">
 				<battery class="battery" :proQuantity="level"></battery>
 				<view class="time" :class="{android:platform=='android'}">
 					<text>{{ time }}</text>
 				</view>
 			</view>
-		</view>
-		<view v-if="mode && index==1" class="swiper-box">
-			<swiper id="swiper" v-if="pageList.length" class="swiper-box" duration="300" :current="currentIndex" @change="changePage">
-				<swiper-item v-for="pageItem in pageList" :key="pageItem.id">
-					<view class="scroll" @touchmove="handletouchmove" @touchstart="handletouchstart" @touchend="handletouchend" :class="{ black: black }" @click="scrollClick">
-						<view class="text-item text-item-top" :class="{ black: black }">
-							<text>{{ title }}</text>
-						</view>
-						<view class="scroll-content" :class="{ black: black }">
-							<view class="img-list m-item" v-for="(item, index) in pageItem.contentList" :key="index">
-								<view class="text-item" :class="{ black: black }">
-									<text class="text-content">{{ item }}</text>
-								</view>
-							</view>
-						</view>
-						<view class="text-item  text-item-bottom" :class="{ black: black }">
-							<battery class="battery" :proQuantity="level"></battery>
-							<view class="time">
-								<text>{{ time }}</text>
-							</view>
-							<view class="pagenum">
-								<text>{{ parseInt(pageItem.id) + 1 }}/{{ pageList.length }}</text>
-							</view>
-						</view>
-					</view>
-				</swiper-item>
-			</swiper>
+			<!-- #endif -->
 		</view>
 		<view class="bottom-tools" :class="{ 'show:': show, hide: !show }" v-if="index==1">
 			<view class="bottom-view">
@@ -78,8 +43,10 @@
 			</view>
 			<view class="bottom-view">
 				<button class="bottom-button" type="primary" size="mini" plain="true" @click="gotoxslist">目录</button>
+				<button class="bottom-button" type="primary" size="mini" plain="true" @click="refontSize">A-</button>
+				<button class="bottom-button" type="primary" size="mini" plain="true" @click="fontSize=20;uni.setStorageSync('fontsize', this.fontSize)">普通</button>
+				<button class="bottom-button" type="primary" size="mini" plain="true" @click="addfontSize">A+</button>
 				<button class="bottom-button" type="primary" size="mini" plain="true" @click="changeBg">{{ black ? '白天' : '黑夜' }}</button>
-				<button class="bottom-button" type="primary" size="mini" plain="true" @click="setmode">{{ mode ? '上下滚动' : '左右滑动' }}</button>
 				<!-- #ifdef APP-PLUS -->
 				<button class="bottom-button" type="primary" size="mini" plain="true" @click="download">下载</button>
 				<!-- #endif -->
@@ -121,6 +88,7 @@ export default {
 			xsurl2Request: null,
 			scrollTimer: null,
 			scrollTopTotal: 0,
+			fontSize:uni.getStorageSync('fontsize')||20,
 			style: {
 				pageHeight: 0,
 				contentViewHeight: 0,
@@ -186,6 +154,20 @@ export default {
 		}
 	},
 	methods: {
+		addfontSize(){
+			this.fontSize++
+			if(this.fontSize>=28){
+				this.fontSize=28
+			}
+			uni.setStorageSync('fontsize', this.fontSize);
+		},
+		refontSize(){
+			this.fontSize--;
+			if(this.fontSize<=12){
+				this.fontSize=12
+			}
+			uni.setStorageSync('fontsize', this.fontSize);
+		},
 		changePage(e) {
 			let index = e.detail.current;
 			this.pageIndex = index;
@@ -509,9 +491,6 @@ export default {
 			this.loading = true;
 			this.getData(this.num);
 		},
-		setmode() {
-			this.mode = !this.mode;
-		},
 		gotoxslist() {
 			let data = {
 				xsname: this.title,
@@ -666,14 +645,14 @@ export default {
 							this.flag = 1;
 							if (this.pageIndex == this.pageList.length - 1) {
 								this.currentIndex = 0;
-								this.next();
+								// this.next();
 							}
 						} else if (tx > this.ditance) {
 							text = '向右滑动';
 							this.flag = 2;
 							if (this.pageIndex == 0) {
 								this.currentIndex = 0;
-								this.prev();
+								// this.prev();
 							}
 						}
 					}
@@ -686,14 +665,14 @@ export default {
 							this.flag = 3;
 							//监听上拉的时候
 							if (this.scrollTopTotal - this.scrollTop - 40 == 0) {
-								this.next();
+								// this.next();
 							}
 						} else if (ty > this.ditance) {
 							text = '向下滑动';
 							this.flag = 4;
 							//监听下拉的时候
 							if (this.scrollTop == 0) {
-								this.prev();
+								// this.prev();
 							}
 						}
 					}
@@ -790,16 +769,15 @@ export default {
 		this.detailData = JSON.parse(options.data);
 		
 		this.title = this.detailData.title;
-		
 		this.url = decodeURIComponent(options.src);
-		
 		this.xsname = this.detailData.name;
 		this.cover = this.detailData.cover;
-		
 		this.num = this.detailData.index ? this.detailData.index :0;
 		this.url1 = this.detailData.url;
 		_this.xslist = uni.getStorageSync('xslist' + this.url1);
-		_this.reloadContent();
+		uni.setNavigationBarTitle({
+			title: this.title
+		});
 		setTimeout(() => {
 			uni.request({
 				url: uni.getStorageSync('baseUrl'),
@@ -825,17 +803,16 @@ export default {
 				}
 			});
 		}, 100);
-		uni.setNavigationBarTitle({
-			title: this.title
-		});
+		_this.reloadContent();
 		//监听事件
 		this.$eventHub.$on('changeXsContent', (data, index) => {
-			this.title = data.num;
+			_this.title = data.num;
 			uni.setNavigationBarTitle({
-				title: this.title
+				title: _this.title
 			});
-			this.num = index;
-			this.reloadContent();
+			_this.num = index;
+			_this.url = data.url;
+			_this.reloadContent();
 		});
 	}
 };

@@ -265,6 +265,37 @@
 							) {
 								this.xunjiif = false;
 							}
+							
+							let obj = res.data.data;
+							let str = this.detailData.name;
+							this.detailData.cover = obj.cover;
+							this.detailData.name = obj.name;
+							let text = str.replace(this.detailData.name,"");
+							if(text.indexOf("更新")!=-1){
+								if(this.detailData.genre.indexOf("综艺")!=-1){
+									let numstr = res.data.list[res.data.list.length-1].num;
+									if(numstr.indexOf("集")!=-1 || numstr.indexOf("期")!=-1){
+										this.detailData.imgText = "更新至"+numstr;
+									}else{
+										this.detailData.imgText = "更新至"+numstr+"期";
+									}
+								}else{
+									this.detailData.imgText = text
+								}
+							}else if(text.indexOf("完结")!=-1){
+								if(this.detailData.genre.indexOf("综艺")==-1){
+									this.detailData.imgText =  res.data.list.length+"集全"
+								}else{
+									this.detailData.imgText = text
+								}
+							}else if(text.indexOf("集")!=-1){
+								this.detailData.imgText = text
+							}else if(text.indexOf("期")!=-1){
+								this.detailData.imgText = text
+							}else{
+								this.detailData.imgText = item.time+"更新"
+							}
+							config.setYsZJ(this.num, this.detailData)
 						}
 					}
 				});

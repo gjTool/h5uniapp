@@ -20,7 +20,7 @@
 				<view class="progress-text">
 					<text>当前已使用{{currentSize}}kb缓存，缓存最大空间为{{limitSize}}kb</text>
 				</view>
-				<progress :percent="percent" activeColor="red" active stroke-width="4" />
+				<progress :percent="percent"  active stroke-width="4" />
 			</view>
 			<view class="u-text" v-if="text" @longpress="copyBtn">
 				<text>{{text}}</text>

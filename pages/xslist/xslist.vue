@@ -135,11 +135,10 @@
 				}
 				this.$eventHub.$emit('changeXsNum', index);
 				this.detailDataObj.index = index;
+				this.detailDataObj.title = item.num;
 				if (this.from == "xs") {
+					this.back()
 					this.$eventHub.$emit('changeXsContent', item, index);
-					setTimeout(() => {
-						this.back()
-					}, 100)
 				} else {
 					uni.redirectTo({
 						url: '/pages/xs/xs?src=' + encodeURIComponent(item.url) + "&data=" + JSON.stringify(this.detailDataObj)
@@ -219,7 +218,7 @@
 			this.detailData = JSON.parse(options.data);
 			this.detailDataObj = JSON.parse(options.obj);
 			
-			this.xsname = decodeURIComponent(this.detailData.xsname);
+			this.xsname = decodeURIComponent(this.detailDataObj.name);
 			this.num = decodeURIComponent(this.detailData.num);
 			this.from = decodeURIComponent(this.detailData.from);
 			this.url1 = decodeURIComponent(this.detailData.url);

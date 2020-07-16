@@ -1,4 +1,5 @@
 {
+  "enablePullDownRefresh": true,
   "navigationBarTitleText": "工具",
   "usingComponents": {
     "uni-icons": "/components/uni-icons/uni-icons",

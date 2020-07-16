@@ -6,6 +6,9 @@
     "pages/video/video",
     "pages/details/detailsMP",
     "pages/details/mhdetails",
+    "pages/details/xsdetails",
+    "pages/xs/xs",
+    "pages/xslist/xslist",
     "pages/mh/mh",
     "pages/mhlist/mhlist",
     "pages/user/user",
@@ -41,6 +44,5 @@
     ]
   },
   "permission": {},
-  "usingComponents": {},
-  "sitemapLocation": "sitemap.json"
+  "usingComponents": {}
 }

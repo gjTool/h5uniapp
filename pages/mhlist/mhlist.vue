@@ -138,10 +138,8 @@
 				}
 				this.$eventHub.$emit('changeMhNum', index);
 				if (this.from == "mh") {
+					this.back()
 					this.$eventHub.$emit('changeMhContent', item, index);
-					setTimeout(() => {
-						this.back()
-					}, 300)
 				} else {
 					uni.redirectTo({
 						url: '/pages/mh/mh?src=' + encodeURIComponent(item.url) + "&data="+JSON.stringify(this.detailDataObj) 
@@ -206,7 +204,7 @@
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
 			this.detailDataObj = JSON.parse(options.obj);
-			this.mhname = decodeURIComponent(this.detailData.mhname);
+			this.mhname = decodeURIComponent(this.detailDataObj.name);
 			this.num = decodeURIComponent(this.detailData.num);
 			this.from = decodeURIComponent(this.detailData.from);
 			this.url1 = decodeURIComponent(this.detailData.url);

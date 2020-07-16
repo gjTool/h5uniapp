@@ -525,7 +525,6 @@
 				});
 			}, 100)
 			this.reloadContent();
-
 			//监听事件
 			this.$eventHub.$on('changeMhContent', (data, index) => {
 				this.title = data.num;

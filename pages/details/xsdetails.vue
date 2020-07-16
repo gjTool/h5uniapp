@@ -102,10 +102,13 @@
 			//监听事件
 			this.$eventHub.$on('changeXsNum', (data) => {
 				this.num = data;
-				this.detailData.title = this.list[this.num].num;
-				this.detailData.Time = new Date().getTime();
-				this.detailData.saveTime = config.getDate("/"); 
-				config.setXsZJ(data, this.detailData)
+				if(this.list && this.list.length&&this.list[data]){
+					this.detailData.title = this.list[data].num;
+					this.detailData.index = data;
+					this.detailData.Time = new Date().getTime();
+					this.detailData.saveTime = config.getDate("/"); 
+					config.setXsZJ(data, this.detailData)
+				}
 			})
 		},
 		methods: {

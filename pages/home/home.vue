@@ -839,7 +839,7 @@
 						url: url
 					});
 				}
-				console.log(item)
+				// console.log(item)
 				//跳转小说
 				if (item._type == '2') {
 					let url = `/pages/details/xsdetails?data=${JSON.stringify(item)}`;

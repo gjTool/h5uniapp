@@ -204,12 +204,11 @@
 							}else{
 								item.imgText = item.time+"更新"
 							}
-							// console.log(res.data)
+							uni.setStorage({
+								key: this.openid  + "ysZJ",
+								data: this.tabBars[0].contentList
+							});
 						}
-						uni.setStorage({
-							key: this.openid  + "ysZJ",
-							data: this.tabBars[0].contentList
-						});
 					}
 				})	
 				this.ysurlRequest = ysurlRequest;
@@ -242,11 +241,11 @@
 							item.imgText = obj.time?obj.time+"更新":""
 							item.genre = obj.tag ?obj.tag:"其他";
 							// console.log(res.data)
+							uni.setStorage({
+								key: this.openid  + "mhZJ",
+								data: this.tabBars[1].contentList
+							});
 						}
-						uni.setStorage({
-							key: this.openid  + "mhZJ",
-							data: this.tabBars[1].contentList
-						});
 					}
 				})	
 				this.mhurlRequest = mhurlRequest;

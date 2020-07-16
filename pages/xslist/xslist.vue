@@ -54,7 +54,9 @@
 				from: "xs",
 				cover:"",
 				index: 0,
-				openid: ""
+				openid: "",
+				detailData:{},
+				detailDataObj:{}
 			}
 		},
 		methods: {
@@ -107,10 +109,10 @@
 				})
 			},
 			itemClick(item, index) {
-				uni.setStorage({
-					key: "xsNum" + this.xsname,
-					data: index
-				});
+				// uni.setStorage({
+				// 	key: "xsNum" + this.xsname,
+				// 	data: index
+				// });
 				this.num = index;
 				try {
 					const value = uni.getStorageSync('xsShouCang');
@@ -132,6 +134,7 @@
 					//TODO handle the exception
 				}
 				this.$eventHub.$emit('changeXsNum', index);
+				this.detailDataObj.index = index;
 				if (this.from == "xs") {
 					this.$eventHub.$emit('changeXsContent', item, index);
 					setTimeout(() => {
@@ -139,8 +142,7 @@
 					}, 100)
 				} else {
 					uni.redirectTo({
-						url: '/pages/xs/xs?src=' + encodeURIComponent(item.url) + "&name=" + encodeURIComponent(item.num) + "&xsname=" +
-							encodeURIComponent(this.xsname) + "&num=" + encodeURIComponent(this.num) + "&url=" + this.url1+ "&cover="+this.cover
+						url: '/pages/xs/xs?src=' + encodeURIComponent(item.url) + "&data=" + JSON.stringify(this.detailDataObj)
 					});
 				}
 			},
@@ -214,11 +216,14 @@
 			this.index = 1
 			// #endif
 			this.openid = uni.getStorageSync("userInfo").openid;
-			this.xsname = decodeURIComponent(options.xsname);
-			this.num = decodeURIComponent(options.num);
-			this.from = decodeURIComponent(options.from);
-			this.url1 = decodeURIComponent(options.url);
-			this.cover = decodeURIComponent(options.cover);
+			this.detailData = JSON.parse(options.data);
+			this.detailDataObj = JSON.parse(options.obj);
+			
+			this.xsname = decodeURIComponent(this.detailData.xsname);
+			this.num = decodeURIComponent(this.detailData.num);
+			this.from = decodeURIComponent(this.detailData.from);
+			this.url1 = decodeURIComponent(this.detailData.url);
+			this.cover = decodeURIComponent(this.detailData.cover);
 			this.title = this.xsname;
 			uni.setNavigationBarTitle({
 				title: this.title

@@ -93,7 +93,8 @@
 				selectObjIndex: 0, //选择的索引值
 				openid: "",
 				MhZJList: [] ,//漫画最近浏览记录
-				YsZJList:[] //影视最近观看记录
+				YsZJList:[] ,//影视最近观看记录
+				XsZJList:[] //影视最近观看记录
 			};
 		},
 		computed: {},
@@ -122,6 +123,15 @@
 				for(let k=0;k<this.tabBars[0].contentList.length;k++){
 					((k)=>{
 						this.getCover(this.tabBars[0].contentList[k],k,this.tabBars[0].contentList.length)
+					})(k)
+				}
+			}
+			this.XsZJList = config.getXsZJ();
+			if(this.XsZJList&&this.XsZJList.length){
+				this.tabBars[2].contentList = this.XsZJList;
+				for(let k=0;k<this.tabBars[2].contentList.length;k++){
+					((k)=>{
+						this.getXsCover(this.tabBars[2].contentList[k],k,this.tabBars[2].contentList.length)
 					})(k)
 				}
 			}
@@ -257,6 +267,43 @@
 					this.mhurlRequestList = [];
 				}
 			},
+			getXsCover(item,k,length){
+				if (this.index == 0 ) {
+					return
+				}
+				let xsurlRequest = uni.request({
+					url: uni.getStorageSync('baseUrl'),
+					data: {
+						xsname: item.name
+					},
+					method: 'GET',
+					complete: res => {
+						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+							let arr = res.data.list;
+							arr.forEach((obj)=>{
+								if(obj.url === item.url){
+									item.imgText = obj.num
+									item.genre = obj.tag ?obj.tag:"其他";
+									uni.setStorage({
+										key: this.openid  + "xsZJ",
+										data: this.tabBars[2].contentList
+									});
+								}
+							})
+						}
+					}
+				})	
+				this.xsurlRequest = xsurlRequest;
+				return xsurlRequest;
+			},
+			clearXsurlRequestList(){
+				if(this.xsurlRequestList.length){
+					this.xsurlRequestList.forEach((item)=>{
+						item.abort();
+					})
+					this.xsurlRequestList = [];
+				}
+			},
 			//详情
 			navToDetails(item) {
 				//跳转影视
@@ -286,6 +333,17 @@
 				if (item._type == '1') {
 					let list = uni.getStorageSync('mhlist' + item.url);
 					let url = '/pages/mh/mh?src=' + encodeURIComponent(list[item.num].url) + "&data=" +JSON.stringify(item)
+					if (this.index == 0) {
+						url = ""
+					}
+					uni.navigateTo({
+						url: url
+					});
+				}
+				//跳转小说
+				if (item._type == '2') {
+					let list = uni.getStorageSync('xslist' + item.url);
+					let url = '/pages/xs/xs?src=' + encodeURIComponent(list[item.num].url) + "&data=" +JSON.stringify(item)
 					if (this.index == 0) {
 						url = ""
 					}

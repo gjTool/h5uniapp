@@ -16,6 +16,12 @@
 				<view class="text">欢迎使用pdfh5咨讯查询，您在这里可以查询到当地天气详情</view>
 				<text class="iconfont iconyou"></text>
 			</view>
+			<view class="progress-box">
+				<view class="progress-text">
+					<text>当前已使用{{currentSize}}kb缓存，缓存最大空间为{{limitSize}}kb</text>
+				</view>
+				<progress :percent="percent" activeColor="red" active stroke-width="4" />
+			</view>
 			<view class="u-text" v-if="text" @longpress="copyBtn">
 				<text>{{text}}</text>
 			</view>
@@ -25,6 +31,12 @@
 				<image :src="item.img" mode="aspectFit"></image>
 				<view class="text">{{ item.text }}</view>
 				<text class="iconfont iconyou"></text>
+			</view>
+			<view class="progress-box">
+				<view class="progress-text">
+					<text>当前已使用{{currentSize}}kb缓存，缓存最大空间为{{limitSize}}kb</text>
+				</view>
+				<progress :percent="percent"  active stroke-width="4" />
 			</view>
 			<view class="u-text" v-if="text"  @longpress="copyBtn">
 				<text>{{text}}</text>
@@ -40,7 +52,8 @@ export default {
 		return {
 			list: [
 				{img: '../../static/zuijin.png', text: '最近浏览' },
-				{img:'../../static/wxlogin.png',text:'联系方式'}
+				{img:'../../static/wxlogin.png',text:'联系方式'},
+				{img:'../../static/delete.png',text:'清除缓存'}
 			],
 			data:uni.getStorageSync("userInfo"),
 			SessionKey: '',
@@ -51,7 +64,11 @@ export default {
 			index:uni.getStorageSync('config').index,
 			text:"",
 			isCanUse: uni.getStorageSync('isCanUse'), //默认为true
-			configTimer:null
+			configTimer:null,
+			keys:[],
+			currentSize:"",
+			limitSize:"",
+			percent:0
 		};
 	},
 	onShareAppMessage(res) {
@@ -153,7 +170,7 @@ export default {
 	onShow() {
 		let _this = this;
 		let option = uni.getStorageSync('config');
-		
+		this.getSize()
 		_this.text = option.text
 		_this.isCanUse = uni.getStorageSync('isCanUse');
 		_this.data = uni.getStorageSync("userInfo");
@@ -242,6 +259,19 @@ export default {
 		//#endif
 	},
 	methods: {
+		getSize(){
+			let _this = this;
+			uni.getStorageInfo({
+			    success: function (res) {
+					_this.keys = res.keys;
+					_this.currentSize = res.currentSize;
+					_this.limitSize = res.limitSize;
+					if(_this.currentSize!=0){
+						_this.percent = (_this.currentSize/_this.limitSize)*100
+					}
+			    }
+			});
+		},
 		copyBtn(){
 			uni.setClipboardData({
 				data: this.text,
@@ -258,6 +288,7 @@ export default {
 			});
 		},
 		listJump(index) {
+			let _this = this;
 			if (index === 0) {
 				let url = `/pages/index/index`;
 				if(this.index==0){
@@ -274,6 +305,123 @@ export default {
 				}
 				uni.navigateTo({
 					url: url
+				});
+			}
+			if (index === 2) {
+				uni.showActionSheet({
+				    itemList: ['清除影视记录', '清除漫画记录', '清除小说记录', '清除所有缓存'],
+				    success: function (res) {
+						if(res.tapIndex==0){
+							uni.showModal({
+								title: '清除提示',
+								content: "确定要清除影视最近浏览记录吗？",
+								success: function(res) {
+									if(res.confirm){
+										try {
+										    uni.removeStorageSync( _this.openid + "ysZJ");
+											_this.getSize()
+											uni.showToast({
+												title:"影视最近浏览记录已清除！",
+												icon:"none"
+											})
+										} catch (e) {
+										    // error
+										}
+									}
+								}
+							});
+						}
+						if(res.tapIndex==1){
+							uni.showModal({
+								title: '清除提示',
+								content: "确定要清除漫画最近浏览记录吗？",
+								success: function(res) {
+									if(res.confirm){
+										try {
+										    uni.removeStorageSync( _this.openid + "mhZJ");
+											_this.keys.forEach((item)=>{
+												if(item.indexof("mhlist")!=-1){
+													uni.removeStorageSync(item);
+												}
+												if(item.indexof("mhShouCang")!=-1){
+													uni.removeStorageSync(item);
+												}
+											})
+											_this.getSize()
+											uni.showToast({
+												title:"漫画最近浏览记录已清除！",
+												icon:"none"
+											})
+										} catch (e) {
+										    // error
+										}
+									}
+								}
+							});
+						}
+						if(res.tapIndex==2){
+							uni.showModal({
+								title: '清除提示',
+								content: "确定要清除小说最近浏览记录吗？",
+								success: function(res) {
+									if(res.confirm){
+										try {
+										    uni.removeStorageSync( _this.openid + "xsZJ");
+											_this.keys.forEach((item)=>{
+												if(item.indexof("xsNum")!=-1){
+													uni.removeStorageSync(item);
+												}
+												if(item.indexof("xslist")!=-1){
+													uni.removeStorageSync(item);
+												}
+												if(item.indexof("xsDownload")!=-1){
+													uni.removeStorageSync(item);
+												}
+												if(item.indexof("xsShouCang")!=-1){
+													uni.removeStorageSync(item);
+												}
+											})
+											_this.getSize()
+											uni.showToast({
+												title:"小说最近浏览记录已清除！",
+												icon:"none"
+											})
+										} catch (e) {
+										    // error
+										}
+									}
+								}
+							});
+						}
+						if(res.tapIndex==3){
+							uni.showModal({
+								title: '清除提示',
+								content: "确定要清除所有缓存吗？",
+								success: function(res) {
+									if(res.confirm){
+										try {
+											_this.keys.forEach((item)=>{
+												if(item!="baseUrl"&&item!="isCanUse"&&item!="config"&&item!="userInfo"){
+													uni.removeStorageSync(item);
+												}
+											})
+											_this.percent = 0;
+											_this.currentSize = 0;
+											uni.showToast({
+												title:"缓存已全部清除！",
+												icon:"none"
+											})
+										} catch (e) {
+										    // error
+										}
+									}
+								}
+							});
+						}
+				    },
+				    fail: function (res) {
+				        console.log(res.errMsg);
+				    }
 				});
 			}
 		},
@@ -464,8 +612,18 @@ export default {
 	font-size: 17px;
 }
 .u-text{
-	padding: 30px;
+	padding: 10px 20px 10px 20px;
 	font-size: 12px;
-	color: #777;
+	color: #333;
+}
+.progress-box{
+	padding: 5px 20px;
+	.progress-text{
+		margin-bottom: 5px;
+	}
+	text{
+		font-size: 10px;
+		color: #777;
+	}
 }
 </style>

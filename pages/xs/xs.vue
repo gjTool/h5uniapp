@@ -150,7 +150,9 @@ export default {
 			pageIndex: 0,
 			currentWebview: null,
 			index: 0,
-			openid: ""
+			openid: "",
+			obj:{},
+			detailData: {}
 		};
 	},
 	computed: {
@@ -234,11 +236,17 @@ export default {
 		reloadContent() {
 			let _this = this;
 			let num = this.num;
-		num = isNaN( parseInt(num)) ? 0:parseInt(num);
-			uni.setStorage({
-				key: 'xsNum' + _this.xsname,
-				data: num
+			num = isNaN( parseInt(num)) ? 0:parseInt(num);
+			this.title = this.xslist[num].num;
+			uni.setNavigationBarTitle({
+				title: this.title
 			});
+			this.detailData.title = this.title;
+			this.detailData.index = num;
+			this.detailData.Time = new Date().getTime();
+			this.detailData.saveTime = config.getDate("/");
+			config.setXsZJ(num, this.detailData)
+			this.$eventHub.$emit('changeXsNum', num);
 			try {
 				const value = uni.getStorageSync('xsShouCang');
 				if (value) {
@@ -505,17 +513,15 @@ export default {
 			this.mode = !this.mode;
 		},
 		gotoxslist() {
+			let data = {
+				xsname: this.title,
+				num: this.num,
+				from: "xs",
+				url: this.url1,
+				cover: this.cover
+			}
 			uni.navigateTo({
-				url:
-					'/pages/xslist/xslist?xsname=' +
-					encodeURIComponent(this.xsname) +
-					'&num=' +
-					encodeURIComponent(this.num) +
-					'&from=xs' +
-					'&url=' +
-					this.url1 +
-					'&cover=' +
-					this.cover
+				url: `/pages/xslist/xslist?data=${JSON.stringify(data)}&obj=${JSON.stringify(this.detailData)}`
 			});
 		},
 		scrollClick() {
@@ -789,7 +795,8 @@ export default {
 		
 		this.xsname = this.detailData.name;
 		this.cover = this.detailData.cover;
-		this.num = this.detailData.num ? this.detailData.num :0;
+		
+		this.num = this.detailData.index ? this.detailData.index :0;
 		this.url1 = this.detailData.url;
 		_this.xslist = uni.getStorageSync('xslist' + this.url1);
 		_this.reloadContent();

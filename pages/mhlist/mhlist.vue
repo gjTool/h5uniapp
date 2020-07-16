@@ -173,7 +173,6 @@
 						if (res.statusCode == 200 && res.data && res.data.code == 0) {
 							let data = res.data.list
 							_this.mhlist = data;
-							// _this.getCacheState(_this.mhlist);
 							setTimeout(() => {
 								_this.scrollTo()
 								callback && callback("ok")
@@ -186,29 +185,8 @@
 						}
 					}
 				});
-			},
-			getCacheState(xslist) {
-				let _this = this;
-				let value = uni.getStorageSync('xsDownload');
-				if (value) {
-					for (let i = 0; i < value.length; i++) {
-						if (value[i].name == _this.xsname) {
-							let arr = value[i].data;
-							value[i].xslist = xslist;
-							arr.forEach((item) => {
-								xslist.forEach((obj) => {
-									if (item.numName == obj.num && item.state == "done") {
-										obj.state = "done";
-									}
-								})
-							})
-							_this.xslist = xslist;
-							break;
-						}
-					}
-					uni.setStorageSync('xsDownload', value);
-				}
 			}
+			
 		},
 		onNavigationBarButtonTap(val) {
 			if (val.index == 1) {}
@@ -239,7 +217,6 @@
 			});
 
 			_this.mhlist = uni.getStorageSync('mhlist' + this.url1);
-			// _this.getCacheState(_this.mhlist)
 			setTimeout(() => {
 				_this.scrollTo()
 			}, 200)

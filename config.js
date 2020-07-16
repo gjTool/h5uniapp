@@ -190,7 +190,7 @@ let getXsZJ = () => {
 	return arr
 }
 //获取小说最近浏览记录章节索引
-let getXsZJindex = (url) => {
+let getXsZJnum = (url) => {
 	let arr = getXsZJ(),
 		index = 0;
 	let openid = uni.getStorageSync("userInfo").openid;
@@ -214,7 +214,7 @@ let setXsZJ = (num, detailData) => {
 	if (openid) {
 		if (arr && arr.length) {
 			let flag = false;
-			detailData.index = index;
+			detailData.index = num;
 			detailData.url = url;
 			for (let i = 0; i < arr.length; i++) {
 				if (url === arr[i].url) {
@@ -293,6 +293,9 @@ export default {
 	getMhZJ,
 	getMhZJnum,
 	setMhZJ,
+	getXsZJ,
+	getXsZJnum,
+	setXsZJ,
 	getYsZJ,
 	getYsZJnum,
 	setYsZJ,

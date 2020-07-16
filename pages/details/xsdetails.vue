@@ -93,20 +93,19 @@
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
 			this.title = this.detailData.name;
-			this.num = uni.getStorageSync("xsNum" + this.title);
+			this.num = config.getXsZJnum(this.detailData.url);
 			this.num = this.num ? this.num : 0;
 			uni.setNavigationBarTitle({
 				title: this.title
 			});
-			
 			this.getList()
 			//监听事件
 			this.$eventHub.$on('changeXsNum', (data) => {
 				this.num = data;
-				uni.setStorage({
-					key: "xsNum" + this.title,
-					data: this.num
-				});
+				this.detailData.title = this.list[this.num].num;
+				this.detailData.Time = new Date().getTime();
+				this.detailData.saveTime = config.getDate("/"); 
+				config.setXsZJ(data, this.detailData)
 			})
 		},
 		methods: {
@@ -128,6 +127,10 @@
 							this.getCacheState(data)
 							try {
 								uni.setStorageSync('xslist'+ this.detailData.url, this.list);
+								this.detailData.title = this.list[this.num].num;
+								this.detailData.Time = new Date().getTime();
+								this.detailData.saveTime = config.getDate("/"); 
+								config.setXsZJ(this.num, this.detailData)
 							} catch (e) {}
 							
 						}
@@ -171,13 +174,9 @@
 			},
 			play(item, index) {
 				this.num = index;
-				uni.setStorage({
-					key: "xsNum" + this.title,
-					data: index
-				});
 				this.detailData.title = this.list[index].num;
-				this.detailData.mum = this.num;
-				// config.setMhZJ(this.num, this.detailData)
+				this.detailData.index = this.num;
+				config.setXsZJ(this.num, this.detailData)
 				try {
 					uni.setStorageSync('xslist' + this.detailData.url, this.list);
 				} catch (e) {}
@@ -237,7 +236,6 @@
 					let data = [];
 					this.detailData.num = this.num;
 					this.detailData.list = this.list;
-					// console.log(this.num)
 					data.push(this.detailData)
 					uni.setStorage({
 						key: 'xsShouCang',
@@ -253,9 +251,15 @@
 
 			},
 			gotoxslist() {
+				let data = {
+					xsname: this.title,
+					num: this.num,
+					from: "xsdetails",
+					url: this.detailData.url,
+					cover: this.detailData.cover
+				}
 				uni.navigateTo({
-					url: '/pages/xslist/xslist?xsname=' + encodeURIComponent(this.title) + '&num=' + encodeURIComponent(this.num) +
-						'&from=xsdetails'+ "&url="+this.detailData.url+"&cover="+this.detailData.cover
+					url: `/pages/xslist/xslist?data=${JSON.stringify(data)}&obj=${JSON.stringify(this.detailData)}`
 				});
 			}
 		}

@@ -137,9 +137,6 @@
 				jindu:false
 			};
 		},
-		onReady: function(res) {
-		
-		},
 		computed: {
 			src() {
 				var _this = this;
@@ -160,7 +157,6 @@
 				return url;
 			}
 		},
-		onUnload() {},
 		onShareAppMessage(res) {
 		  return {
 			title:  "["+this.detailData.genre+"]"+this.title,

@@ -156,6 +156,10 @@
 			if(this.YsZJList&&this.YsZJList.length){
 				this.tabBars[0].contentList = this.YsZJList
 			}
+			this.XsZJList = config.getXsZJ();
+			if(this.XsZJList&&this.XsZJList.length){
+				this.tabBars[2].contentList = this.XsZJList;
+			}
 		},
 		onHide() {
 			this.$refs['share'].close();
@@ -343,7 +347,7 @@
 				//跳转小说
 				if (item._type == '2') {
 					let list = uni.getStorageSync('xslist' + item.url);
-					let url = '/pages/xs/xs?src=' + encodeURIComponent(list[item.num].url) + "&data=" +JSON.stringify(item)
+					let url = '/pages/xs/xs?src=' + encodeURIComponent(list[item.index].url) + "&data=" +JSON.stringify(item)
 					if (this.index == 0) {
 						url = ""
 					}

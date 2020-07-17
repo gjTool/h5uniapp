@@ -1,9 +1,11 @@
 <template>
 	<view class="content">
 		<view v-if="index==1">
-			<view class="text-item text-item-top" v-show="show"  :class="{ black: black }">
+			<!-- #ifdef APP-PLUS -->
+			<view class="text-item text-item-top" v-show="!show"  :class="{ black: black }">
 				<text>{{ title }}</text>
 			</view>
+			<!-- #endif -->
 			<view
 				@touchmove="handletouchmove"
 				@touchstart="handletouchstart"

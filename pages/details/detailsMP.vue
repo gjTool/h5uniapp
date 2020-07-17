@@ -193,6 +193,7 @@
 		},
 		methods: {
 			getList(){
+				let _this = this;
 				uni.request({
 					url: uni.getStorageSync('baseUrl'),
 					data: {

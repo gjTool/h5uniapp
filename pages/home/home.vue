@@ -485,6 +485,16 @@
 						if(_this.index ==1){
 							_this.marginTop = (_this.statusBarHeight + 88) + "px";
 							_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+							if (!_this.contentData.length) {
+								_this.loading = true;
+								_this.keyWord = _this.searchWord;
+								let tabItem1 = _this.tabBars[0];
+								_this.loadList(tabItem1);
+								let tabItem2 = _this.tabBars[1];
+								_this.loadList(tabItem2);
+								let tabItem3 = _this.tabBars[2];
+								_this.loadList(tabItem3);
+							}
 						}else{
 							_this.marginTop = (_this.statusBarHeight + 44) + "px";
 						}
@@ -531,6 +541,16 @@
 									}else{
 										_this.marginTop = (_this.statusBarHeight + 88) + "px";
 										_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+										if (!_this.contentData.length) {
+											_this.loading = true;
+											_this.keyWord = _this.searchWord;
+											let tabItem1 = _this.tabBars[0];
+											_this.loadList(tabItem1);
+											let tabItem2 = _this.tabBars[1];
+											_this.loadList(tabItem2);
+											let tabItem3 = _this.tabBars[2];
+											_this.loadList(tabItem3);
+										}
 									}
 									uni.showModal({
 										title: '提示',
@@ -542,7 +562,7 @@
 								}
 							}
 						});
-					},3000)
+					},1000)
 				}
 			});
 			//#endif

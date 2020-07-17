@@ -50,9 +50,6 @@
 	import uniIcons from '@/components/uni-icons/uni-icons.vue';
 	import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue';
 	import uniPopup from '@/components/uni-popup/uni-popup.vue';
-	let windowWidth = 0,
-		scrollTimer = false,
-		tabBar;
 	export default {
 		components: {
 			mixLoading,
@@ -99,13 +96,14 @@
 		},
 		computed: {},
 		async onLoad() {
+			let _this = this;
 			let option = uni.getStorageSync('config');
 			this.index = option.index
 			// #ifndef MP
 			this.index = 1
 			// #endif
 			// 获取屏幕宽度
-			windowWidth = uni.getSystemInfoSync().windowWidth;
+			_this.windowWidth = uni.getSystemInfoSync().windowWidth;
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.MhZJList = config.getMhZJ();
 			if(this.MhZJList&&this.MhZJList.length){
@@ -135,6 +133,7 @@
 					})(k)
 				}
 			}
+			_this.tabBar =  this.getElSize('nav-bar');
 		},
 		onNavigationBarButtonTap(e) {
 			if (e.index == 0) {
@@ -204,12 +203,11 @@
 							}else{
 								item.imgText = item.time+"更新"
 							}
-							// console.log(res.data)
+							uni.setStorage({
+								key: this.openid  + "ysZJ",
+								data: this.tabBars[0].contentList
+							});
 						}
-						uni.setStorage({
-							key: this.openid  + "ysZJ",
-							data: this.tabBars[0].contentList
-						});
 					}
 				})	
 				this.ysurlRequest = ysurlRequest;
@@ -242,11 +240,11 @@
 							item.imgText = obj.time?obj.time+"更新":""
 							item.genre = obj.tag ?obj.tag:"其他";
 							// console.log(res.data)
+							uni.setStorage({
+								key: this.openid  + "mhZJ",
+								data: this.tabBars[1].contentList
+							});
 						}
-						uni.setStorage({
-							key: this.openid  + "mhZJ",
-							data: this.tabBars[1].contentList
-						});
 					}
 				})	
 				this.mhurlRequest = mhurlRequest;
@@ -387,22 +385,23 @@
 			},
 			//tab切换
 			async changeTab(e) {
+				let _this  = this;
 				this.loading = false;
-				if (scrollTimer) {
+				if (_this.scrollTimer) {
 					//多次切换只执行最后一次
-					clearTimeout(scrollTimer);
-					scrollTimer = false;
+					clearTimeout(_this.scrollTimer);
+					_this.scrollTimer = false;
 				}
 				let index = e;
 				//e=number为点击切换，e=object为swiper滑动切换
 				if (typeof e === 'object') {
 					index = e.detail.current;
 				}
-				if (typeof tabBar !== 'object') {
-					tabBar = await this.getElSize('nav-bar');
+				if (typeof _this.tabBar !== 'object') {
+					_this.tabBar = await this.getElSize('nav-bar');
 				}
 				//计算宽度相关
-				let tabBarScrollLeft = tabBar.scrollLeft;
+				let tabBarScrollLeft = _this.tabBar.scrollLeft;
 				let width = 0;
 				let nowWidth = 0;
 				//获取可滑动总宽度
@@ -418,21 +417,21 @@
 					this.tabCurrentIndex = index;
 				}
 				//延迟300ms,等待swiper动画结束再修改tabbar
-				scrollTimer = setTimeout(() => {
-					if (width - nowWidth / 2 > windowWidth / 2) {
-						//如果当前项越过中心点，将其放在屏幕中心
-						this.scrollLeft = width - nowWidth / 2 - windowWidth / 2;
-					} else {
-						this.scrollLeft = 0;
-					}
-					if (typeof e === 'object') {
-						this.tabCurrentIndex = index;
-					}
+				_this.scrollTimer = setTimeout(() => {
+					
+				}, 0);
+				if (width - nowWidth / 2 > _this.windowWidth / 2) {
+					//如果当前项越过中心点，将其放在屏幕中心
+					this.scrollLeft = width - nowWidth / 2 - _this.windowWidth / 2;
+				} else {
+					this.scrollLeft = 0;
+				}
+				if (typeof e === 'object') {
 					this.tabCurrentIndex = index;
-
-					let tabItem = this.tabBars[this.tabCurrentIndex];
-					// this.loadList(tabItem);
-				}, 300);
+				}
+				this.tabCurrentIndex = index;
+				
+				let tabItem = this.tabBars[this.tabCurrentIndex];
 			},
 			//获得元素的size
 			getElSize(id) {

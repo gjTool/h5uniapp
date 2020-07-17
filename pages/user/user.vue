@@ -13,7 +13,7 @@
 		<view class="listFunction" v-if="index==0">
 			<view class="listStrip">
 				<image src="../../static/tab-shoucang-current.png" mode="aspectFit"></image>
-				<view class="text">欢迎使用pdfh5咨讯查询，您在这里可以查询到当地天气详情</view>
+				<view class="text">欢迎使用本小程序，您在这里可以查询到当地天气详情</view>
 				<text class="iconfont iconyou"></text>
 			</view>
 			<view class="progress-box">

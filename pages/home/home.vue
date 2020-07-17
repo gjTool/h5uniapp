@@ -185,9 +185,6 @@
 	import mixLoading from '@/components/mix-loading/mix-loading';
 	import uniIcons from '@/components/uni-icons/uni-icons.vue';
 	import uniNavBar from '@/components/uni-nav-bar/uni-nav-bar.vue';
-	let windowWidth = 0,
-		scrollTimer = false,
-		tabBar;
 	export default {
 		components: {
 			mixLoading,
@@ -281,7 +278,7 @@
 			plus.navigator.setFullscreen(false);
 			// #endif
 			// 获取屏幕宽度
-			let windowWidth = uni.getSystemInfoSync().windowWidth;
+			_this.windowWidth = uni.getSystemInfoSync().windowWidth;
 			// 获取屏幕高度
 			let windowHeight = uni.getSystemInfoSync().windowHeight;
 			// 获取状态栏高度
@@ -321,7 +318,7 @@
 			let tabItem3 = _this.tabBars[2];
 			_this.loadList(tabItem3);
 			// #endif
-			if (windowWidth >= 768) {
+			if (_this.windowWidth >= 768) {
 				this.ipad = true;
 			}
 			// #ifdef APP-PLUS
@@ -329,6 +326,7 @@
 			this.marginTop = "44px";
 			this.height=(windowHeight-44)+"px";
 			// #endif
+			this.tabBar =  this.getElSize('nav-bar');
 			// #ifdef MP
 			uni.getSetting({
 				success(res) {
@@ -860,22 +858,23 @@
 			},
 			//tab切换
 			async changeTab(e) {
+				let _this = this
 				this.loading = false;
-				if (scrollTimer) {
+				if (this.scrollTimer) {
 					//多次切换只执行最后一次
-					clearTimeout(scrollTimer);
-					scrollTimer = false;
+					clearTimeout(this.scrollTimer);
+					this.scrollTimer = false;
 				}
 				let index = e;
 				//e=number为点击切换，e=object为swiper滑动切换
 				if (typeof e === 'object') {
 					index = e.detail.current;
 				}
-				if (typeof tabBar !== 'object') {
-					tabBar = await this.getElSize('nav-bar');
+				if (typeof this.tabBar !== 'object') {
+					this.tabBar = await this.getElSize('nav-bar');
 				}
 				//计算宽度相关
-				let tabBarScrollLeft = tabBar.scrollLeft;
+				let tabBarScrollLeft = this.tabBar.scrollLeft;
 				let width = 0;
 				let nowWidth = 0;
 				//获取可滑动总宽度
@@ -891,21 +890,21 @@
 					this.tabCurrentIndex = index;
 				}
 				//延迟300ms,等待swiper动画结束再修改tabbar
-				scrollTimer = setTimeout(() => {
-					if (width - nowWidth / 2 > windowWidth / 2) {
-						//如果当前项越过中心点，将其放在屏幕中心
-						this.scrollLeft = width - nowWidth / 2 - windowWidth / 2;
-					} else {
-						this.scrollLeft = 0;
-					}
-					if (typeof e === 'object') {
-						this.tabCurrentIndex = index;
-					}
+				this.scrollTimer = setTimeout(() => {
+					
+				}, 0);
+				if (width - nowWidth / 2 > _this.windowWidth / 2) {
+					//如果当前项越过中心点，将其放在屏幕中心
+					this.scrollLeft = width - nowWidth / 2 - _this.windowWidth / 2;
+				} else {
+					this.scrollLeft = 0;
+				}
+				if (typeof e === 'object') {
 					this.tabCurrentIndex = index;
-
-					let tabItem = this.tabBars[this.tabCurrentIndex];
-					// this.loadList(tabItem);
-				}, 300);
+				}
+				this.tabCurrentIndex = index;
+				
+				let tabItem = this.tabBars[this.tabCurrentIndex];
 			},
 			//获得元素的size
 			getElSize(id) {

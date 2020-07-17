@@ -130,10 +130,6 @@
 							this.getCacheState(data)
 							try {
 								uni.setStorageSync('xslist'+ this.detailData.url, this.list);
-								this.detailData.title = this.list[this.num].num;
-								this.detailData.Time = new Date().getTime();
-								this.detailData.saveTime = config.getDate("/"); 
-								config.setXsZJ(this.num, this.detailData)
 							} catch (e) {}
 							
 						}

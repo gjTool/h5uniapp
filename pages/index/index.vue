@@ -94,7 +94,6 @@
 				XsZJList:[] //影视最近观看记录
 			};
 		},
-		computed: {},
 		async onLoad() {
 			let _this = this;
 			let option = uni.getStorageSync('config');
@@ -127,10 +126,10 @@
 			this.XsZJList = config.getXsZJ();
 			if(this.XsZJList&&this.XsZJList.length){
 				this.tabBars[2].contentList = this.XsZJList;
-				for(let k=0;k<this.tabBars[2].contentList.length;k++){
-					((k)=>{
-						this.getXsCover(this.tabBars[2].contentList[k],k,this.tabBars[2].contentList.length)
-					})(k)
+				for(let j=0;j<this.tabBars[2].contentList.length;j++){
+					((j)=>{
+						this.getXsCover(this.tabBars[2].contentList[j],j,this.tabBars[2].contentList.length)
+					})(j)
 				}
 			}
 			_this.tabBar =  this.getElSize('nav-bar');
@@ -177,7 +176,7 @@
 							let str = item.name;
 							item.cover = obj.cover;
 							item.name = obj.name;
-							let text = str.replace(item.name,"");
+							let text = str.replace(item.name1,"");
 							if(text.indexOf("更新")!=-1){
 								if(item.genre.indexOf("综艺")!=-1){
 									let numstr = res.data.list[res.data.list.length-1].num;
@@ -203,10 +202,6 @@
 							}else{
 								item.imgText = item.time+"更新"
 							}
-							uni.setStorage({
-								key: this.openid  + "ysZJ",
-								data: this.tabBars[0].contentList
-							});
 						}
 					}
 				})	
@@ -239,11 +234,6 @@
 							item.name = obj.name;
 							item.imgText = obj.time?obj.time+"更新":""
 							item.genre = obj.tag ?obj.tag:"其他";
-							// console.log(res.data)
-							uni.setStorage({
-								key: this.openid  + "mhZJ",
-								data: this.tabBars[1].contentList
-							});
 						}
 					}
 				})	
@@ -265,22 +255,14 @@
 				let xsurlRequest = uni.request({
 					url: uni.getStorageSync('baseUrl'),
 					data: {
-						xsname: item.name
+						xsurl1: item.url
 					},
 					method: 'GET',
 					complete: res => {
 						if (res.statusCode == 200 && res.data && res.data.code == 0) {
-							let arr = res.data.list;
-							arr.forEach((obj)=>{
-								if(obj.url === item.url){
-									item.imgText = obj.num
-									item.genre = obj.tag ?obj.tag:"其他";
-									uni.setStorage({
-										key: this.openid  + "xsZJ",
-										data: this.tabBars[2].contentList
-									});
-								}
-							})
+							let obj = res.data.data;
+							item.imgText = obj.num;
+							item.num = obj.num;
 						}
 					}
 				})	
@@ -333,6 +315,7 @@
 				}
 				//跳转小说
 				if (item._type == '2') {
+					console.log(item.index,item.cover)
 					let list = uni.getStorageSync('xslist' + item.url);
 					let url = '/pages/xs/xs?src=' + encodeURIComponent(list[item.index].url) + "&data=" +JSON.stringify(item)
 					if (this.index == 0) {

@@ -221,10 +221,12 @@ export default {
 			let _this = this;
 			let num = this.num;
 			num = isNaN( parseInt(num)) ? 0:parseInt(num);
-			this.title = this.xslist[num].num;
-			uni.setNavigationBarTitle({
-				title: this.title
-			});
+			if(this.xslist && this.xslist.length){
+				this.title = this.xslist[num].num;
+				uni.setNavigationBarTitle({
+					title: this.title
+				});
+			}
 			this.detailData.title = this.title;
 			this.detailData.index = num;
 			this.detailData.Time = new Date().getTime();

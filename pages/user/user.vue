@@ -90,6 +90,7 @@ export default {
 		let option = uni.getStorageSync('config');
 		this.index = option.index
 		this.text = option.text
+		this.openid = uni.getStorageSync("userInfo").openid;
 		//监听事件
 		this.$eventHub.$on('isCanUse2', (num) => {
 			let option = uni.getStorageSync('config');
@@ -174,6 +175,7 @@ export default {
 		_this.text = option.text
 		_this.isCanUse = uni.getStorageSync('isCanUse');
 		_this.data = uni.getStorageSync("userInfo");
+		this.openid = _this.data.openid;
 		if(_this.isCanUse===false){
 			_this.index = option.index;
 		}else{
@@ -214,6 +216,7 @@ export default {
 												try {
 													infoRes.userInfo.session_key=res.data.session_key;
 													infoRes.userInfo.openid=res.data.openid;
+													_this.openid = res.data.openid;
 													uni.setStorageSync('userInfo', infoRes.userInfo);
 													_this.isCanUse = false;
 													_this.$eventHub.$emit('isCanUse',0)
@@ -340,10 +343,10 @@ export default {
 										try {
 										    uni.removeStorageSync( _this.openid + "mhZJ");
 											_this.keys.forEach((item)=>{
-												if(item.indexof("mhlist")!=-1){
+												if(item.indexOf("mhlist")!=-1){
 													uni.removeStorageSync(item);
 												}
-												if(item.indexof("mhShouCang")!=-1){
+												if(item.indexOf("mhShouCang")!=-1){
 													uni.removeStorageSync(item);
 												}
 											})
@@ -368,16 +371,16 @@ export default {
 										try {
 										    uni.removeStorageSync( _this.openid + "xsZJ");
 											_this.keys.forEach((item)=>{
-												if(item.indexof("xsNum")!=-1){
+												if(item.indexOf("xsNum")!=-1){
 													uni.removeStorageSync(item);
 												}
-												if(item.indexof("xslist")!=-1){
+												if(item.indexOf("xslist")!=-1){
 													uni.removeStorageSync(item);
 												}
-												if(item.indexof("xsDownload")!=-1){
+												if(item.indexOf("xsDownload")!=-1){
 													uni.removeStorageSync(item);
 												}
-												if(item.indexof("xsShouCang")!=-1){
+												if(item.indexOf("xsShouCang")!=-1){
 													uni.removeStorageSync(item);
 												}
 											})

@@ -2,7 +2,8 @@
 	<view class="content">
 		<view class="video-box" v-if="index==1">
 			<video id="myVideo" :title="videoTitle" class="myVideo" autoplay :src="src" controls show-casting-button direction="90"
-			 show-mute-btn enable-play-gesture enable-progress-gesture show-screen-lock-button @touchstart="mytouchstart"
+			  enable-play-gesture enable-progress-gesture show-screen-lock-button @touchstart="mytouchstart"
+			 :show-play-btn="true" :show-center-play-btn="true"  
 			 @loadedmetadata="loadedmetadata" @longtap="mylongtap" @play="myplay" @touchend="mytouchend" vslide-gesture-in-fullscreen
 			 @timeupdate="mytimeupdate" @controlstoggle="mycontrolstoggle" @fullscreenchange="myfullscreenchange">
 				<view class="rate" @click="rateBtn" v-show="rateShow">x{{Rate===1?"1.0":Rate===2?"2.0":Rate}}</view>
@@ -26,6 +27,7 @@
 						</view>
 					</view>
 				</view>
+				<view class="bottom-progress"></view>
 			</video>
 		</view>
 		<scroll-view class="scroll" scroll-y v-if="index==1">
@@ -692,7 +694,14 @@
 			display: none;
 		}
 	}
-
+	.bottom-progress{
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		height: 2px;
+		background-color: #000;
+	}
 	.xuanji {
 		position: absolute;
 		width: 60px;

@@ -94,6 +94,7 @@
 			this.detailData = JSON.parse(options.data);
 			this.title = this.detailData.name;
 			this.num = config.getXsZJnum(this.detailData.url);
+			console.log(this.num)
 			this.num = this.num ? this.num : 0;
 			uni.setNavigationBarTitle({
 				title: this.title

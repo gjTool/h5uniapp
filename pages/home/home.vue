@@ -747,6 +747,7 @@
 							let obj = res.data.data;
 							let str = item.name;
 							item.cover = obj.cover;
+							item.name1 = item.name;
 							item.name = obj.name;
 							let text = str.replace(item.name,"");
 							if(text.indexOf("更新")!=-1){

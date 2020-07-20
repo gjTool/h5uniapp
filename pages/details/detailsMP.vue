@@ -3,7 +3,7 @@
 		<view class="video-box" v-if="index==1">
 			<video id="myVideo" :title="videoTitle" class="myVideo" autoplay :src="src" controls show-casting-button direction="90"
 			  enable-play-gesture enable-progress-gesture show-screen-lock-button @touchstart="mytouchstart"
-			 :show-play-btn="true" :show-center-play-btn="true"  
+			  :auto-pause-if-navigate="true" :auto-pause-if-open-native="true"
 			 @loadedmetadata="loadedmetadata" @longtap="mylongtap" @play="myplay" @touchend="mytouchend" vslide-gesture-in-fullscreen
 			 @timeupdate="mytimeupdate" @controlstoggle="mycontrolstoggle" @fullscreenchange="myfullscreenchange">
 				<view class="rate" @click="rateBtn" v-show="rateShow">x{{Rate===1?"1.0":Rate===2?"2.0":Rate}}</view>
@@ -175,6 +175,25 @@
 		},
 		onPullDownRefresh(){
 			this.getList()
+		},
+		onHide(){
+			try{
+				if(this.videoContext){
+					this.videoContext.pause()
+				}
+			}catch(e){
+				//TODO handle the exception
+			}
+			
+		},
+		onShow(){
+			try{
+				if(this.videoContext){
+					this.videoContext.play()()
+				}
+			}catch(e){
+				//TODO handle the exception
+			}
 		},
 		onLoad(options) {
 			// #ifndef MP-ALIPAY

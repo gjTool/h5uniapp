@@ -315,7 +315,7 @@
 				}
 				//跳转小说
 				if (item._type == '2') {
-					console.log(item.index,item.cover)
+					// console.log(item.index,item.cover)
 					let list = uni.getStorageSync('xslist' + item.url);
 					let url = '/pages/xs/xs?src=' + encodeURIComponent(list[item.index].url) + "&data=" +JSON.stringify(item)
 					if (this.index == 0) {

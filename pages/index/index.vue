@@ -104,6 +104,7 @@
 			// 获取屏幕宽度
 			_this.windowWidth = uni.getSystemInfoSync().windowWidth;
 			this.openid = uni.getStorageSync("userInfo").openid;
+			this.openid = uni.getStorageSync("userInfo").openid;
 			this.MhZJList = config.getMhZJ();
 			if(this.MhZJList&&this.MhZJList.length){
 				this.tabBars[1].contentList = this.MhZJList;
@@ -143,16 +144,19 @@
 			}
 		},
 		onShow() {
+			let _this = this;
 			// #ifdef APP-PLUS
 			plus.navigator.setFullscreen(false);
 			// #endif
+			_this.windowWidth = uni.getSystemInfoSync().windowWidth;
+			this.openid = uni.getStorageSync("userInfo").openid;
 			this.MhZJList = config.getMhZJ();
 			if(this.MhZJList&&this.MhZJList.length){
-				this.tabBars[1].contentList = this.MhZJList
+				this.tabBars[1].contentList = this.MhZJList;
 			}
 			this.YsZJList = config.getYsZJ();
 			if(this.YsZJList&&this.YsZJList.length){
-				this.tabBars[0].contentList = this.YsZJList
+				this.tabBars[0].contentList = this.YsZJList;
 			}
 			this.XsZJList = config.getXsZJ();
 			if(this.XsZJList&&this.XsZJList.length){
@@ -176,10 +180,10 @@
 							let str = item.name;
 							item.cover = obj.cover;
 							item.name = obj.name;
-							let text = str.replace(item.name1,"");
+							let text = item.name1.replace(str,"");
+							let numstr = res.data.list[res.data.list.length-1].num;
 							if(text.indexOf("更新")!=-1){
 								if(item.genre.indexOf("综艺")!=-1){
-									let numstr = res.data.list[res.data.list.length-1].num;
 									if(numstr.indexOf("集")!=-1 || numstr.indexOf("期")!=-1){
 										item.imgText = "更新至"+numstr;
 									}else{
@@ -187,21 +191,22 @@
 									}
 									
 								}else{
-									item.imgText = text
+									item.imgText = "更新至"+numstr
 								}
 							}else if(text.indexOf("完结")!=-1){
 								if(item.genre.indexOf("综艺")==-1){
 									item.imgText =  res.data.list.length+"集全"
 								}else{
-									item.imgText = text
+									item.imgText = "更新至"+numstr
 								}
 							}else if(text.indexOf("集")!=-1){
-								item.imgText = text
+								item.imgText = "更新至"+numstr
 							}else if(text.indexOf("期")!=-1){
-								item.imgText = text
+								item.imgText = "更新至"+numstr
 							}else{
 								item.imgText = item.time+"更新"
 							}
+							this.tabBars[0].contentList[k].imgText = item.imgText
 						}
 					}
 				})	
@@ -234,6 +239,7 @@
 							item.name = obj.name;
 							item.imgText = obj.time?obj.time+"更新":""
 							item.genre = obj.tag ?obj.tag:"其他";
+							this.tabBars[1].contentList[k].imgText = item.imgText
 						}
 					}
 				})	
@@ -263,6 +269,7 @@
 							let obj = res.data.data;
 							item.imgText = obj.num;
 							item.num = obj.num;
+							this.tabBars[2].contentList[k].imgText = item.imgText
 						}
 					}
 				})	

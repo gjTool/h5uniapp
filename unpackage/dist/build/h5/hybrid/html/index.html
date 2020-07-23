@@ -121,9 +121,8 @@
 	</head>
 	<body>
 		<video id="video" class="video-js vjs-default-skin" controls width="640" height="264" poster="" x-webkit-airplay="allow"
-		 x5-playsinline="" playsinline="" webkit-playsinline="">
+		 x5-playsinline playsinline webkit-playsinline>
 			<source src="" type="application/x-mpegURL">
-			<source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
 		</video>
 		<script src="./js/jquery-1.11.2.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="./js/video.min.js" type="text/javascript" charset="utf-8"></script>
@@ -138,7 +137,6 @@
 			var player;
 			var option = {
 				errorDisplay: false,
-				preload: "auto",
 				source: [{
 					type: "application/x-mpegURL",
 					src: videourl

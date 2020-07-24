@@ -12,9 +12,11 @@
 			:background-color="'#ec706b'"
 			class="uni-nav-bar"
 		/>
+		<!-- #ifdef H5 -->
 		<view class="video-box" v-if="index==1">
 			<web-view class="video" :style="webviewStyles" :src="webviewsrc"></web-view>
 		</view>
+		<!-- #endif -->
 		<scroll-view v-if="index==1" class="scroll" scroll-y>
 			<view class="scroll-content">
 				<view class="image-box"><image :src="obj.cover" @error="imgError(obj)"></image></view>

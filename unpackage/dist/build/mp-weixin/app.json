@@ -2,9 +2,7 @@
   "pages": [
     "pages/home/home",
     "pages/index/index",
-    "pages/details/details",
-    "pages/video/video",
-    "pages/details/detailsMP",
+    "pages/details/detailsXX",
     "pages/details/mhdetails",
     "pages/details/xsdetails",
     "pages/xs/xs",

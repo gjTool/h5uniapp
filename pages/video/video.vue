@@ -1,5 +1,6 @@
 <template>
 	<view>
+		<!-- #ifdef APP-NVUE -->
 		<view class="video-box" :style="{ height: boxHeight }" v-if="index==1"></view>
 		<view :style="{ top: scrollTop, height: scrollHeight }" class="scroll" scroll-y v-if="index==1">
 			<view class="scroll-content">
@@ -38,6 +39,7 @@
 				</view>
 			</view>
 		</view>
+		<!-- #endif -->
 	</view>
 </template>
 
@@ -182,6 +184,7 @@ export default {
 	},
 	onLoad(option) {
 		let _t = this;
+		// #ifdef APP-PLUS
 		let resObj = uni.getSystemInfoSync();
 		this.statusBarHeight = resObj.statusBarHeight;
 		this.screenWidth = resObj.screenWidth;
@@ -204,7 +207,6 @@ export default {
 			title: this.title
 		});
 
-		// #ifdef APP-PLUS
 		this.video = uni.getSubNVueById('video');
 		// 打开 nvue 子窗体
 		this.videoshow = false;

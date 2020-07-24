@@ -60,9 +60,9 @@
 					}
 				}
 			}
-		}
-		
-		,{
+		},
+		// #ifndef MP
+		{
 			"path": "pages/details/details",
 			"style": {
 				"navigationBarTitleText": "工具",
@@ -95,7 +95,8 @@
 					// ]
 				}
 			}
-		}, {
+		},
+		{
 			"path": "pages/video/video",
 			"style": {
 				"navigationBarTitleText": "工具",
@@ -162,13 +163,13 @@
 					]
 				}
 			}
-		}
-		
-		,{
-		    "path" : "pages/details/detailsMP",
+		},
+		// #endif
+		{
+		    "path" : "pages/details/detailsXX",
 		    "style" : {
 				"enablePullDownRefresh":true,
-				"navigationBarTitleText": "工具",
+				"navigationBarTitleText": "",
 				"app-plus": {
 					"bounce": "none",
 					"titleNView": {

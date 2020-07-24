@@ -750,9 +750,9 @@
 							item.name1 = item.name;
 							item.name = obj.name;
 							let text = str.replace(item.name,"");
+							let numstr = res.data.list[res.data.list.length-1].num;
 							if(text.indexOf("更新")!=-1){
 								if(item.genre.indexOf("综艺")!=-1){
-									let numstr = res.data.list[res.data.list.length-1].num;
 									if(numstr.indexOf("集")!=-1 || numstr.indexOf("期")!=-1){
 										item.imgText = "更新至"+numstr;
 									}else{
@@ -760,18 +760,18 @@
 									}
 									
 								}else{
-									item.imgText = text
+									item.imgText = "更新至"+numstr;
 								}
 							}else if(text.indexOf("完结")!=-1){
 								if(item.genre.indexOf("综艺")==-1){
 									item.imgText =  res.data.list.length+"集全"
 								}else{
-									item.imgText = text
+									item.imgText = "更新至"+numstr;
 								}
 							}else if(text.indexOf("集")!=-1){
-								item.imgText = text
+								item.imgText = "更新至"+numstr;
 							}else if(text.indexOf("期")!=-1){
-								item.imgText = text
+								item.imgText = "更新至"+numstr;
 							}else{
 								item.imgText = item.time+"更新"
 							}
@@ -838,7 +838,7 @@
 					});
 					// #endif
 					// #ifdef MP
-					let url = `/pages/details/detailsMP?data=${JSON.stringify(item)}`;
+					let url = `/pages/details/detailsXX?data=${JSON.stringify(item)}`;
 					if (this.index == 0) {
 						url = ""
 					}

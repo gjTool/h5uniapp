@@ -299,7 +299,7 @@
 					});
 					// #endif
 					// #ifdef MP
-					let url = `/pages/details/detailsMP?data=${JSON.stringify(item)}`;
+					let url = `/pages/details/detailsXX?data=${JSON.stringify(item)}`;
 					if (this.index == 0) {
 						url = ""
 					}

@@ -270,7 +270,7 @@
 			if (option && !option.advert) {
 				this.timedown = 0;
 			}
-			_this.isCanUse = uni.getStorageSync('isCanUse');
+		
 			// #ifdef MP || H5
 			this.timedown = 0;
 			// #endif
@@ -287,10 +287,15 @@
 			_this.index = option.index;
 			this.top = (this.statusBarHeight + 44) + "px";
 			this.marginTop = (this.statusBarHeight + 78) + "px";
-			if(_this.index ==1){
+			if(_this.index == 0){
+				_this.marginTop = (_this.statusBarHeight + 44) + "px";
+				if(!_this.forecastList.length){
+					_this.getWeather("北京")
+				}
+			}else{
 				_this.marginTop = (_this.statusBarHeight + 88) + "px";
 				_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-				if(!_this.isCanUse){
+				if (!_this.contentData.length) {
 					_this.loading = true;
 					_this.keyWord = _this.searchWord;
 					let tabItem1 = _this.tabBars[0];
@@ -300,8 +305,6 @@
 					let tabItem3 = _this.tabBars[2];
 					_this.loadList(tabItem3);
 				}
-			}else{
-				_this.marginTop = (_this.statusBarHeight + 44) + "px";
 			}
 			// #endif
 			// #ifdef H5
@@ -328,47 +331,25 @@
 			// #endif
 			this.tabBar =  this.getElSize('nav-bar');
 			// #ifdef MP
-			uni.getSetting({
-				success(res) {
-					let authSetting=res.authSetting
-					if (!res.authSetting['scope.userInfo']) {
-						_this.index = 0;
-						_this.isCanUse = true;
-						uni.setStorageSync('userInfo',{});
-						uni.setStorageSync('isCanUse', true); 
-						//这里调用授权
-						// console.log('当前未授权');
-						_this.marginTop = (_this.statusBarHeight + 44) + "px";
-						if(!_this.forecastList.length){
-							_this.getWeather("北京")
-						}
-					} else {
-						if (_this.index == 1  ) {
-							_this.marginTop = (_this.statusBarHeight + 88) + "px";
-							_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-							if (!_this.contentData.length) {
-								_this.loading = true;
-								_this.keyWord = _this.searchWord;
-								let tabItem1 = _this.tabBars[0];
-								_this.loadList(tabItem1);
-								let tabItem2 = _this.tabBars[1];
-								_this.loadList(tabItem2);
-								let tabItem3 = _this.tabBars[2];
-								_this.loadList(tabItem3);
-							}
-						}else{
-							_this.marginTop = (_this.statusBarHeight + 44) + "px";
-							if(!_this.forecastList.length){
-								_this.getWeather("北京")
-							}
-						}
-						
-					}
+			// #endif
+		},
+		onNavigationBarSearchInputConfirmed(e) {
+			this.confirm({
+				detail: {
+					value: e.text
 				}
 			});
-		
-			//监听事件
-			this.$eventHub.$on('isCanUse', (num) => {
+		},
+		onShow() {
+			let _this = this;
+			this.openid = uni.getStorageSync("userInfo").openid;
+			let option = uni.getStorageSync('config');
+			// #ifdef APP-PLUS
+			plus.navigator.setFullscreen(false);
+			// #endif
+			// #ifdef MP-WEIXIN
+			clearTimeout(config.configTimer)
+			config.configTimer = setTimeout(()=>{
 				uni.request({
 					url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
 					method: 'GET',
@@ -384,10 +365,10 @@
 								uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
 							}
 							_this.index = res.data.index;
+							_this.text = res.data.text
 							// #ifndef MP
 							_this.index = 1
 							// #endif
-							
 							if(_this.index == 0){
 								_this.marginTop = (_this.statusBarHeight + 44) + "px";
 								if(!_this.forecastList.length){
@@ -396,7 +377,6 @@
 							}else{
 								_this.marginTop = (_this.statusBarHeight + 88) + "px";
 								_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-								// _this.paddingBottom = "44px";
 								if (!_this.contentData.length) {
 									_this.loading = true;
 									_this.keyWord = _this.searchWord;
@@ -408,163 +388,17 @@
 									_this.loadList(tabItem3);
 								}
 							}
-							if(res.data.alertText2){
-								uni.showModal({
-									title: '提示',
-									showCancel:false,
-									content: res.data.alertText2,
-									success: function(res) {
-										
-									}
-								});
-							}
-						}
-					}
-				});
-			})
-			// #endif
-		},
-		onNavigationBarSearchInputConfirmed(e) {
-			this.confirm({
-				detail: {
-					value: e.text
-				}
-			});
-		},
-		onShow() {
-			let _this = this;
-			this.openid = uni.getStorageSync("userInfo").openid;
-			let option = uni.getStorageSync('config');
-			_this.isCanUse = uni.getStorageSync('isCanUse');
-			// if(_this.isCanUse===false){
-			// 	_this.index = option.index;
-			// }else{
-			// 	_this.index = 0;
-			// }
-			
-			// #ifdef APP-PLUS
-			plus.navigator.setFullscreen(false);
-			// #endif
-			// #ifdef MP-WEIXIN
-			clearTimeout(config.configTimer)
-			
-			uni.getSetting({
-				success(res) {
-					let authSetting=res.authSetting
-					if (!res.authSetting['scope.userInfo']) {
-						//这里调用授权
-						// console.log('当前未授权');
-						_this.isCanUse = true;
-						uni.setStorageSync('isCanUse', true);
-						_this.index = 0;
-						if(!_this.forecastList.length){
-							_this.getWeather("北京")
-						}
-						let option = uni.getStorageSync('config');
-						option.index = 0;
-						uni.setStorage({
-							key: 'config',
-							data: option
-						});
-						_this.marginTop = (_this.statusBarHeight + 44) + "px";
-						if(option.alertText2){
 							uni.showModal({
 								title: '提示',
 								showCancel:false,
-								content: option.alertText2,
+								content: res.data.alertText2,
 								success: function(res) {
-									
 								}
 							});
 						}
-					} else {
-						//用户已经授权过了
-						_this.isCanUse = false;
-						_this.background = "RGB(248,249,251)"
-						uni.setStorageSync('isCanUse', false); 
-						if(_this.index ==1){
-							_this.marginTop = (_this.statusBarHeight + 88) + "px";
-							_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-							if (!_this.contentData.length) {
-								_this.loading = true;
-								_this.keyWord = _this.searchWord;
-								let tabItem1 = _this.tabBars[0];
-								_this.loadList(tabItem1);
-								let tabItem2 = _this.tabBars[1];
-								_this.loadList(tabItem2);
-								let tabItem3 = _this.tabBars[2];
-								_this.loadList(tabItem3);
-							}
-						}else{
-							_this.marginTop = (_this.statusBarHeight + 44) + "px";
-						}
-						uni.getUserInfo({
-							provider: 'weixin',
-							success: function(infoRes) {
-								//获取用户信息后向调用信息更新方法
-								try {
-									_this.isCanUse = false;
-								} catch (e) {}
-								
-							}
-						});
 					}
-					config.configTimer = setTimeout(()=>{
-						uni.request({
-							url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
-							method: 'GET',
-							complete: res => {
-								if (res.statusCode == 200 && res.data) {
-									uni.setStorage({
-										key: 'config',
-										data: res.data
-									});
-									if(res.data.baseUrl){
-										uni.setStorageSync('baseUrl', res.data.baseUrl);
-									}else{
-										uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
-									}
-									if(!_this.isCanUse){
-										_this.index = res.data.index;
-										_this.text = res.data.text
-										// #ifndef MP
-										_this.index = 1
-										// #endif
-									}else{
-										_this.index = 0
-									}
-									if(_this.index == 0){
-										_this.marginTop = (_this.statusBarHeight + 44) + "px";
-										if(!_this.forecastList.length){
-											_this.getWeather("北京")
-										}
-									}else{
-										_this.marginTop = (_this.statusBarHeight + 88) + "px";
-										_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-										if (!_this.contentData.length) {
-											_this.loading = true;
-											_this.keyWord = _this.searchWord;
-											let tabItem1 = _this.tabBars[0];
-											_this.loadList(tabItem1);
-											let tabItem2 = _this.tabBars[1];
-											_this.loadList(tabItem2);
-											let tabItem3 = _this.tabBars[2];
-											_this.loadList(tabItem3);
-										}
-									}
-									uni.showModal({
-										title: '提示',
-										showCancel:false,
-										content: res.data.alertText2,
-										success: function(res) {
-										}
-									});
-								}
-							}
-						});
-					},1000)
-				}
-			});
+				});
+			},1000)
 			//#endif
 			
 		},

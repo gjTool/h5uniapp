@@ -1,22 +1,17 @@
 <template>
 	<view class="content" @click="scrollClick">
-		<!-- <uni-nav-bar :status-bar="true" :show="show" left-icon="arrowleft" @click-left="back" :title="title" right-text="目录" @click-right="gotomhlist"
+		<uni-nav-bar :status-bar="true" :show="show" left-icon="arrowleft" @click-left="back" :title="title" right-text="目录" @click-right="gotomhlist"
 		 :background-color="'#ec706b'" class="uni-nav-bar" /> -->
-		<!-- <view class="text-item text-item-top" v-show="!show" :class="{ black: black }">
+		<view class="text-item text-item-top" v-show="!show" :class="{ black: black }">
 		 	<text>{{title}}</text>
-		 </view> -->
-		<view v-if="index==1" @touchmove="handletouchmove" @touchstart="handletouchstart" @touchend="handletouchend" class="scroll"
+		 </view>
+		<view v-if="index==1"  class="scroll"
 		 id="scrollview" :class="{ black: black }">
 			<view class="scroll-content">
 				<view class="img-list" v-for="(item,index) in list" :key="index">
 					<image class="img" mode="widthFix" :src="item.img" @error="imgError(item)" @load="imgLoad" lazy-load="true"
 					 show-menu-by-longpress></image>
 				</view>
-				<!-- <movable-area scale-area >
-		 			<movable-view scale :x="x" :y="y" direction="all" >
-		 				
-		 			</movable-view>
-		 		</movable-area> -->
 				<!-- 加载图标 -->
 				<mixLoading class="mix-loading" v-if="loading"></mixLoading>
 			</view>
@@ -339,64 +334,6 @@
 						}
 					}
 				});
-			},
-			handletouchmove: function(event) {
-				clearTimeout(this.handletouchmoveTimer)
-				this.handletouchmoveTimer = setTimeout(() => {
-					if (event.changedTouches || event.changedTouches[0]) {
-						return
-					}
-					let currentX = event.changedTouches[0].pageX;
-					let currentY = event.changedTouches[0].pageY;
-					let tx = currentX - this.lastX;
-					let ty = currentY - this.lastY;
-					let text = '';
-					//左右方向滑动
-					if (Math.abs(tx) > Math.abs(ty)) {
-						if (tx < -this.ditance) {
-							text = '向左滑动';
-							this.flag = 1;
-						} else if (tx > this.ditance) {
-							text = '向右滑动';
-							this.flag = 2;
-						}
-					}
-					//上下方向滑动
-					else {
-						if (ty < -this.ditance) {
-							text = '向上滑动';
-							this.flag = 3;
-							//监听上拉的时候
-							if (this.scrollTopTotal - this.scrollTop - 40 == 0) {
-								this.next()
-							}
-						} else if (ty > this.ditance) {
-							text = '向下滑动';
-							this.flag = 4;
-							//监听下拉的时候
-							if (this.scrollTop == 0) {
-								this.prev()
-							}
-						}
-					}
-					//将当前坐标进行保存以进行下一次计算
-					this.lastX = currentX;
-					this.lastY = currentY;
-					this.text = text;
-				}, 20)
-				clearTimeout(this.getBatteryTimer)
-				this.getBatteryTimer = setTimeout(() => {
-					this.getBattery();
-				}, 300)
-			},
-			handletouchstart: function(event) {
-				if (event.changedTouches && event.changedTouches[0]) {
-					this.lastX = event.changedTouches[0].pageX;
-					this.lastY = event.changedTouches[0].pageY;
-				}
-			},
-			handletouchend: function(event) {
-
 			}
 		},
 		//监听页面滚动
@@ -636,7 +573,7 @@
 		left: 0;
 		width: 100%;
 		height: 20px;
-		background-color: transparent;
+		background-color: #ebd8b0;
 		z-index: 1;
 		font-size: 12px;
 		color: #555555;

@@ -226,18 +226,11 @@
 		{
 			"path": "pages/xs/xs",
 			"style": {
+				"navigationStyle":"custom",
 				"app-plus": {
 					"navigationBarTextStyle": "white",
 					"bounce": "none",
-					"titleNView": {
-						"buttons": [{
-							"width": "60px",
-							"text": "目录",
-							"fontSize": "16",
-							"float": "right",
-							"color": "#fff"
-						}]
-					},
+					"titleNView": false,
 					"scrollIndicator":"none"
 				}
 			}
@@ -264,18 +257,11 @@
 		{
 			"path": "pages/mh/mh",
 			"style": {
+				"navigationStyle":"custom",
 				"app-plus": {
 					"navigationBarTextStyle": "white",
 					"bounce": "none",
-					"titleNView": {
-						"buttons": [{
-							"width": "60px",
-							"text": "目录",
-							"fontSize": "16",
-							"float": "right",
-							"color": "#fff"
-						}]
-					},
+					"titleNView": false,
 					"scrollIndicator":"none"
 				}
 			}
@@ -306,7 +292,10 @@
         ,{
             "path" : "pages/login/login",
             "style" : {
-				"navigationBarTitleText": "授权登录"
+				"navigationBarTitleText": "授权登录",
+				"app-plus":{
+					"animationType":"slide-in-bottom"
+				}
 			}
         }
         ,{

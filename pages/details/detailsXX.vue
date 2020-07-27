@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
-		<view class="video-box" v-if="index==1 && !isCanUse">
-			<video id="myVi" v-if="index==1 && !isCanUse" :title="videoTitle" class="myVi" autoplay :src="src" controls show-casting-button direction="90"
+		<view class="video-box" v-if="index==1 ">
+			<video id="myVi" v-if="index==1 " :title="videoTitle" class="myVi" autoplay :src="src" controls show-casting-button direction="90"
 			  enable-play-gesture enable-progress-gesture show-screen-lock-button @touchstart="mytouchstart"
 			  :auto-pause-if-navigate="true" :auto-pause-if-open-native="true"
 			 @loadedmetadata="loadedmetadata" @longtap="mylongtap" @play="myplay" @touchend="mytouchend" vslide-gesture-in-fullscreen
@@ -30,7 +30,7 @@
 				<view class="bottom-progress"></view>
 			</video>
 		</view>
-		<scroll-view class="scroll" scroll-y v-if="index==1 && !isCanUse">
+		<scroll-view class="scroll" scroll-y v-if="index==1 ">
 			<view class="scroll-content">
 				<view class="image-box">
 					<image :src="obj.cover" class="img" @error="imgError(obj)" show-menu-by-longpress></image>
@@ -198,7 +198,6 @@
 		onLoad(options) {
 			let _this = this;
 			let option = uni.getStorageSync('config');
-			_this.isCanUse = uni.getStorageSync('isCanUse');
 			this.index = option.index
 			// #ifndef MP-ALIPAY
 			if(this.index==1){

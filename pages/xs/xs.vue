@@ -1,25 +1,29 @@
 <template>
-	<view class="content">
+	<view class="content" >
 		<view v-if="index==1">
-			<!-- #ifdef APP-PLUS -->
+			<uni-nav-bar
+				v-if="index==1"
+				:status-bar="true"
+				:show="show"
+				left-icon="arrowleft"
+				@click-left="back"
+				:title="title"
+				:background-color="'#ec706b'"
+				class="uni-nav-bar"
+			/>
 			<view class="text-item text-item-top" v-show="!show"  :class="{ black: black }">
 				<text>{{ title }}</text>
 			</view>
-			<!-- #endif -->
 			<view
-				@touchmove="handletouchmove"
-				@touchstart="handletouchstart"
-				@touchend="handletouchend"
-				 @click="scrollClick"
+				@click="scrollClick"
 				class="scroll"
 				id="scrollview"
 				:class="{ black: black }"
-				
 			>
 				<view class="scroll-content" :class="{ black: black }">
 					<view class="text-item text-grey" v-show="itemshow" :class="{ black: black }"><text>------------- 本章开始 -------------</text></view>
 					<view class="img-list m-item" v-for="(item, index) in list" :key="index">
-						<view class="text-item" :class="{ black: black }">
+						<view class="text-item" :class="{ black: black }" >
 							<text class="text-content" :style="{'font-size':fontSize+'px'}">{{ item }}</text>
 						</view>
 					</view>
@@ -632,70 +636,7 @@ export default {
 				}
 				uni.setStorageSync('xsDownload', value);
 			}
-		},
-		handletouchmove: function(event) {
-			clearTimeout(this.handletouchmoveTimer);
-			this.handletouchmoveTimer = setTimeout(() => {
-				let currentX = event.changedTouches[0].pageX;
-				let currentY = event.changedTouches[0].pageY;
-				let tx = currentX - this.lastX;
-				let ty = currentY - this.lastY;
-				let text = '';
-				//左右方向滑动
-				if (Math.abs(tx) > Math.abs(ty)) {
-					if (this.mode) {
-						if (tx < -this.ditance) {
-							text = '向左滑动';
-							this.flag = 1;
-							if (this.pageIndex == this.pageList.length - 1) {
-								this.currentIndex = 0;
-								// this.next();
-							}
-						} else if (tx > this.ditance) {
-							text = '向右滑动';
-							this.flag = 2;
-							if (this.pageIndex == 0) {
-								this.currentIndex = 0;
-								// this.prev();
-							}
-						}
-					}
-				}
-				//上下方向滑动
-				else {
-					if (!this.mode) {
-						if (ty < -this.ditance) {
-							text = '向上滑动';
-							this.flag = 3;
-							//监听上拉的时候
-							if (this.scrollTopTotal - this.scrollTop - 40 == 0) {
-								// this.next();
-							}
-						} else if (ty > this.ditance) {
-							text = '向下滑动';
-							this.flag = 4;
-							//监听下拉的时候
-							if (this.scrollTop == 0) {
-								// this.prev();
-							}
-						}
-					}
-				}
-				//将当前坐标进行保存以进行下一次计算
-				this.lastX = currentX;
-				this.lastY = currentY;
-				this.text = text;
-			}, 20);
-			clearTimeout(this.getBatteryTimer);
-			this.getBatteryTimer = setTimeout(() => {
-				this.getBattery();
-			}, 300);
-		},
-		handletouchstart: function(event) {
-			this.lastX = event.changedTouches[0].pageX;
-			this.lastY = event.changedTouches[0].pageY;
-		},
-		handletouchend: function(event) {}
+		}
 	},
 	//监听页面滚动
 	onPageScroll: function(obj) {

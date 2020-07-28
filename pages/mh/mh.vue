@@ -1,7 +1,15 @@
 <template>
 	<view class="content" @click="scrollClick">
-		<uni-nav-bar :status-bar="true" :show="show" left-icon="arrowleft" @click-left="back" :title="title" right-text="目录" @click-right="gotomhlist"
-		 :background-color="'#ec706b'" class="uni-nav-bar" /> -->
+		<uni-nav-bar
+			v-if="index==1"
+			:status-bar="true"
+			:show="show"
+			left-icon="arrowleft"
+			@click-left="back"
+			:title="title"
+			:background-color="'#ec706b'"
+			class="uni-nav-bar"
+		/>
 		<view class="text-item text-item-top" v-show="!show" :class="{ black: black }">
 		 	<text>{{title}}</text>
 		 </view>
@@ -16,14 +24,6 @@
 				<mixLoading class="mix-loading" v-if="loading"></mixLoading>
 			</view>
 		</view>
-
-
-		<!-- <view class="text-item  text-item-bottom" v-show="!show" :class="{ black: black }">
-			<battery class="battery" :proQuantity="level"></battery>
-			<view class="time"  :class="{android:platform=='android'}">
-				<text>{{time}}</text>
-			</view>
-		</view> -->
 		<view class="bottom-tools" :class="{ 'show:': show, hide: !show }" v-if="index==1">
 			<button class="bottom-button" type="primary" size="mini" plain="true" @click="gotomhlist">目录</button>
 			<button class="bottom-button" type="primary" size="mini" plain="true" @click="prev">上一话</button>
@@ -480,23 +480,22 @@
 	.img-list {
 		width: 750upx;
 	}
-
 	.img {
 		width: 750upx;
 		will-change: transform;
 		display: block;
 	}
-
 	.content {
 		display: flex;
 		flex-direction: column;
 		background: #fff;
 	}
-
 	.scroll {
 		flex: 1;
 		justify-content: center;
 		align-items: center;
+		position: absolute;
+		top:0;
 	}
 	.scroll::-webkit-scrollbar {
 		width: 0;
@@ -509,36 +508,30 @@
 		flex-direction: column;
 		background-color: #007AFF;
 	}
-
 	.text-item {
 		padding: 0 6px;
 		text-indent: 16px;
 		font-size: 18px;
 	}
-
 	.text-item.text-grey {
 		color: #444;
 		font-size: 14px;
 		text-indent: 0px;
 		text-align: center;
 	}
-
 	.text-item.black {
 		color: #555;
 	}
-
 	.scroll,
 	.uni-scroll-view,
 	.scroll-content {
 		background-color: transparent;
 	}
-
 	.scroll.black,
 	.uni-scroll-view.black,
 	.scroll-content.black {
 		background-color: #070707;
 	}
-
 	.bottom-tools {
 		width: 100%;
 		// height: 44px;
@@ -552,28 +545,24 @@
 		justify-content: space-between;
 		align-items: center;
 		transition: all 0.1s;
-
 		.bottom-button {
 			color: #ffffff !important;
 			border: 1px solid #ffffff !important;
 		}
 	}
-
 	.bottom-tools.hide {
 		transform: translateY(100%);
 	}
-
 	.bottom-tools.sow {
 		transform: translateY(0);
 	}
-
 	.text-item-top {
 		position: fixed;
 		top: 0;
 		left: 0;
 		width: 100%;
 		height: 20px;
-		background-color: #ebd8b0;
+		background-color: transparent;
 		z-index: 1;
 		font-size: 12px;
 		color: #555555;
@@ -581,8 +570,8 @@
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		text-indent: 0px;
+		text-align: center;
 	}
-
 	.text-item-bottom {
 		position: fixed;
 		bottom: 0;
@@ -594,12 +583,10 @@
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
-
 		.battery {
 			font-size: 10px;
 			margin-right: 30px;
 		}
-
 		.time {
 			font-size: 12px;
 			color: #555555;
@@ -609,14 +596,13 @@
 			top: 0;
 			left: 0;
 		}
-
 		.time.android {
 			top: 4px;
 		}
 	}
-
 	.text-item-top.black,
 	.text-item-bottom.black {
 		background-color: #070707;
 	}
+
 </style>

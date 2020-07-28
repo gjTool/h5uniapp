@@ -3,23 +3,6 @@ if(!baseUrl){
 	baseUrl = "https://www.gjtool.cn/py"
 	uni.setStorageSync('baseUrl', baseUrl);
 }
-uni.request({
-	url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
-	method: 'GET',
-	complete: res => {
-		if (res.statusCode == 200 && res.data) {
-			uni.setStorage({
-				key: 'config',
-				data: res.data
-			});
-			if(res.data.baseUrl){
-				uni.setStorageSync('baseUrl', res.data.baseUrl);
-			}else{
-				uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
-			}
-		}
-	}
-});
 let alert = "";
 let option = uni.getStorageSync('config');
 if (option && option.alert && option.alertText) {

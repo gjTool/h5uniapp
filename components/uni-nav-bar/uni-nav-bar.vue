@@ -114,7 +114,7 @@ export default {
 	transition: all 0.1s;
 }
 .uni-navbar--hide {
-	transform: translateY(-74px);
+	transform: translateY(-94px);
 	transition: all 0.1s;
 }
 .uni-navbar--sow {

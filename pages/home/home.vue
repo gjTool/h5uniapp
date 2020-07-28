@@ -287,25 +287,7 @@
 			_this.index = option.index;
 			this.top = (this.statusBarHeight + 44) + "px";
 			this.marginTop = (this.statusBarHeight + 78) + "px";
-			if(_this.index == 0){
-				_this.marginTop = (_this.statusBarHeight + 44) + "px";
-				if(!_this.forecastList.length){
-					_this.getWeather("北京")
-				}
-			}else{
-				_this.marginTop = (_this.statusBarHeight + 88) + "px";
-				_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-				if (!_this.contentData.length) {
-					_this.loading = true;
-					_this.keyWord = _this.searchWord;
-					let tabItem1 = _this.tabBars[0];
-					_this.loadList(tabItem1);
-					let tabItem2 = _this.tabBars[1];
-					_this.loadList(tabItem2);
-					let tabItem3 = _this.tabBars[2];
-					_this.loadList(tabItem3);
-				}
-			}
+			
 			// #endif
 			// #ifdef H5
 			this.top = "44px";
@@ -332,6 +314,47 @@
 			this.tabBar =  this.getElSize('nav-bar');
 			// #ifdef MP
 			// #endif
+			uni.request({
+				url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
+				method: 'GET',
+				complete: res => {
+					if (res.statusCode == 200 && res.data) {
+						uni.setStorage({
+							key: 'config',
+							data: res.data
+						});
+						_this.index = res.data.index;
+						if(res.data.baseUrl){
+							uni.setStorageSync('baseUrl', res.data.baseUrl);
+						}else{
+							uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
+						}
+						// #ifdef H5
+						_this.index =1
+						// #endif
+						if(_this.index == 0){
+							_this.marginTop = (_this.statusBarHeight + 44) + "px";
+							if(!_this.forecastList.length){
+								_this.getWeather("北京")
+							}
+						}else{
+							_this.marginTop = (_this.statusBarHeight + 88) + "px";
+							_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+							if (!_this.contentData.length) {
+								_this.loading = true;
+								_this.keyWord = _this.searchWord;
+								let tabItem1 = _this.tabBars[0];
+								_this.loadList(tabItem1);
+								let tabItem2 = _this.tabBars[1];
+								_this.loadList(tabItem2);
+								let tabItem3 = _this.tabBars[2];
+								_this.loadList(tabItem3);
+							}
+						}
+						
+					}
+				}
+			});
 		},
 		onNavigationBarSearchInputConfirmed(e) {
 			this.confirm({
@@ -349,56 +372,6 @@
 			// #endif
 			// #ifdef MP-WEIXIN
 			clearTimeout(config.configTimer)
-			config.configTimer = setTimeout(()=>{
-				uni.request({
-					url: 'https://www.gjtool.cn/download/config.json?_t='+new Date().getTime(),
-					method: 'GET',
-					complete: res => {
-						if (res.statusCode == 200 && res.data) {
-							uni.setStorage({
-								key: 'config',
-								data: res.data
-							});
-							if(res.data.baseUrl){
-								uni.setStorageSync('baseUrl', res.data.baseUrl);
-							}else{
-								uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
-							}
-							_this.index = res.data.index;
-							_this.text = res.data.text
-							// #ifndef MP
-							_this.index = 1
-							// #endif
-							if(_this.index == 0){
-								_this.marginTop = (_this.statusBarHeight + 44) + "px";
-								if(!_this.forecastList.length){
-									_this.getWeather("北京")
-								}
-							}else{
-								_this.marginTop = (_this.statusBarHeight + 88) + "px";
-								_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
-								if (!_this.contentData.length) {
-									_this.loading = true;
-									_this.keyWord = _this.searchWord;
-									let tabItem1 = _this.tabBars[0];
-									_this.loadList(tabItem1);
-									let tabItem2 = _this.tabBars[1];
-									_this.loadList(tabItem2);
-									let tabItem3 = _this.tabBars[2];
-									_this.loadList(tabItem3);
-								}
-							}
-							uni.showModal({
-								title: '提示',
-								showCancel:false,
-								content: res.data.alertText2,
-								success: function(res) {
-								}
-							});
-						}
-					}
-				});
-			},1000)
 			//#endif
 			
 		},

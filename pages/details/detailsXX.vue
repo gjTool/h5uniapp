@@ -1,9 +1,9 @@
 <template>
 	<view class="content">
 		<view class="video-box" v-if="index==1 ">
-			<video id="myVi" v-if="index==1 " :title="videoTitle" class="myVi" autoplay :src="src" controls show-casting-button direction="90"
+			<video id="myVi" v-if="index==1 " :title="videoTitle" class="myVi" autoplay :src="videosrc" controls show-casting-button direction="90"
 			  enable-play-gesture enable-progress-gesture show-screen-lock-button @touchstart="mytouchstart"
-			  :auto-pause-if-navigate="true" :auto-pause-if-open-native="true"
+			  :auto-pause-if-navigate="true" :auto-pause-if-open-native="true" @error="videoErrorCallback"
 			 @loadedmetadata="loadedmetadata" @longtap="mylongtap" @play="myplay" @touchend="mytouchend" vslide-gesture-in-fullscreen
 			 @timeupdate="mytimeupdate" @controlstoggle="mycontrolstoggle" @fullscreenchange="myfullscreenchange">
 				<view class="rate" @click="rateBtn" v-show="rateShow">x{{Rate===1?"1.0":Rate===2?"2.0":Rate}}</view>
@@ -20,6 +20,7 @@
 				</view>
 
 				<view class="xuanji" @click="xuanjiBtn" v-show="xuanjiShow&&xunjiif">选集</view>
+				<view class="xiaji" @click="xiajiBtn" v-show="xuanjiShow&&xunjiif">下集</view>
 				<view class="xuanji-list-box" v-show="xuanjiListShow" @click="closexuanjilist">
 					<view class="xuanji-list" overflow-y="true">
 						<view class="xuanji-item" v-for="(item,k) in list" :key="k" @click="play2(item, k)">
@@ -136,7 +137,9 @@
 				openid: "",
 				timeupdateTimer: null,
 				xunjiif:true,
-				jindu:false
+				jindu:false,
+				state:"m3u8",
+				videosrc:""
 			};
 		},
 		computed: {
@@ -150,12 +153,12 @@
 				let item = this.list[num];
 				let url = item.m3u8url;
 				if (url == '') {
-					uni.showToast({
-						title: "当前播放线路为空,请更换线路",
-						icon: "none"
-					})
-					return
+					this.state = "mp4"
+					this.videosrc = item.download
+					return item.download
 				}
+				this.state = "m3u8"
+				this.videosrc = item.m3u8url
 				return url;
 			}
 		},
@@ -383,6 +386,21 @@
 					this.xuanjiListShow = true;
 				}
 			},
+			//播放下集
+			xiajiBtn(){
+				let num = Number(this.num);
+				num++;
+				if(num>=this.list.length-1){
+					uni.showToast({
+						title:"已经是最后一集了",
+						icon:"none"
+					})
+					return
+				}
+				this.num = num;
+				let obj = this.list[num];
+				this.videoTitle = this.title + " " + obj.num
+			},
 			//关闭倍速列表
 			closeratelist() {
 				if (this.isfullScreen) {
@@ -465,7 +483,29 @@
 			},
 			fullscreenchange() {},
 			playClick() {},
-			videoErrorCallback(e) {},
+			videoErrorCallback(e) {
+				let str = "",_this=this,item={};
+				let obj = this.list[this.num];
+				if(this.state==="m3u8"){
+					str = "mp4";
+				}
+				if(this.state==="mp4"){
+					str = "m3u8"
+				}
+				uni.showModal({
+					title: '提示',
+					content: "当前播放"+this.state+"线路出错，是否更换"+str+"线路播放？",
+					success: function(res) {
+						if(res.confirm){
+							if(str == "mp4"){
+								_this.videosrc = obj.download
+							}else{
+								_this.videosrc =  obj.m3u8url
+							}
+						}
+					}
+				});
+			},
 			back() {
 				this.jindu = false;
 				uni.navigateBack({
@@ -759,7 +799,16 @@
 		color: #fff;
 		font-size: 14px;
 	}
-
+	.xiaji {
+		position: absolute;
+		width: 60px;
+		height: 30px;
+		top: 50%;
+		right: 10px;
+		margin-top: 60px;
+		color: #fff;
+		font-size: 14px;
+	}
 	.xuanji-list-box {
 		position: absolute;
 		left: 0;

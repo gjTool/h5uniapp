@@ -888,6 +888,7 @@ page {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	text-indent: 0px;
+	text-align: center;
 }
 
 .text-item-bottom {

@@ -30,7 +30,7 @@
 					<swiper-item v-for="(tabItem,i) in tabBars" :key="i">
 						<scroll-view class="panel-scroll-box" :scroll-y="enableScroll">
 							<view v-for="(item, index) in tabItem.contentList" :key="index" class="news-item" @click="navToDetails(item)">
-								<view v-show="item.cover" class="img-list">
+								<view v-show="item.cover" class="img-list" :class="{'blank':item.blank}">
 									<image class="img" @error="imgError(item)" :src="item.cover" lazy-load="true"></image>
 									<view class="img-text" v-show="item.imgText">
 										{{ item.imgText }}
@@ -53,7 +53,7 @@
 			<!-- #ifdef H5 -->
 			<view class="weixin-advert" v-if="weixinAdvert" @click="closeImg" id="weixin-advert">
 				<view class="img-box">
-					<text class="text">长按图片识别小程序码，进入看电影小程序。微信授权登陆即可观看电影</text>
+					<text class="text">长按图片识别小程序码，进入免费看电影小程序</text>
 					<image class="img" id="weixin-img" src="/static/weixin_advert.jpeg" ></image>
 				</view>
 			</view>
@@ -248,14 +248,14 @@
 		},
 		onShareAppMessage(res) {
 		  return {
-			title: "[免费vip影视]登陆即可观看" ,
+			title: "免费影视综艺动漫、漫画小说，搜索即可观看" ,
 			imageUrl:"/static/share.jpg",
 			path: '/pages/home/home'
 		  }
 		},
 		onShareTimeline(){
 			return {
-				title: "[免费vip影视]登陆即可观看" ,
+				title: "免费影视综艺动漫、漫画小说，搜索即可观看" ,
 				imageUrl:"/static/share.jpg",
 				query: ''
 			}
@@ -365,15 +365,38 @@
 		},
 		onShow() {
 			let _this = this;
-			this.openid = uni.getStorageSync("userInfo").openid;
-			let option = uni.getStorageSync('config');
 			// #ifdef APP-PLUS
 			plus.navigator.setFullscreen(false);
 			// #endif
-			// #ifdef MP-WEIXIN
-			clearTimeout(config.configTimer)
-			//#endif
+			this.openid = uni.getStorageSync("userInfo").openid;
+			let option = uni.getStorageSync('config');
 			
+			// #ifdef MP
+			clearTimeout(config.configTimer)
+			if(_this.index == option.index){
+				return
+			}
+			_this.index = option.index;
+			if(_this.index == 0){
+				_this.marginTop = (_this.statusBarHeight + 44) + "px";
+				if(!_this.forecastList.length){
+					_this.getWeather("北京")
+				}
+			}else{
+				_this.marginTop = (_this.statusBarHeight + 88) + "px";
+				_this.height=(uni.getSystemInfoSync().windowHeight-88-_this.statusBarHeight)+"px";
+				if (!_this.contentData.length) {
+					_this.loading = true;
+					_this.keyWord = _this.searchWord;
+					let tabItem1 = _this.tabBars[0];
+					_this.loadList(tabItem1);
+					let tabItem2 = _this.tabBars[1];
+					_this.loadList(tabItem2);
+					let tabItem3 = _this.tabBars[2];
+					_this.loadList(tabItem3);
+				}
+			}
+			// #endif
 		},
 		methods: {
 			closeImg(e){
@@ -495,7 +518,19 @@
 							} else {
 								_this.contentData = res.data.list;
 							}
-							_this.contentData.length = 18;
+							if(_this.contentData.length<7){
+								var len = 7-_this.contentData.length;
+								for(let i=0;i<len;i++){
+									_this.contentData.push({
+										imgText : "",
+										genre : "",
+										cover:"/static/404.jpg",
+										blank:true
+									})
+								}
+							}else{
+								_this.contentData.length = 30;
+							}
 							_this.getList(tabItem, _this.contentData);
 						} else {
 							_this.getList(tabItem, []);
@@ -632,6 +667,9 @@
 			},
 			//详情
 			navToDetails(item) {
+				if(item.blank){
+					return
+				}
 				//跳转影视
 				if (item._type == '3') {
 					// #ifdef APP-PLUS 
@@ -944,7 +982,9 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-
+	.img-list.blank{
+		opacity: 0;
+	}
 	.img-list {
 		flex-shrink: 0;
 		flex-direction: row;

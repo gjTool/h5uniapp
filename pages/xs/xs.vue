@@ -147,14 +147,14 @@ export default {
 	},
 	onShareAppMessage(res) {
 	  return {
-		title: "[小说]"+this.xsname+" "+this.title,
+		title: "[免费小说]"+this.xsname+" "+this.title,
 		imageUrl:this.detailData.cover,
 		path: '/pages/xs/xs?src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
 	  }
 	},
 	onShareTimeline(){
 		return {
-			title: "[小说]"+this.xsname+" "+this.title,
+			title: "[免费小说]"+this.xsname+" "+this.title,
 			imageUrl:this.detailData.cover,
 			query: 'src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
 		}

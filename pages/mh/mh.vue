@@ -408,14 +408,14 @@
 		},
 		onShareAppMessage(res) {
 		  return {
-			title: "[漫画]"+this.mhname+" "+this.title,
+			title: "[免费漫画]"+this.mhname+" "+this.title,
 			imageUrl:this.detailData.cover,
 			path: '/pages/mh/mh?src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
 		  }
 		},
 		onShareTimeline(){
 			return {
-				title: "[漫画]"+this.mhname+" "+this.title,
+				title: "[免费漫画]"+this.mhname+" "+this.title,
 				imageUrl:this.detailData.cover,
 				query: 'src=' + encodeURIComponent(this.url) + "&data=" + JSON.stringify(this.detailData)
 			}

@@ -79,14 +79,14 @@
 		},
 		onShareAppMessage(res) {
 		  return {
-			title: "[漫画]"+this.title ,
+			title: "[免费漫画]"+this.title ,
 			imageUrl:this.detailData.cover,
 			path: '/pages/details/mhdetails?data='+JSON.stringify(this.detailData)
 		  }
 		},
 		onShareTimeline(){
 			return {
-				title: "[漫画]"+this.title ,
+				title: "[免费漫画]"+this.title ,
 				imageUrl:this.detailData.cover,
 				query: 'data='+JSON.stringify(this.detailData)
 			}

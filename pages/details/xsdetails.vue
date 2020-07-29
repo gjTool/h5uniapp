@@ -66,14 +66,14 @@
 		},
 		onShareAppMessage(res) {
 		  return {
-			title: "[小说]"+this.title ,
+			title: "[免费小说]"+this.title ,
 			imageUrl:this.detailData.cover,
 			path: '/pages/details/xsdetails?data='+JSON.stringify(this.detailData)
 		  }
 		},
 		onShareTimeline(){
 			return {
-				title: "[小说]"+this.title ,
+				title: "[免费小说]"+this.title ,
 				imageUrl:this.detailData.cover,
 				query: 'data='+JSON.stringify(this.detailData)
 			}

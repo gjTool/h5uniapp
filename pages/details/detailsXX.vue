@@ -390,7 +390,7 @@
 			xiajiBtn(){
 				let num = Number(this.num);
 				num++;
-				if(num>=this.list.length-1){
+				if(num>this.list.length-1){
 					uni.showToast({
 						title:"已经是最后一集了",
 						icon:"none"

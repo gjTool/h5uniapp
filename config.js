@@ -67,8 +67,8 @@ let setYsZJ = (num, detailData) => {
 				arr.push(detailData)
 			}
 			arr.sort(compare('Time'))
-			if (arr.length > 12) {
-				arr = arr.splice(0, 12)
+			if (arr.length > 20) {
+				arr = arr.splice(0, 20)
 			}
 			uni.setStorage({
 				key: openid + "ysZJ",
@@ -137,8 +137,8 @@ let setMhZJ = (num, detailData) => {
 				arr.push(detailData)
 			}
 			arr.sort(compare('Time'))
-			if (arr.length > 12) {
-				arr = arr.splice(0, 12)
+			if (arr.length > 20) {
+				arr = arr.splice(0, 20)
 			}
 			uni.setStorage({
 				key: openid + "mhZJ",
@@ -210,8 +210,8 @@ let setXsZJ = (num, detailData) => {
 				arr.push(detailData)
 			}
 			arr.sort(compare('Time'))
-			if (arr.length > 12) {
-				arr = arr.splice(0, 12)
+			if (arr.length > 20) {
+				arr = arr.splice(0, 20)
 			}
 			uni.setStorage({
 				key: openid + "xsZJ",

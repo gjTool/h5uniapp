@@ -73,14 +73,14 @@ export default {
 	},
 	onShareAppMessage(res) {
 	  return {
-		title: "[免费vip影视]登陆即可观看" ,
+		title: "免费影视综艺动漫、漫画小说，搜索即可观看" ,
 		imageUrl:"/static/share.jpg",
 		path: '/pages/home/home'
 	  }
 	},
 	onShareTimeline(){
 		return {
-			title: "[免费vip影视]登陆即可观看" ,
+			title: "免费影视综艺动漫、漫画小说，搜索即可观看" ,
 			imageUrl:"/static/share.jpg",
 			query: ''
 		}
@@ -145,40 +145,39 @@ export default {
 					_this.isCanUse = false;
 					_this.background = "RGB(248,249,251)";
 					uni.setStorageSync('isCanUse', false); 
-					if(!_this.openid){
-						uni.login({
-							provider: 'weixin',
-							success: function(loginRes) {
-								let code = loginRes.code;
-								uni.getUserInfo({
-									provider: 'weixin',
-									success: function(infoRes) {
-										uni.request({
-											url: 'https://www.gjtool.cn/wxlogin',
-											data: {
-												code: code
-											},
-											method: 'POST',
-											success: res => {
-												try {
-													infoRes.userInfo.session_key=res.data.session_key;
-													infoRes.userInfo.openid=res.data.openid;
-													_this.openid = res.data.openid;
-													uni.setStorageSync('userInfo', infoRes.userInfo);
-													_this.isCanUse = false;
-													_this.$eventHub.$emit('isCanUse',0)
-													_this.$eventHub.$emit('isCanUse2',0)
-												} catch (e) {}
-											},
-											error:err=>{
-												
-											}
-										});
-									}
-								});
-							}
-						})
-					}
+					uni.login({
+						provider: 'weixin',
+						success: function(loginRes) {
+							let code = loginRes.code;
+							uni.getUserInfo({
+								provider: 'weixin',
+								success: function(infoRes) {
+									uni.request({
+										url: 'https://www.gjtool.cn/wxlogin',
+										data: {
+											code: code
+										},
+										method: 'POST',
+										success: res => {
+											try {
+												infoRes.userInfo.session_key=res.data.session_key;
+												infoRes.userInfo.openid=res.data.openid;
+												_this.openid = res.data.openid;
+												_this.data = infoRes.userInfo;
+												uni.setStorageSync('userInfo', infoRes.userInfo);
+												_this.isCanUse = false;
+												_this.$eventHub.$emit('isCanUse',0)
+												_this.$eventHub.$emit('isCanUse2',0)
+											} catch (e) {}
+										},
+										error:err=>{
+											
+										}
+									});
+								}
+							});
+						}
+					})
 				}
 				config.configTimer = setTimeout(()=>{
 					uni.request({
@@ -186,10 +185,7 @@ export default {
 						method: 'GET',
 						complete: res => {
 							if (res.statusCode == 200 && res.data) {
-								uni.setStorage({
-									key: 'config',
-									data: res.data
-								});
+								uni.setStorageSync('config',res.data)
 								_this.text = res.data.text
 								if(!_this.isCanUse){
 									_this.index = res.data.index;

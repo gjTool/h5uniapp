@@ -727,7 +727,7 @@
 		height: 30px;
 		top: 50%;
 		right: 10px;
-		margin-top: -40px;
+		margin-top: -50px;
 		color: #fff;
 		font-size: 14px;
 	}
@@ -795,7 +795,7 @@
 		height: 30px;
 		top: 50%;
 		right: 10px;
-		margin-top: 10px;
+		margin-top: 0px;
 		color: #fff;
 		font-size: 14px;
 	}

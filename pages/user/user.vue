@@ -7,13 +7,13 @@
 				<view class="name">{{ data.nickName || '暂无信息' }}</view>
 			</view>
 		</view>
-		<view class="" v-if="isCanUse">
+		<view class="listFunction" v-if="isCanUse">
 			<button class="bottom" type="primary" @click="login">立即登录</button>
 		</view>
 		<view class="listFunction" v-if="index==0">
 			<view class="listStrip">
 				<image src="../../static/tab-shoucang-current.png" mode="aspectFit"></image>
-				<view class="text">欢迎使用本小程序！</view>
+				<view class="text">欢迎使用本小程序！<text v-if="isCanUse">登陆后开启更多功能……</text></view>
 				<text class="iconfont iconyou"></text>
 			</view>
 			<view class="progress-box">

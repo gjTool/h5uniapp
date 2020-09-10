@@ -10,25 +10,16 @@
 		"preloadBackgroundData": false,
 		"minified": true,
 		"newFeature": true,
-		"coverView": true,
 		"autoAudits": false,
+		"coverView": true,
 		"showShadowRootInWxmlPanel": true,
 		"scopeDataCheck": false,
-		"checkInvalidKey": true,
-		"checkSiteMap": true,
-		"uploadWithSourceMap": true,
-		"babelSetting": {
-			"ignore": [],
-			"disablePlugins": [],
-			"outputPath": ""
-		},
-		"useCompilerModule": true,
-		"userConfirmedUseCompilerModuleSwitch": false
+		"useCompilerModule": true
 	},
 	"compileType": "miniprogram",
 	"libVersion": "",
 	"appid": "wxbc50e5a13b22e7f3",
-	"projectname": "极速之影",
+	"projectname": "%E6%9E%81%E9%80%9F%E8%BF%BD%E5%89%A7%E7%9C%8B%E7%94%B5%E5%BD%B1",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"condition": {

@@ -235,7 +235,8 @@
 				mhurlRequestList:[],
 				searchWord:uni.getStorageSync('config').searchWord || "2020",
 				openid:"",
-				configTimer:null
+				configTimer:null,
+				limit:42
 			};
 		},
 		computed: {
@@ -270,7 +271,6 @@
 			if (option && !option.advert) {
 				this.timedown = 0;
 			}
-		
 			// #ifdef MP || H5
 			this.timedown = 0;
 			// #endif
@@ -370,7 +370,9 @@
 			// #endif
 			this.openid = uni.getStorageSync("userInfo").openid;
 			let option = uni.getStorageSync('config');
-			
+			if(option&&option.limit){
+				this.limit = option.limit
+			}
 			// #ifdef MP
 			clearTimeout(config.configTimer)
 			if(_this.index == option.index){
@@ -424,13 +426,13 @@
 				if (this.index == 1) {
 					if(this.tabCurrentIndex == 0){
 						let tabItem1 = this.tabBars[0];
-						this.loadList(tabItem1);
+						this.loadList(tabItem1,this.limit);
 					}else if(this.tabCurrentIndex == 1){
 						let tabItem2 = this.tabBars[1];
-						this.loadList(tabItem2);
+						this.loadList(tabItem2,this.limit);
 					}else if(this.tabCurrentIndex == 2){
 						let tabItem3 = this.tabBars[2];
-						this.loadList(tabItem3);
+						this.loadList(tabItem3,this.limit);
 					}
 				} else {
 					this.getWeather(this.keyWord)
@@ -469,7 +471,10 @@
 					delta: 1
 				});
 			},
-			loadList(tabItem) {
+			loadList(tabItem,limit) {
+				if(!limit){
+					limit = 12;
+				}
 				let _this = this;
 				let search = '';
 				if (!tabItem) {
@@ -529,7 +534,7 @@
 									})
 								}
 							}else{
-								_this.contentData.length = 30;
+								_this.contentData.length = limit;
 							}
 							_this.getList(tabItem, _this.contentData);
 						} else {

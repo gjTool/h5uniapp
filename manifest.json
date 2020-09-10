@@ -1,5 +1,5 @@
 {
-    "name" : "极速之影",
+    "name" : "极速追剧看电影",
     "appid" : "__UNI__1EA8C20",
     "description" : "看电影漫画",
     "versionName" : "1.0.0",
@@ -139,7 +139,7 @@
         "permission" : {}
     },
     "h5" : {
-        "title" : "极速之影",
+        "title" : "极速追剧看电影",
         "domain" : "www.gjtool.cn",
         "devServer" : {
             "https" : false

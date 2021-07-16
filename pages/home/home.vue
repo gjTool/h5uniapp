@@ -221,6 +221,7 @@
 						<text> 数据来源于天气网</text>
 					</view>
 				</view>
+				<ad unit-id="adunit-78c062b57e82831a"></ad>
 			</scroll-view>
 		</view>
 	</view>
@@ -321,7 +322,7 @@
 				config.interstitialAd.show().catch((err) => {
 					console.error(err)
 				})
-			}, 300)
+			}, 1000)
 			let _this = this;
 			/**
 			 * 启动页广告
@@ -994,6 +995,7 @@
 		/* #ifdef APP-PLUS */
 		display: flex;
 		/* #endif */
+		background-color: #ededed;
 	}
 
 	.swiper-box {
@@ -1161,7 +1163,7 @@
 
 			.text {
 				padding-left: 24px;
-				color: #fff;
+				color: #000;
 				font-size: 16px;
 			}
 		}
@@ -1179,16 +1181,15 @@
 	}
 
 	.user {
-		background: #0aebeb url('https://apip.weatherdt.com/view/static/images/bg_00d.png');
 		padding: 10px;
 		overflow-y: scroll !important;
 
 		view {
-			color: #fff;
+			color: #000;
 		}
 
 		text {
-			color: #fff;
+			color: #000;
 		}
 	}
 
@@ -1212,7 +1213,7 @@
 			align-items: center;
 
 			.text {
-				color: #fff;
+				color: #000;
 				padding: 0 10px;
 				font-size: 16px;
 			}

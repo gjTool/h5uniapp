@@ -42,7 +42,7 @@
 				<text>{{text}}</text>
 			</view>
 		</view>
-		<ad unit-id="adunit-78c062b57e82831a" style="width:100%;position: absolute;bottom: 0;"></ad>
+		<ad unit-id="adunit-78c062b57e82831a" style="position: absolute;left: 0;bottom: 0;"></ad>
 	</view>
 </template>
 

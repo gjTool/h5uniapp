@@ -1,8 +1,8 @@
 <template>
+	<!-- 最近浏览 -->
 	<view class="content">
 		<!-- <uni-nav-bar :status-bar="true" :show="true" title="收藏夹" :right-text="cancelFlag ? '完成' : '编辑'" @click-right="bianji"
 		 :background-color="'#ec706b'" class="uni-nav-bar" /> -->
-
 		<!-- 顶部选项卡 -->
 		<scroll-view id="nav-bar" class="nav-bar" scroll-x scroll-with-animation :scroll-left="scrollLeft" v-if="index==1">
 			<view v-for="(item, index) in tabBars" :key="item.id" class="nav-item" :class="{ current: index === tabCurrentIndex }"
@@ -14,6 +14,7 @@
 			<!-- 内容部分 -->
 			<swiper id="swiper" class="swiper-box" :duration="300" :current="tabCurrentIndex" @change="changeTab">
 				<swiper-item v-for="(tabItem,i) in tabBars" :key="i">
+					<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 					<scroll-view class="panel-scroll-box" scroll-y="true">
 						<view v-for="(item, index) in tabItem.contentList" :key="index" class="news-item" @click="navToDetails(item)" v-show="item.title">
 							<view class="text-time">

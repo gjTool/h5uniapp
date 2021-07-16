@@ -1,5 +1,5 @@
 let baseUrl = uni.getStorageSync('baseUrl');
-if(!baseUrl){
+if (!baseUrl) {
 	baseUrl = "https://www.gjtool.cn/py"
 	uni.setStorageSync('baseUrl', baseUrl);
 }
@@ -8,7 +8,8 @@ let option = uni.getStorageSync('config');
 if (option && option.alert && option.alertText) {
 	alert = option.alertText
 }
-
+let interstitialAd = null
+let timer = null
 //获取影视最近浏览数组
 let getYsZJ = () => {
 	let openid = uni.getStorageSync("userInfo").openid;
@@ -16,10 +17,10 @@ let getYsZJ = () => {
 	if (!openid) {
 		arr = []
 	} else {
-		if(arr && arr.length){
+		if (arr && arr.length) {
 			arr = unique(arr, "url");
 			arr.sort(compare('Time'))
-		}else{
+		} else {
 			arr = []
 		}
 	}
@@ -28,7 +29,8 @@ let getYsZJ = () => {
 //获取影视最近浏览集数
 let getYsZJnum = (url) => {
 	let arr = getYsZJ(),
-		num = 0,currentTime=0;
+		num = 0,
+		currentTime = 0;
 	let openid = uni.getStorageSync("userInfo").openid;
 	if (openid) {
 		if (arr && arr.length) {
@@ -42,8 +44,8 @@ let getYsZJnum = (url) => {
 		}
 	}
 	return {
-		num:num,
-		currentTime:currentTime
+		num: num,
+		currentTime: currentTime
 	}
 }
 //设置影视最近浏览
@@ -67,9 +69,6 @@ let setYsZJ = (num, detailData) => {
 				arr.push(detailData)
 			}
 			arr.sort(compare('Time'))
-			if (arr.length > 13) {
-				arr = arr.splice(0, 13)
-			}
 			uni.setStorage({
 				key: openid + "ysZJ",
 				data: arr
@@ -90,10 +89,10 @@ let getMhZJ = () => {
 	if (!openid) {
 		arr = []
 	} else {
-		if(arr && arr.length){
+		if (arr && arr.length) {
 			arr = unique(arr, "url");
 			arr.sort(compare('Time'))
-		}else{
+		} else {
 			arr = []
 		}
 	}
@@ -137,9 +136,6 @@ let setMhZJ = (num, detailData) => {
 				arr.push(detailData)
 			}
 			arr.sort(compare('Time'))
-			if (arr.length > 13) {
-				arr = arr.splice(0, 13)
-			}
 			uni.setStorage({
 				key: openid + "mhZJ",
 				data: arr
@@ -163,10 +159,10 @@ let getXsZJ = () => {
 	if (!openid) {
 		arr = []
 	} else {
-		if(arr && arr.length){
+		if (arr && arr.length) {
 			arr = unique(arr, "url");
 			arr.sort(compare('Time'))
-		}else{
+		} else {
 			arr = []
 		}
 	}
@@ -210,9 +206,6 @@ let setXsZJ = (num, detailData) => {
 				arr.push(detailData)
 			}
 			arr.sort(compare('Time'))
-			if (arr.length > 13) {
-				arr = arr.splice(0, 13)
-			}
 			uni.setStorage({
 				key: openid + "xsZJ",
 				data: arr
@@ -269,7 +262,7 @@ let getDate = function(w) {
 		return obj.y + '年' + obj.m + '月' + obj.d + '日' + '星期' + obj.w + ' ' + obj.h + ':' + obj.mi + ':' + obj.s
 	}
 }
-let configTimer=-1;
+let configTimer = -1;
 export default {
 	baseUrl,
 	alert,
@@ -283,5 +276,7 @@ export default {
 	getYsZJnum,
 	setYsZJ,
 	getDate,
-	configTimer
+	configTimer,
+	interstitialAd,
+	timer
 }

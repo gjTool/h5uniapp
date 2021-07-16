@@ -1,21 +1,24 @@
 <template>
 	<view class="content">
 		<view class="video-box" v-if="index==1 ">
-			<video id="myVi" v-if="index==1 " :title="videoTitle" class="myVi" autoplay :src="videosrc" controls show-casting-button direction="90"
-			  enable-play-gesture enable-progress-gesture show-screen-lock-button @touchstart="mytouchstart"
-			  :auto-pause-if-navigate="true" :auto-pause-if-open-native="true" @error="videoErrorCallback"
-			 @loadedmetadata="loadedmetadata" @longtap="mylongtap" @play="myplay" @touchend="mytouchend" vslide-gesture-in-fullscreen
-			 @timeupdate="mytimeupdate" @controlstoggle="mycontrolstoggle" @fullscreenchange="myfullscreenchange">
-				<view class="rate" @click="rateBtn" v-show="rateShow">x{{Rate===1?"1.0":Rate===2?"2.0":Rate}}</view>
+			<video id="myVi" v-if="index==1 " unit-id="adunit-09d0ed8ea9eaf45e" :title="videoTitle" class="myVi"
+				autoplay :src="videosrc" controls show-casting-button direction="90" enable-play-gesture
+				enable-progress-gesture show-screen-lock-button @touchstart="mytouchstart"
+				:auto-pause-if-navigate="true" :auto-pause-if-open-native="true" @error="videoErrorCallback"
+				@loadedmetadata="loadedmetadata" @longtap="mylongtap" @play="myplay" @touchend="mytouchend"
+				vslide-gesture-in-fullscreen @timeupdate="mytimeupdate" @controlstoggle="mycontrolstoggle"
+				@fullscreenchange="myfullscreenchange">
+				<view class="rate" @click="rateBtn" v-show="rateShow">
+					x{{Rate===1?"1.0":Rate===2?"2.0":Rate}}</view>
 				<view class="rate-list-box" v-show="rateListShow" @click="closeratelist">
 					<view class="rate-list" overflow-y="true">
 						<view class="rate-title">倍速播放</view>
-						<view class="rate-item" :class="{'active':Rate===0.5}" @click="setRate(0.5)">x0.5</view>
-						<view class="rate-item" :class="{'active':Rate===0.8}" @click="setRate(0.8)">x0.8</view>
-						<view class="rate-item" :class="{'active':Rate===1.0}" @click="setRate(1.0)">x1.0</view>
-						<view class="rate-item" :class="{'active':Rate===1.25}" @click="setRate(1.25)">x1.25</view>
-						<view class="rate-item" :class="{'active':Rate===1.5}" @click="setRate(1.5)">x1.5</view>
-						<view class="rate-item" :class="{'active':Rate===2.0}" @click="setRate(2.0)">x2.0</view>
+						<view class="rate-item" :class="{'active':Rate===0.5}" @click="setRate(0.5)">0.5</view>
+						<view class="rate-item" :class="{'active':Rate===0.8}" @click="setRate(0.8)">0.8</view>
+						<view class="rate-item" :class="{'active':Rate===1.0}" @click="setRate(1.0)">1.0</view>
+						<view class="rate-item" :class="{'active':Rate===1.25}" @click="setRate(1.25)">1.25</view>
+						<view class="rate-item" :class="{'active':Rate===1.5}" @click="setRate(1.5)">1.5</view>
+						<view class="rate-item" :class="{'active':Rate===2.0}" @click="setRate(2.0)">2.0</view>
 					</view>
 				</view>
 
@@ -82,13 +85,15 @@
 				</view>
 				<view class="list-box">
 					<view><text>选集：</text></view>
-					<button v-for="(item, index) in list" :key="index" @click="play2(item, index)" type="primary" size="mini" :plain="index == num ? false : true">
+					<button v-for="(item, index) in list" :key="index" @click="play2(item, index)" type="primary"
+						size="mini" :plain="index == num ? false : true">
 						{{ item.num }}
 					</button>
 				</view>
 				<!-- 加载图标 -->
 				<mixLoading class="mix-loading" v-if="loading"></mixLoading>
 			</view>
+			<ad unit-id="adunit-78c062b57e82831a"></ad>
 		</scroll-view>
 	</view>
 </template>
@@ -136,10 +141,10 @@
 				xuanjiListShow: false,
 				openid: "",
 				timeupdateTimer: null,
-				xunjiif:true,
-				jindu:false,
-				state:"m3u8",
-				videosrc:""
+				xunjiif: true,
+				jindu: false,
+				state: "m3u8",
+				videosrc: ""
 			};
 		},
 		computed: {
@@ -163,38 +168,38 @@
 			}
 		},
 		onShareAppMessage(res) {
-		  return {
-			title:  "["+this.detailData.genre+"]"+this.title,
-			imageUrl:this.detailData.cover,
-			path: '/pages/details/detailsXX?data='+JSON.stringify(this.detailData)
-		  }
-		},
-		onShareTimeline(){
 			return {
-				title:  "["+this.detailData.genre+"]"+this.title,
-				imageUrl:this.detailData.cover,
-				query: 'data='+JSON.stringify(this.detailData)
+				title: "[" + this.detailData.genre + "]" + this.title,
+				imageUrl: this.detailData.cover,
+				path: '/pages/details/detailsXX?data=' + JSON.stringify(this.detailData)
 			}
 		},
-		onPullDownRefresh(){
+		onShareTimeline() {
+			return {
+				title: "[" + this.detailData.genre + "]" + this.title,
+				imageUrl: this.detailData.cover,
+				query: 'data=' + JSON.stringify(this.detailData)
+			}
+		},
+		onPullDownRefresh() {
 			this.getList()
 		},
-		onHide(){
-			try{
-				if(this.conTENT){
+		onHide() {
+			try {
+				if (this.conTENT) {
 					this.conTENT.pause()
 				}
-			}catch(e){
+			} catch (e) {
 				//TODO handle the exception
 			}
-			
+
 		},
-		onShow(){
-			try{
-				if(this.conTENT){
+		onShow() {
+			try {
+				if (this.conTENT) {
 					this.conTENT.play()()
 				}
-			}catch(e){
+			} catch (e) {
 				//TODO handle the exception
 			}
 		},
@@ -202,8 +207,8 @@
 			let _this = this;
 			let option = uni.getStorageSync('config');
 			this.index = option.index
-			// #ifndef MP-ALIPAY
-			if(this.index==1){
+			// #ifndef MP-ALIPAY||APP-PLUS
+			if (this.index == 1) {
 				this.conTENT = uni.createVideoContext('myVi')
 			}
 			// #endif
@@ -216,7 +221,7 @@
 			this.getList()
 		},
 		methods: {
-			getList(){
+			getList() {
 				let _this = this;
 				uni.request({
 					url: uni.getStorageSync('baseUrl'),
@@ -278,7 +283,7 @@
 							let item = this.list[0];
 							let op = config.getYsZJnum(this.detailData.url);
 							this.num = op.num ? op.num : 0;
-							this.videoTitle = this.title + " " +this.list[this.num].num;
+							this.videoTitle = this.title + " " + this.list[this.num].num;
 							if (
 								this.list.length <= 4 &&
 								this.detailData.genre.indexOf('综艺') == -1 &&
@@ -290,32 +295,32 @@
 							) {
 								this.xunjiif = false;
 							}
-							
-							let text = this.detailData.name1.replace(this.detailData.name,"");
-							let numstr = res.data.list[res.data.list.length-1].num;
-							if(text.indexOf("更新")!=-1){
-								if(this.detailData.genre.indexOf("综艺")!=-1){
-									if(numstr.indexOf("集")!=-1 || numstr.indexOf("期")!=-1){
-										this.detailData.imgText = "更新至"+numstr;
-									}else{
-										this.detailData.imgText = "更新至"+numstr+"期";
+
+							let text = this.detailData.name1.replace(this.detailData.name, "");
+							let numstr = res.data.list[res.data.list.length - 1].num;
+							if (text.indexOf("更新") != -1) {
+								if (this.detailData.genre.indexOf("综艺") != -1) {
+									if (numstr.indexOf("集") != -1 || numstr.indexOf("期") != -1) {
+										this.detailData.imgText = "更新至" + numstr;
+									} else {
+										this.detailData.imgText = "更新至" + numstr + "期";
 									}
-									
-								}else{
-									this.detailData.imgText = "更新至"+numstr;
+
+								} else {
+									this.detailData.imgText = "更新至" + numstr;
 								}
-							}else if(text.indexOf("完结")!=-1){
-								if(this.detailData.genre.indexOf("综艺")==-1){
-									this.detailData.imgText =  res.data.list.length+"集全"
-								}else{
-									this.detailData.imgText = "更新至"+numstr;
+							} else if (text.indexOf("完结") != -1) {
+								if (this.detailData.genre.indexOf("综艺") == -1) {
+									this.detailData.imgText = res.data.list.length + "集全"
+								} else {
+									this.detailData.imgText = "更新至" + numstr;
 								}
-							}else if(text.indexOf("集")!=-1){
-								this.detailData.imgText = "更新至"+numstr;
-							}else if(text.indexOf("期")!=-1){
-								this.detailData.imgText = "更新至"+numstr;
-							}else{
-								this.detailData.imgText = this.detailData.time+"更新"
+							} else if (text.indexOf("集") != -1) {
+								this.detailData.imgText = "更新至" + numstr;
+							} else if (text.indexOf("期") != -1) {
+								this.detailData.imgText = "更新至" + numstr;
+							} else {
+								this.detailData.imgText = this.detailData.time + "更新"
 							}
 							config.setYsZJ(this.num, this.detailData)
 						}
@@ -344,11 +349,11 @@
 				}
 				return result;
 			},
-			myplay(){
-				if(!this.jindu){
+			myplay() {
+				if (!this.jindu) {
 					this.jindu = true;
 					let op = config.getYsZJnum(this.detailData.url);
-					if(op.currentTime){
+					if (op.currentTime) {
 						this.conTENT.seek(op.currentTime);
 					}
 				}
@@ -365,13 +370,13 @@
 				clearTimeout(this.xuanjiTimer);
 				clearTimeout(this.timeupdateTimer);
 				this.timeupdateTimer = setTimeout(() => {
-					 let title = this.list[this.num].num;
-					 title +=" "+this.formatSeconds(currentTime);
-					 this.detailData.currentTime = currentTime;
-					 this.detailData.title = title;
-					 this.detailData.Time = new Date().getTime();
-					 this.detailData.saveTime = config.getDate("/"); 
-					 config.setYsZJ(this.num, this.detailData)
+					let title = this.list[this.num].num;
+					title += " " + this.formatSeconds(currentTime);
+					this.detailData.currentTime = currentTime;
+					this.detailData.title = title;
+					this.detailData.Time = new Date().getTime();
+					this.detailData.saveTime = config.getDate("/");
+					config.setYsZJ(this.num, this.detailData)
 				}, 250)
 			},
 			//关闭选集列表
@@ -387,13 +392,13 @@
 				}
 			},
 			//播放下集
-			xiajiBtn(){
+			xiajiBtn() {
 				let num = Number(this.num);
 				num++;
-				if(num>this.list.length-1){
+				if (num >= this.list.length - 1) {
 					uni.showToast({
-						title:"已经是最后一集了",
-						icon:"none"
+						title: "已经是最后一集了",
+						icon: "none"
 					})
 					return
 				}
@@ -484,24 +489,22 @@
 			fullscreenchange() {},
 			playClick() {},
 			videoErrorCallback(e) {
-				let str = "",_this=this,item={};
+				let str = "",
+					_this = this,
+					item = {};
 				let obj = this.list[this.num];
-				if(this.state==="m3u8"){
+				if (this.state === "m3u8") {
 					str = "mp4";
 				}
-				if(this.state==="mp4"){
+				if (this.state === "mp4") {
 					str = "m3u8"
 				}
 				uni.showModal({
 					title: '提示',
-					content: "当前播放"+this.state+"线路出错，是否更换"+str+"线路播放？",
+					content: "当前播放出错，请退出页面重试",
 					success: function(res) {
-						if(res.confirm){
-							if(str == "mp4"){
-								_this.videosrc = obj.download
-							}else{
-								_this.videosrc =  obj.m3u8url
-							}
+						if (res.confirm) {
+							_this.back()
 						}
 					}
 				});
@@ -727,7 +730,7 @@
 		height: 30px;
 		top: 50%;
 		right: 10px;
-		margin-top: -50px;
+		margin-top: -40px;
 		color: #fff;
 		font-size: 14px;
 	}
@@ -781,7 +784,8 @@
 			display: none;
 		}
 	}
-	.bottom-progress{
+
+	.bottom-progress {
 		position: absolute;
 		left: 0;
 		bottom: 0;
@@ -789,16 +793,18 @@
 		height: 2px;
 		background-color: #000;
 	}
+
 	.xuanji {
 		position: absolute;
 		width: 60px;
 		height: 30px;
 		top: 50%;
 		right: 10px;
-		margin-top: 0px;
+		margin-top: 10px;
 		color: #fff;
 		font-size: 14px;
 	}
+
 	.xiaji {
 		position: absolute;
 		width: 60px;
@@ -809,6 +815,7 @@
 		color: #fff;
 		font-size: 14px;
 	}
+
 	.xuanji-list-box {
 		position: absolute;
 		left: 0;

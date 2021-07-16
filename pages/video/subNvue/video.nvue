@@ -1,5 +1,7 @@
 <template>
-	<div><div class="fullscreen"></div></div>
+	<div>
+		<div class="fullscreen"></div>
+	</div>
 </template>
 
 <script>

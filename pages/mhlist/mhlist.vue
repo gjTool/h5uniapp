@@ -3,6 +3,7 @@
 		<!-- 	<uni-nav-bar :status-bar="true" left-icon="arrowleft" @click-left="back" :title="title" :background-color="'#ec706b'"
 		 class="uni-nav-bar" :right-text="sort" @click-right="sortlist" /> -->
 		<view class="uni-xs-list" v-if="index==1">
+			<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 			<!-- 下拉刷新组件 -->
 			<mix-pulldown-refresh ref="mixPulldownRefresh" :top="0" @refresh="onPulldownReresh" @setEnableScroll="setEnableScroll">
 				<scroll-view class="scroll" :scroll-y="enableScroll" scroll-y style="padding:20upx;">

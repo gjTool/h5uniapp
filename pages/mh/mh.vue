@@ -20,6 +20,7 @@
 					<image class="img" mode="widthFix" :src="item.img" @error="imgError(item)" @load="imgLoad" lazy-load="true"
 					 show-menu-by-longpress></image>
 				</view>
+				<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 				<!-- 加载图标 -->
 				<mixLoading class="mix-loading" v-if="loading"></mixLoading>
 			</view>

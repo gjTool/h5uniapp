@@ -1,5 +1,6 @@
 <template>
 	<view>
+		<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 		<text>{{text}}</text>
 	</view>
 </template>

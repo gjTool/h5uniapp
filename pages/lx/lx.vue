@@ -1,5 +1,7 @@
 <template>
 	<view>
+		<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
+		<ad unit-id="adunit-20e16c50e6f1df9e" ad-type="video" ad-theme="white"></ad>
 		<view class="img-box" v-if="index == 1"> 
 			<view class="img-div"  v-for="(item,index) in imgList" :key="index" >
 				<image class="img" mode="widthFix":src="item" show-menu-by-longpress></image>

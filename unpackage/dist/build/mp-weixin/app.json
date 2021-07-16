@@ -10,7 +10,6 @@
     "pages/mh/mh",
     "pages/mhlist/mhlist",
     "pages/user/user",
-    "pages/login/login",
     "pages/lx/lx"
   ],
   "subPackages": [],

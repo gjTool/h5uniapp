@@ -290,15 +290,6 @@
 			}
         }
         ,{
-            "path" : "pages/login/login",
-            "style" : {
-				"navigationBarTitleText": "授权登录",
-				"app-plus":{
-					"animationType":"slide-in-bottom"
-				}
-			}
-        }
-        ,{
             "path" : "pages/lx/lx",
             "style" : {}
         }

@@ -28,6 +28,7 @@
 						</view>
 					</view>
 					<view class="text-item  text-grey" v-show="itemshow" :class="{ black: black }"><text>------------- 本章结束 -------------</text></view>
+					<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 				</view>
 			</view>
 			<!-- 加载图标 -->

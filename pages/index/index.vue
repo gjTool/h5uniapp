@@ -14,8 +14,8 @@
 			<!-- 内容部分 -->
 			<swiper id="swiper" class="swiper-box" :duration="300" :current="tabCurrentIndex" @change="changeTab">
 				<swiper-item v-for="(tabItem,i) in tabBars" :key="i">
-					<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 					<scroll-view class="panel-scroll-box" scroll-y="true">
+						<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 						<view v-for="(item, index) in tabItem.contentList" :key="index" class="news-item" @click="navToDetails(item)" v-show="item.title">
 							<view class="text-time">
 								<text class="text-time-l">上次观看到：</text>

@@ -31,6 +31,7 @@
 				<swiper id="swiper" class="swiper-box" :duration="300" :current="tabCurrentIndex" @change="changeTab">
 					<swiper-item v-for="(tabItem,i) in tabBars" :key="i">
 						<scroll-view class="panel-scroll-box" :scroll-y="enableScroll">
+							<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 							<view v-for="(item, index) in tabItem.contentList" :key="index" class="news-item"
 								@click="navToDetails(item)">
 								<view v-show="item.cover" class="img-list" :class="{'blank':item.blank}">
@@ -47,7 +48,6 @@
 									<text class="title">{{ item.name }}</text>
 								</view>
 							</view>
-							<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 							<view v-if="first && !tabItem.contentList.length"
 								style="margin-top:40px;text-align: center;"><text class="title">没有搜索到数据～</text></view>
 						</scroll-view>
@@ -60,7 +60,8 @@
 			<view class="weixin-advert" v-if="weixinAdvert" @click="closeImg" id="weixin-advert">
 				<view class="img-box">
 					<text class="text">长按图片识别小程序码，进入免费看电影小程序</text>
-					<img class="img" id="weixin-img" style="position: relative;" src="https://www.gjtool.cn/h5/static/weixin_advert.jpeg" />
+					<img class="img" id="weixin-img" style="position: relative;"
+						src="https://www.gjtool.cn/h5/static/weixin_advert.jpeg" />
 				</view>
 			</view>
 			<!-- #endif -->
@@ -220,7 +221,6 @@
 						<text> 数据来源于天气网</text>
 					</view>
 				</view>
-				<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 			</scroll-view>
 		</view>
 	</view>
@@ -317,12 +317,11 @@
 					config.interstitialAd.onLoad(() => {})
 					config.interstitialAd.onError((err) => {})
 					config.interstitialAd.onClose(() => {})
-
 				}
 				config.interstitialAd.show().catch((err) => {
 					console.error(err)
 				})
-			}, 1500)
+			}, 300)
 			let _this = this;
 			/**
 			 * 启动页广告
@@ -871,6 +870,14 @@
 	}
 </style>
 <style lang="scss" scoped>
+	.adContainer {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
 	.input-view {
 		/* #ifdef APP-PLUS */
 		width: 92%;

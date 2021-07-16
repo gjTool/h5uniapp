@@ -72,8 +72,8 @@
 				</view>
 				<!-- 加载图标 -->
 				<mixLoading class="mix-loading" v-if="loading"></mixLoading>
+				<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 			</view>
-			<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
 		</scroll-view>
 	</view>
 </template>

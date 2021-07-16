@@ -10,6 +10,7 @@ if (option && option.alert && option.alertText) {
 }
 let interstitialAd = null
 let timer = null
+let videoAd = null;
 //获取影视最近浏览数组
 let getYsZJ = () => {
 	let openid = uni.getStorageSync("userInfo").openid;
@@ -67,6 +68,9 @@ let setYsZJ = (num, detailData) => {
 			}
 			if (!flag) {
 				arr.push(detailData)
+				if (arr.length > 40) {
+					arr.shift()
+				}
 			}
 			arr.sort(compare('Time'))
 			uni.setStorage({
@@ -134,6 +138,9 @@ let setMhZJ = (num, detailData) => {
 			}
 			if (!flag) {
 				arr.push(detailData)
+				if (arr.length > 40) {
+					arr.shift()
+				}
 			}
 			arr.sort(compare('Time'))
 			uni.setStorage({
@@ -204,8 +211,12 @@ let setXsZJ = (num, detailData) => {
 			}
 			if (!flag) {
 				arr.push(detailData)
+				if (arr.length > 40) {
+					arr.shift()
+				}
 			}
 			arr.sort(compare('Time'))
+
 			uni.setStorage({
 				key: openid + "xsZJ",
 				data: arr
@@ -278,5 +289,6 @@ export default {
 	getDate,
 	configTimer,
 	interstitialAd,
-	timer
+	timer,
+	videoAd
 }

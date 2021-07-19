@@ -279,6 +279,8 @@
 				ysurlRequestList: [],
 				mhurlRequest: null,
 				mhurlRequestList: [],
+				xsurlRequest: null,
+				xsurlRequestList: [],
 				searchWord: uni.getStorageSync('config').searchWord || "2020",
 				openid: "",
 				configTimer: null,
@@ -564,6 +566,9 @@
 				if (this.mhurlRequestList.length) {
 					this.clearMhurlRequestList()
 				}
+				if (this.xsurlRequestList.length) {
+					this.clearXsurlRequestList()
+				}
 				if (this.index == 0) {
 					return
 				}
@@ -573,20 +578,20 @@
 					method: 'GET',
 					complete: res => {
 						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+
 							let list = res.data.list;
 							let arr = [];
 							list.forEach(item => {
-								if (item.genre && item.genre.indexOf('福利') <= -1 && item.genre.indexOf(
+								if (item.genre && item.genre.indexOf('福利') <= -1 && item.genre
+									.indexOf(
 										'伦理') <= -1 && item.genre.indexOf(
-										'写真') <= -1) {
+										'写真') <= -1 && item.genre.indexOf(
+										"耽美") <= -1 || (item.tag && item.tag.indexOf(
+										"耽美") <= -1)) {
 									arr.push(item);
 								}
 							});
-							if (search == 'ysname') {
-								_this.contentData = arr;
-							} else {
-								_this.contentData = res.data.list;
-							}
+							_this.contentData = arr.length ? arr : list;
 							if (_this.contentData.length < 7) {
 								var len = 7 - _this.contentData.length;
 								for (let i = 0; i < len; i++) {
@@ -641,7 +646,25 @@
 							this.getMhCover(tabItem.contentList[k])
 						})(k)
 					}
+
+				} else if (tabItem.id == '2') {
+					for (let k = 0; k < tabItem.contentList.length; k++) {
+						((k) => {
+							this.getXsCover(tabItem.contentList[k])
+						})(k)
+					}
+
 				}
+				setTimeout(() => {
+					let arr = [];
+					for (let k = 0; k < this.tabBars[1].contentList.length; k++) {
+						if (this.tabBars[1].contentList[k].genre && this.tabBars[1].contentList[k].genre
+							.indexOf("耽美") <= -1) {
+							arr.push(this.tabBars[1].contentList[k])
+						}
+					}
+					this.tabBars[1].contentList = arr;
+				}, 1500)
 			},
 			getCover(item) {
 				if (this.index == 0) {
@@ -686,7 +709,6 @@
 							} else {
 								item.imgText = item.time + "更新"
 							}
-							// console.log(res.data)
 						}
 					}
 				})
@@ -726,12 +748,45 @@
 				this.mhurlRequest = mhurlRequest;
 				return mhurlRequest;
 			},
+
 			clearMhurlRequestList() {
 				if (this.mhurlRequestList.length) {
 					this.mhurlRequestList.forEach((item) => {
 						item.abort();
 					})
 					this.mhurlRequestList = [];
+				}
+			},
+			getXsCover(item) {
+				if (this.index == 0) {
+					return
+				}
+				let xsurlRequest = uni.request({
+					url: uni.getStorageSync('baseUrl'),
+					data: {
+						xsurl1: item.url
+					},
+					method: 'GET',
+					complete: res => {
+						if (res.statusCode == 200 && res.data && res.data.code == 0) {
+							let obj = res.data.data;
+							item.cover = obj.cover;
+							item.name = obj.name;
+							item.imgText = (res.data.list.length ? res.data.list[res.data.list
+								.length - 1].num : "")
+							item.genre = "";
+						}
+					}
+				})
+				this.xsurlRequest = xsurlRequest;
+				return xsurlRequest;
+			},
+			clearXsurlRequestList() {
+				if (this.xsurlRequestList.length) {
+					this.xsurlRequestList.forEach((item) => {
+						item.abort();
+					})
+					this.xsurlRequestList = [];
 				}
 			},
 			//详情

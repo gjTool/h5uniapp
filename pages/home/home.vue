@@ -795,7 +795,7 @@
 					complete: res => {
 						if (res.statusCode == 200 && res.data && res.data.code == 0) {
 							let obj = res.data.data;
-							item.cover = obj.cover;
+							item.cover = "http://www.x33xs.com/" + obj.cover;
 							item.name = obj.name;
 							item.imgText = (res.data.list.length ? res.data.list[res.data.list
 								.length - 1].num : "")

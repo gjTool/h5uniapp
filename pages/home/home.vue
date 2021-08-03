@@ -311,21 +311,29 @@
 			}
 		},
 		async onLoad() {
-			clearTimeout(config.timer)
-			config.timer = setTimeout(() => {
-				if (wx.createInterstitialAd) {
-					config.interstitialAd = wx.createInterstitialAd({
-						adUnitId: 'adunit-04984e19200bf32e'
-					})
-					config.interstitialAd.onLoad(() => {})
-					config.interstitialAd.onError((err) => {})
-					config.interstitialAd.onClose(() => {})
-				}
-				config.interstitialAd.show().catch((err) => {
-					console.error(err)
-				})
-			}, 1000)
 			let _this = this;
+			this.$eventHub.$on('setIndex', num => {
+				this.index = num;
+				let obj = uni.getStorageSync('config');
+				obj.index = num;
+				uni.setStorage({
+					key: 'config',
+					data: obj
+				});
+				_this.marginTop = (_this.statusBarHeight + 88) + "px";
+				_this.height = (uni.getSystemInfoSync().windowHeight - _this
+					.statusBarHeight) + "px";
+				if (!_this.contentData.length) {
+					_this.loading = true;
+					_this.keyWord = _this.searchWord;
+					let tabItem1 = _this.tabBars[0];
+					_this.loadList(tabItem1);
+					let tabItem2 = _this.tabBars[1];
+					_this.loadList(tabItem2);
+					let tabItem3 = _this.tabBars[2];
+					_this.loadList(tabItem3);
+				}
+			})
 			/**
 			 * 启动页广告
 			 *  初始化的时机应该是在splash关闭时，否则会造成在app端广告显示了数秒后首屏才渲染出来
@@ -377,48 +385,65 @@
 			this.tabBar = this.getElSize('nav-bar');
 			// #ifdef MP
 			// #endif
-			uni.request({
-				url: 'https://www.gjtool.cn/download/config.json?_t=' + new Date().getTime(),
-				method: 'GET',
-				complete: res => {
-					if (res.statusCode == 200 && res.data) {
-						uni.setStorage({
-							key: 'config',
-							data: res.data
-						});
-						_this.index = res.data.index;
-						if (res.data.baseUrl) {
-							uni.setStorageSync('baseUrl', res.data.baseUrl);
-						} else {
-							uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
-						}
-						// #ifdef H5
-						_this.index = 1
-						// #endif
-						if (_this.index == 0) {
-							_this.marginTop = (_this.statusBarHeight + 44) + "px";
-							if (!_this.forecastList.length) {
-								_this.getWeather("北京")
+			let obj = uni.getStorageSync('config');
+			if (!obj.index) {
+				uni.request({
+					url: 'https://www.gjtool.cn/download/config.json?_t=' + new Date().getTime(),
+					method: 'GET',
+					complete: res => {
+						if (res.statusCode == 200 && res.data) {
+							uni.setStorage({
+								key: 'config',
+								data: res.data
+							});
+							_this.index = res.data.index;
+							if (res.data.baseUrl) {
+								uni.setStorageSync('baseUrl', res.data.baseUrl);
+							} else {
+								uni.setStorageSync('baseUrl', "https://www.gjtool.cn/py");
 							}
-						} else {
-							_this.marginTop = (_this.statusBarHeight + 88) + "px";
-							_this.height = (uni.getSystemInfoSync().windowHeight - 88 - _this
-								.statusBarHeight) + "px";
-							if (!_this.contentData.length) {
-								_this.loading = true;
-								_this.keyWord = _this.searchWord;
-								let tabItem1 = _this.tabBars[0];
-								_this.loadList(tabItem1);
-								let tabItem2 = _this.tabBars[1];
-								_this.loadList(tabItem2);
-								let tabItem3 = _this.tabBars[2];
-								_this.loadList(tabItem3);
+							// #ifdef H5
+							_this.index = 1
+							// #endif
+							if (_this.index == 0) {
+								_this.marginTop = (_this.statusBarHeight + 44) + "px";
+								if (!_this.forecastList.length) {
+									_this.getWeather("北京")
+								}
+							} else {
+								_this.marginTop = (_this.statusBarHeight + 88) + "px";
+								_this.height = (uni.getSystemInfoSync().windowHeight - 88 - _this
+									.statusBarHeight) + "px";
+								if (!_this.contentData.length) {
+									_this.loading = true;
+									_this.keyWord = _this.searchWord;
+									let tabItem1 = _this.tabBars[0];
+									_this.loadList(tabItem1);
+									let tabItem2 = _this.tabBars[1];
+									_this.loadList(tabItem2);
+									let tabItem3 = _this.tabBars[2];
+									_this.loadList(tabItem3);
+								}
 							}
-						}
 
+						}
 					}
+				});
+			} else {
+				_this.marginTop = (_this.statusBarHeight + 88) + "px";
+				_this.height = (uni.getSystemInfoSync().windowHeight - 88 - _this
+					.statusBarHeight) + "px";
+				if (!_this.contentData.length) {
+					_this.loading = true;
+					_this.keyWord = _this.searchWord;
+					let tabItem1 = _this.tabBars[0];
+					_this.loadList(tabItem1);
+					let tabItem2 = _this.tabBars[1];
+					_this.loadList(tabItem2);
+					let tabItem3 = _this.tabBars[2];
+					_this.loadList(tabItem3);
 				}
-			});
+			}
 		},
 		onNavigationBarSearchInputConfirmed(e) {
 			this.confirm({

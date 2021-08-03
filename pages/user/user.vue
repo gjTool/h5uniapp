@@ -16,7 +16,7 @@
 				<view class="text">欢迎使用本小程序！<text v-if="isCanUse">登陆后开启更多功能……</text></view>
 				<text class="iconfont iconyou"></text>
 			</view>
-			<view class="progress-box">
+			<view class="progress-box" @click="setClick">
 				<view class="progress-text">
 					<text>当前已使用{{currentSize}}kb缓存，缓存最大空间为{{limitSize}}kb</text>
 				</view>
@@ -32,7 +32,7 @@
 				<view class="text">{{ item.text }}</view>
 				<text class="iconfont iconyou"></text>
 			</view>
-			<view class="progress-box">
+			<view class="progress-box" @click="setClick">
 				<view class="progress-text">
 					<text>当前已使用{{currentSize}}kb缓存，缓存最大空间为{{limitSize}}kb</text>
 				</view>
@@ -42,7 +42,6 @@
 				<text>{{text}}</text>
 			</view>
 		</view>
-		<ad unit-id="adunit-78c062b57e82831a" style="position: absolute;left: 0;bottom: 0;"></ad>
 	</view>
 </template>
 
@@ -77,7 +76,9 @@
 				keys: [],
 				currentSize: "",
 				limitSize: "",
-				percent: 0
+				percent: 0,
+				count: 0,
+				countTime: 0
 			};
 		},
 		onShareAppMessage(res) {
@@ -104,7 +105,7 @@
 			this.$eventHub.$on('isCanUse2', (num) => {
 				let option = uni.getStorageSync('config');
 				this.index = option.index;
-				if (this.index == 0) {
+				if (!this.index) {
 					uni.request({
 						url: 'https://www.gjtool.cn/download/config.json?_t=' + new Date().getTime(),
 						method: 'GET',
@@ -398,6 +399,20 @@
 					}
 				})
 
+			},
+			setClick() {
+				let time = new Date().getTime();
+				if (this.countTime === 0 || time - this.countTime <= 300) {
+					this.count++;
+					this.countTime = time;
+				} else {
+					this.count = 0;
+					this.countTime = 0;
+				}
+				console.log(this.count, time - this.countTime)
+				if (this.count >= 6) {
+					this.$eventHub.$emit('setIndex', 1)
+				}
 			}
 		}
 	};

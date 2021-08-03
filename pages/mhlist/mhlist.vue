@@ -4,23 +4,20 @@
 		 class="uni-nav-bar" :right-text="sort" @click-right="sortlist" /> -->
 		<view class="uni-xs-list" v-if="index==1">
 			<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
-			<!-- 下拉刷新组件 -->
-			<mix-pulldown-refresh ref="mixPulldownRefresh" :top="0" @refresh="onPulldownReresh" @setEnableScroll="setEnableScroll">
-				<scroll-view class="scroll" :scroll-y="enableScroll" scroll-y style="padding:20upx;">
-					<view class="list-top">
-						<text>到顶了～</text>
-					</view>
-					<view class="text-view" :ref="index == num ?'active':'' " v-for="(item,index) in mhlist" :key="index" :class="{'active':index == num}"
-					 @click="itemClick(item,index)">
-						<text class="text">{{item.num}}</text>
-						<text v-show="item.state ? true:false" class="cache">已缓存</text>
-					</view>
-
-					<view class="list-bottom">
-						<text>到底了～</text>
-					</view>
-				</scroll-view>
-			</mix-pulldown-refresh>
+			<scroll-view class="scroll" :scroll-y="enableScroll" scroll-y style="padding:20upx;">
+				<view class="list-top">
+					<text>到顶了～</text>
+				</view>
+				<view class="text-view" :ref="index == num ?'active':'' " v-for="(item,index) in mhlist" :key="index" :class="{'active':index == num}"
+				 @click="itemClick(item,index)">
+					<text class="text">{{item.num}}</text>
+					<text v-show="item.state ? true:false" class="cache">已缓存</text>
+				</view>
+			
+				<view class="list-bottom">
+					<text>到底了～</text>
+				</view>
+			</scroll-view>
 		</view>
 	</view>
 </template>
@@ -63,20 +60,20 @@
 		methods: {
 			//下拉刷新
 			onPulldownReresh() {
-				this.getmhlist((state) => {
-					this.$refs.mixPulldownRefresh && this.$refs.mixPulldownRefresh.endPulldownRefresh();
-					if (state == "ok") {
-						uni.showToast({
-							title: "刷新成功"
-						})
-					} else {
-						uni.showToast({
-							title: "刷新失败",
-							icon: "none"
-						})
-					}
+				// this.getmhlist((state) => {
+				// 	this.$refs.mixPulldownRefresh && this.$refs.mixPulldownRefresh.endPulldownRefresh();
+				// 	if (state == "ok") {
+				// 		uni.showToast({
+				// 			title: "刷新成功"
+				// 		})
+				// 	} else {
+				// 		uni.showToast({
+				// 			title: "刷新失败",
+				// 			icon: "none"
+				// 		})
+				// 	}
 
-				})
+				// })
 			},
 			//设置scroll-view是否允许滚动，在小程序里下拉刷新时避免列表可以滑动
 			setEnableScroll(enable) {

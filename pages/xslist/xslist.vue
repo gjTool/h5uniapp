@@ -2,25 +2,22 @@
 	<view class="content">
 		<!-- <uni-nav-bar :status-bar="true" left-icon="arrowleft" @click-left="back" :title="title" :background-color="'#ec706b'"
 		 class="uni-nav-bar" :right-text="sort" @click-right="sortlist" /> -->
-		<view class="uni-xs-list"  v-if="index==1">
+		<view class="uni-xs-list" v-if="index==1">
 			<ad unit-id="adunit-78c062b57e82831a" style="width: 100%;"></ad>
-			<!-- 下拉刷新组件 -->
-			<mix-pulldown-refresh ref="mixPulldownRefresh" :top="0" @refresh="onPulldownReresh" @setEnableScroll="setEnableScroll">
-				<scroll-view class="scroll" :scroll-y="enableScroll" scroll-y style="padding:20upx;">
-					<view class="list-top">
-						<text>到顶了～</text>
-					</view>
-					<view class="text-view" :ref="index == num ?'active':'' " v-for="(item,index) in xslist" :key="index" :class="{'active':index == num}"
-					 @click="itemClick(item,index)">
-						<text  class="text">{{item.num}}</text>
-						<text v-show="item.state ? true:false" class="cache">已缓存</text>
-					</view>
-					
-					<view class="list-bottom">
-						<text>到底了～</text>
-					</view>
-				</scroll-view>
-			</mix-pulldown-refresh>
+			<scroll-view class="scroll" :scroll-y="enableScroll" scroll-y style="padding:20upx;">
+				<view class="list-top">
+					<text>到顶了～</text>
+				</view>
+				<view class="text-view" :ref="index == num ?'active':'' " v-for="(item,index) in xslist" :key="index"
+					:class="{'active':index == num}" @click="itemClick(item,index)">
+					<text class="text">{{item.num}}</text>
+					<text v-show="item.state ? true:false" class="cache">已缓存</text>
+				</view>
+
+				<view class="list-bottom">
+					<text>到底了～</text>
+				</view>
+			</scroll-view>
 		</view>
 	</view>
 </template>
@@ -53,30 +50,30 @@
 				list: [],
 				sort: "升序",
 				from: "xs",
-				cover:"",
+				cover: "",
 				index: 0,
 				openid: "",
-				detailData:{},
-				detailDataObj:{}
+				detailData: {},
+				detailDataObj: {}
 			}
 		},
 		methods: {
 			//下拉刷新
 			onPulldownReresh() {
-				this.getxslist((state) => {
-					this.$refs.mixPulldownRefresh && this.$refs.mixPulldownRefresh.endPulldownRefresh();
-					if(state == "ok"){
-						uni.showToast({
-							title:"刷新成功"
-						})
-					}else {
-						uni.showToast({
-							title:"刷新失败",
-							icon:"none"
-						})
-					}
-					
-				})
+				// this.getxslist((state) => {
+				// 	this.$refs.mixPulldownRefresh && this.$refs.mixPulldownRefresh.endPulldownRefresh();
+				// 	if(state == "ok"){
+				// 		uni.showToast({
+				// 			title:"刷新成功"
+				// 		})
+				// 	}else {
+				// 		uni.showToast({
+				// 			title:"刷新失败",
+				// 			icon:"none"
+				// 		})
+				// 	}
+
+				// })
 			},
 			//设置scroll-view是否允许滚动，在小程序里下拉刷新时避免列表可以滑动
 			setEnableScroll(enable) {
@@ -142,7 +139,8 @@
 					this.$eventHub.$emit('changeXsContent', item, index);
 				} else {
 					uni.redirectTo({
-						url: '/pages/xs/xs?src=' + encodeURIComponent(item.url) + "&data=" + JSON.stringify(this.detailDataObj)
+						url: '/pages/xs/xs?src=' + encodeURIComponent(item.url) + "&data=" + JSON.stringify(this
+							.detailDataObj)
 					});
 				}
 			},
@@ -150,7 +148,7 @@
 				let _this = this;
 				// 获取屏幕高度
 				let windowHeight = uni.getSystemInfoSync().windowHeight;
-				let len = (parseInt(_this.num) + 6) * 33 - windowHeight / 2 + 64+44
+				let len = (parseInt(_this.num) + 6) * 33 - windowHeight / 2 + 64 + 44
 				len = len - windowHeight >= 0 ? len : 0
 				uni.pageScrollTo({
 					scrollTop: len,
@@ -185,7 +183,7 @@
 					}
 				});
 			},
-			getCacheState(xslist){
+			getCacheState(xslist) {
 				let _this = this;
 				let value = uni.getStorageSync('xsDownload');
 				if (value) {
@@ -193,9 +191,9 @@
 						if (value[i].name == _this.xsname) {
 							let arr = value[i].data;
 							value[i].xslist = xslist;
-							arr.forEach((item)=>{
-								xslist.forEach((obj)=>{
-									if(item.numName == obj.num && item.state == "done"){
+							arr.forEach((item) => {
+								xslist.forEach((obj) => {
+									if (item.numName == obj.num && item.state == "done") {
 										obj.state = "done";
 									}
 								})
@@ -204,7 +202,7 @@
 							break;
 						}
 					}
-					uni.setStorageSync('xsDownload',value);
+					uni.setStorageSync('xsDownload', value);
 				}
 			}
 		},
@@ -218,7 +216,7 @@
 			this.openid = uni.getStorageSync("userInfo").openid;
 			this.detailData = JSON.parse(options.data);
 			this.detailDataObj = JSON.parse(options.obj);
-			
+
 			this.xsname = decodeURIComponent(this.detailDataObj.name);
 			this.num = decodeURIComponent(this.detailData.num);
 			this.from = decodeURIComponent(this.detailData.from);
@@ -228,7 +226,7 @@
 			uni.setNavigationBarTitle({
 				title: this.title
 			});
-		
+
 			_this.xslist = uni.getStorageSync('xslist' + this.url1);
 			_this.getCacheState(_this.xslist)
 			setTimeout(() => {
@@ -273,7 +271,8 @@
 		font-size: 14px;
 		position: relative;
 		padding-right: 50px;
-		.cache{
+
+		.cache {
 			position: absolute;
 			top: 6px;
 			right: 0;

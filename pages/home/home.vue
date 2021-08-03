@@ -800,6 +800,8 @@
 							item.imgText = (res.data.list.length ? res.data.list[res.data.list
 								.length - 1].num : "")
 							item.genre = "";
+							item._type = "xs";
+							item._cover = obj.cover;;
 						}
 					}
 				})

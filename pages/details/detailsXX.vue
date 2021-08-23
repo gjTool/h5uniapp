@@ -75,6 +75,8 @@
 				</view>
 				<view class="text-bottom">
 					<button class="play-button" type="primary" size="mini" @click="play(list[num], num)">播放</button>
+					<text>跳过片头片尾</text>
+					<switch checked @change="switch1Change" />
 				</view>
 				<view class="text-box">
 					<view>
@@ -144,7 +146,9 @@
 				xunjiif: true,
 				jindu: false,
 				state: "m3u8",
-				videosrc: ""
+				videosrc: "",
+				xiajiBtnTimer: null,
+				tiao: true
 			};
 		},
 		computed: {
@@ -350,6 +354,9 @@
 				return result;
 			},
 			myplay() {
+				if (this.tiao) {
+					this.conTENT.seek(100);
+				}
 				if (!this.jindu) {
 					this.jindu = true;
 					let op = config.getYsZJnum(this.detailData.url);
@@ -366,9 +373,9 @@
 			mytimeupdate(event) {
 				let currentTime = event.detail.currentTime;
 				let duration = event.detail.duration;
-
 				clearTimeout(this.xuanjiTimer);
 				clearTimeout(this.timeupdateTimer);
+				clearTimeout(this.xiajiBtnTimer);
 				this.timeupdateTimer = setTimeout(() => {
 					let title = this.list[this.num].num;
 					title += " " + this.formatSeconds(currentTime);
@@ -377,7 +384,19 @@
 					this.detailData.Time = new Date().getTime();
 					this.detailData.saveTime = config.getDate("/");
 					config.setYsZJ(this.num, this.detailData)
+					if (this.tiao && currentTime > 140 && currentTime + 220 >= duration) {
+						this.conTENT.stop()
+						currentTime = 0;
+						clearTimeout(this.xiajiBtnTimer);
+						this.xiajiBtnTimer = setTimeout(() => {
+							this.xiajiBtn()
+						}, 300)
+						return
+					}
 				}, 250)
+			},
+			switch1Change(event) {
+				this.tiao = event.detail.value;
 			},
 			//关闭选集列表
 			closexuanjilist() {
@@ -400,6 +419,7 @@
 						title: "已经是最后一集了",
 						icon: "none"
 					})
+					this.conTENT.stop()
 					return
 				}
 				this.num = num;
@@ -499,15 +519,15 @@
 				if (this.state === "mp4") {
 					str = "m3u8"
 				}
-				uni.showModal({
-					title: '提示',
-					content: "当前播放出错，请退出页面重试",
-					success: function(res) {
-						if (res.confirm) {
-							_this.back()
-						}
-					}
-				});
+				// uni.showModal({
+				// 	title: '提示',
+				// 	content: "当前播放出错，请退出页面重试",
+				// 	success: function(res) {
+				// 		// if (res.confirm) {
+				// 		// 	_this.back()
+				// 		// }
+				// 	}
+				// });
 			},
 			back() {
 				this.jindu = false;

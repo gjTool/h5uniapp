@@ -856,7 +856,7 @@
 				}
 				// console.log(item)
 				//跳转小说
-				if (item._type == '2') {
+				if (item._type == '2' || item._type == 'xs') {
 					let url = `/pages/details/xsdetails?data=${JSON.stringify(item)}`;
 					if (this.index == 0) {
 						url = ""
